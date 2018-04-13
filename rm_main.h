@@ -21,7 +21,7 @@
  * @author  Nickel Liang
  * @date    2018-04-13
  */
-inline void RM_Main_Init(void) {
+extern inline void RM_Main_Init(void) {
     return;
 }
 

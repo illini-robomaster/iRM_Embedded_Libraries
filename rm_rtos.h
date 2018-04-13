@@ -21,7 +21,7 @@
  * @author  Nickel_Liang
  * @date    2018-04-13
  */
-inline void RM_RTOS_Init(void) {
+extern inline void RM_RTOS_Init(void) {
     return;
 }
 
@@ -31,7 +31,7 @@ inline void RM_RTOS_Init(void) {
  * @author  Nickel_Liang
  * @date    2018-04-13
  */
-inline void RM_RTOS_MUTEX_Init(void) {
+extern inline void RM_RTOS_MUTEX_Init(void) {
     return;
 }
 
@@ -41,7 +41,7 @@ inline void RM_RTOS_MUTEX_Init(void) {
  * @author  Nickel_Liang
  * @date    2018-04-13
  */
-inline void RM_RTOS_SEMAPHORES_Init(void) {
+extern inline void RM_RTOS_SEMAPHORES_Init(void) {
     return;
 }
 
@@ -51,7 +51,7 @@ inline void RM_RTOS_SEMAPHORES_Init(void) {
  * @author  Nickel_Liang
  * @date    2018-04-13
  */
-inline void RM_RTOS_TIMERS_Init(void) {
+extern inline void RM_RTOS_TIMERS_Init(void) {
     return;
 }
 
@@ -61,7 +61,7 @@ inline void RM_RTOS_TIMERS_Init(void) {
  * @author  Nickel_Liang
  * @date    2018-04-13
  */
-inline void RM_RTOS_THREADS_Init(void) {
+extern inline void RM_RTOS_THREADS_Init(void) {
     return;
 }
 
@@ -71,12 +71,18 @@ inline void RM_RTOS_THREADS_Init(void) {
  * @author  Nickel_Liang
  * @date    2018-04-13
  */
-inline void RM_RTOS_QUEUES_Init(void) {
+extern inline void RM_RTOS_QUEUES_Init(void) {
     return;
 }
 
-
-inline void RM_RTOS_Default_Task(void const * argument) {
+/**
+ * DefaultTask Jobs
+ *
+ * @param  argument   Same parameter passed in in Src/freertos.c
+ * @author Nickel_Liang
+ * @date   2018-04-13
+ */
+extern inline void RM_RTOS_Default_Task(void const * argument) {
     for(;;) {
       osDelay(1);
     }
