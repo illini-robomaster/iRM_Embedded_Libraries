@@ -83,8 +83,11 @@ extern inline void RM_RTOS_QUEUES_Init(void) {
  * @date   2018-04-13
  */
 extern inline void RM_RTOS_Default_Task(void const * argument) {
+    /* Add codes to initialize default thread here */
+
+    /* There must be a while loop here. Use empty for loop to prevent compiler from complaining. */
     for(;;) {
-      osDelay(1);
+
     }
 }
 
