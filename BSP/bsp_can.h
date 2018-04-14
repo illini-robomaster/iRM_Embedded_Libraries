@@ -14,14 +14,19 @@
 #include "can.h"
 #include <inttypes.h>
 
-
-void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
-
 void CAN1_init(void);
 
 void CAN2_init(void);
 
-static void RM_CAN_FilterConfiguration(CAN_HandleTypeDef* hcan);
+void CAN1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+
+void CAN2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+
+static void CAN_init(CAN_HandleTypeDef* hcan);
+
+static void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+
+static void CAN_filter_config(CAN_HandleTypeDef* hcan);
 
 static void RM_CAN_GetChassisData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr);
 

@@ -8,7 +8,31 @@
 
 #include "bsp_can.h"
 
-void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
+
+void CAN1_init(void) {
+	CAN_init(&hcan1);
+}
+
+void CAN2_init(void) {
+	CAN_init(&hcan2);
+}
+
+void CAN1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
+	CAN_transmit(&hcan1, id, msg1, msg2, msg3, msg4);
+}
+
+void CAN2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
+	CAN_transmit(&hcan2, id, msg1, msg2, msg3, msg4);
+}
+
+static void CAN_init(CAN_HandleTypeDef* hcan) {
+	CAN_filter_config(hcan);   //Initialize filter 0
+	if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK) {
+		Error_Handler();
+    }
+}
+
+static void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
 	hcan->pTxMsg->StdId = id;
 	hcan->pTxMsg->IDE = CAN_ID_STD;
 	hcan->pTxMsg->RTR = CAN_RTR_DATA;
@@ -22,20 +46,6 @@ void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t ms
 	hcan->pTxMsg->Data[6] = msg4 >> 8;
 	hcan->pTxMsg->Data[7] = msg4;
 	HAL_CAN_Transmit(hcan, 1000);
-}
-
-void CAN1_init(void) {
-	RM_CAN_FilterConfiguration(&hcan1);   //Initialize filter 0
-	if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK) {
-		Error_Handler();
-    }
-}
-
-void CAN2_init(void) {
-	RM_CAN_FilterConfiguration(&hcan2);   //Initialize filter 0
-	if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK) {
-		Error_Handler();
-    }
 }
 
 static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
@@ -70,6 +80,9 @@ static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
 		Error_Handler();
     }
 }
+
+
+
 
 static void RM_CAN_GetChassisData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
 	//3508 DATA[0]DATA[1]
