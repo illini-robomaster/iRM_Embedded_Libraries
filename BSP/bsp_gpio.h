@@ -10,7 +10,6 @@
 #define _BSP_GPIO_
 
 #include "stm32f4xx_hal.h"
-#include "rm_config.h"
 
 /**
  * Init NVIC (Interrupt) of GPIO pins. Used for Trigger Switch read.
@@ -18,6 +17,6 @@
  * @author Eric_Liang
  * @date   2018-04-13
  */
-void gpio_interrupt_init(void);
+void GPIO_interrupt_init(void);
 
 #endif

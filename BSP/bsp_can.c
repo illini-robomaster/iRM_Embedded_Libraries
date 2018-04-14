@@ -8,25 +8,7 @@
 
 #include "bsp_can.h"
 
-motor_measure_t motorChassis[4] = {0}; //4 chassis moto
-motor_measure_t motorYaw, motorPitch;
-motor_measure_t motorLauncher[2] = {0}; //2 launcher motor
-motor_measure_t motorPoke;
 
-/******************************************************************************
-	Input
-		hcan, target id, 4 current
-	Output
-	Description
-		For M3508 P19 Motor with C620 ESC
-			Data in range -16384 ~ 16384
-			Current in range -20A ~ 20A
-		For 6623 Motor
-			Data in range -5000 ~ 5000
-	Log
-		11/23/17 Nickel Liang	First Draft
-		11/24/17 Nickel Liang	Add more comment
-*******************************************************************************/
 void RM_CAN_SetMotor(CAN_HandleTypeDef* hcan, uint16_t id, int16_t spd1, int16_t spd2, int16_t spd3, int16_t spd4) {
 	hcan->pTxMsg->StdId = id;
 	hcan->pTxMsg->IDE = CAN_ID_STD;
