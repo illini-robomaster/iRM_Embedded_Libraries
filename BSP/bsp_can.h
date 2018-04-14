@@ -14,15 +14,17 @@
 #include "can.h"
 #include <inttypes.h>
 
-/* Global Functions */
-void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t spd1, int16_t spd2, int16_t spd3, int16_t spd4);
-void CAN_CalibrateGimbalMotor(CAN_HandleTypeDef* hcan);
+
+void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+
 void CAN1_init(void);
+
 void CAN2_init(void);
 
-/* Static Functions */
 static void RM_CAN_FilterConfiguration(CAN_HandleTypeDef* hcan);
+
 static void RM_CAN_GetChassisData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr);
+
 static void RM_CAN_GetGimbalData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr);
 static void RM_CAN_GetOffset(CAN_HandleTypeDef* hcan, motor_measure_t *ptr);
 

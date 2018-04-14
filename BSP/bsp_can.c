@@ -8,92 +8,37 @@
 
 #include "bsp_can.h"
 
-
-void RM_CAN_SetMotor(CAN_HandleTypeDef* hcan, uint16_t id, int16_t spd1, int16_t spd2, int16_t spd3, int16_t spd4) {
+void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
 	hcan->pTxMsg->StdId = id;
 	hcan->pTxMsg->IDE = CAN_ID_STD;
 	hcan->pTxMsg->RTR = CAN_RTR_DATA;
 	hcan->pTxMsg->DLC = 0x08;
-	hcan->pTxMsg->Data[0] = spd1 >> 8; 	//Higher 8 bits of ESC 1
-	hcan->pTxMsg->Data[1] = spd1;		//Lower 8 bits of ESC 1
-	hcan->pTxMsg->Data[2] = spd2 >> 8;
-	hcan->pTxMsg->Data[3] = spd2;
-	hcan->pTxMsg->Data[4] = spd3 >> 8;
-	hcan->pTxMsg->Data[5] = spd3;
-	hcan->pTxMsg->Data[6] = spd4 >> 8;
-	hcan->pTxMsg->Data[7] = spd4;
+	hcan->pTxMsg->Data[0] = msg1 >> 8; 	//Higher 8 bits of ESC 1
+	hcan->pTxMsg->Data[1] = msg1;		//Lower 8 bits of ESC 1
+	hcan->pTxMsg->Data[2] = msg2 >> 8;
+	hcan->pTxMsg->Data[3] = msg2;
+	hcan->pTxMsg->Data[4] = msg3 >> 8;
+	hcan->pTxMsg->Data[5] = msg3;
+	hcan->pTxMsg->Data[6] = msg4 >> 8;
+	hcan->pTxMsg->Data[7] = msg4;
 	HAL_CAN_Transmit(hcan, 1000);
 }
 
-/******************************************************************************
-	Input
-		hcan
-	Output
-	Description
-		For 6623 Motor Calibration
-	Log
-		11/24/17 Nickel Liang	First Draft
-		12/05/17 Nickel Liang	Add more comment, fix NULL compile error
-*******************************************************************************/
-void RM_CAN_CalibrateGimbalMotor(CAN_HandleTypeDef* hcan) {
-	hcan->pTxMsg->StdId = CAN_6623_CLI_TX;
-	hcan->pTxMsg->IDE = CAN_ID_STD;
-	hcan->pTxMsg->RTR = CAN_RTR_DATA;
-	hcan->pTxMsg->DLC = 0x08;
-	hcan->pTxMsg->Data[0] = RM_CAN_6623_CLI_MSG;
-	hcan->pTxMsg->Data[1] = 0x00; // For calibration purpose, you can put any message in Data[7:1]
-	hcan->pTxMsg->Data[2] = 0x00;
-	hcan->pTxMsg->Data[3] = 0x00;
-	hcan->pTxMsg->Data[4] = 0x00;
-	hcan->pTxMsg->Data[5] = 0x00;
-	hcan->pTxMsg->Data[6] = 0x00;
-	hcan->pTxMsg->Data[7] = 0x00;
-	HAL_CAN_Transmit(hcan, 1000);
-}
-
-/******************************************************************************
-	Input
-	Output
-	Description
-		Init CAN1
-	Log
-		12/05/17 Nickel Liang	First Draft
-*******************************************************************************/
-void RM_CAN_InitCAN1(void) {
+void CAN1_init(void) {
 	RM_CAN_FilterConfiguration(&hcan1);   //Initialize filter 0
 	if (HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0) != HAL_OK) {
 		Error_Handler();
     }
 }
 
-/******************************************************************************
-	Input
-	Output
-	Description
-		Init CAN2
-	Log
-		12/05/17 Nickel Liang	First Draft
-*******************************************************************************/
-void RM_CAN_InitCAN2(void) {
+void CAN2_init(void) {
 	RM_CAN_FilterConfiguration(&hcan2);   //Initialize filter 0
 	if (HAL_CAN_Receive_IT(&hcan2, CAN_FIFO0) != HAL_OK) {
 		Error_Handler();
     }
 }
 
-/******************************************************************************
-	Input
-		hcan
-	Output
-	Description
-		Configure CAN1 or CAN2
-		CAN1 default filter 0
-		CAN2 default filter 14
-		Both filter accept ALL incoming data
-	Log
-		11/23/17 Nickel Liang	First Draft
-*******************************************************************************/
-static void RM_CAN_FilterConfiguration(CAN_HandleTypeDef* hcan) {
+static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
 	CAN_FilterConfTypeDef	CAN_FilterConfigStructure;
 
 	static CanTxMsgTypeDef	Tx1Message;	//Allocate memory for data storage
@@ -126,17 +71,6 @@ static void RM_CAN_FilterConfiguration(CAN_HandleTypeDef* hcan) {
     }
 }
 
-/******************************************************************************
-	Input
-		hcan, motor ptr
-	Output
-	Description
-		For M3508 P19 Motor with C620 ESC
-			Receive and change data in moto struc
-	Log
-		11/24/17 Nickel Liang	First Draft
-		12/05/17 Nickel Liang	Add more comment, make it static
- ******************************************************************************/
 static void RM_CAN_GetChassisData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
 	//3508 DATA[0]DATA[1]
 	ptr->lastAngle 		= ptr->angle;
