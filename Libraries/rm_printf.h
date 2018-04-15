@@ -5,7 +5,7 @@
 #ifndef IRM2018_RM_PRINT_H
 #define IRM2018_RM_PRINT_H
 
-#include "mytype.h"
+
 
 static char printf_temp[512];
 

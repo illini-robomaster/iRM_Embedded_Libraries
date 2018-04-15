@@ -14,7 +14,7 @@
 
 /* Includes */
 #include "rm_config.h"
-
+#include "rm_printf.h"
 /**
  * Initialize peripherals before get into RTOS
  *
@@ -22,6 +22,9 @@
  * @date    2018-04-13
  */
 extern inline void RM_Main_Init(void) {
+    while (1){
+        RM_PRINTF("objk\n\n\n");
+    }
     return;
 }
 
