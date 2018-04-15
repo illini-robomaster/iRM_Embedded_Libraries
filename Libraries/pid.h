@@ -3,6 +3,7 @@
 
 #include "stm32f4xx_hal.h"
 #include <math.h>
+#include <stdlib.h>
 
 /**
  * @brief Constrain candidate in [-ABS_MAX, ABS_MAX]
