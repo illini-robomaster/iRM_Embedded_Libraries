@@ -46,3 +46,83 @@ motor_measure_t motorChassis[4] = {0}; //4 chassis moto
 motor_measure_t motorYaw, motorPitch;
 motor_measure_t motorLauncher[2] = {0}; //2 launcher motor
 motor_measure_t motorPoke;
+
+
+
+static void CAN_GetChassisData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
+	//3508 DATA[0]DATA[1]
+	ptr->lastAngle 		= ptr->angle;
+	ptr->angle 			= (uint16_t)(hcan->pRxMsg->Data[0]<<8 | hcan->pRxMsg->Data[1]);
+	if (ptr->angle - ptr->lastAngle > 4096)
+		ptr->roundCnt --;
+	else if (ptr->angle - ptr->lastAngle < -4096)
+		ptr->roundCnt ++;
+	ptr->totalAngle 	= ptr->roundCnt * 8192 + ptr->angle - ptr->offsetAngle;
+	//3508 DATA[2]DATA[3]
+	ptr->speedRPM 		= (int16_t)(hcan->pRxMsg->Data[2]<<8 | hcan->pRxMsg->Data[3]);
+	//3508 DATA[4]DATA[5]
+	ptr->torqueCurrent	= (int16_t)(hcan->pRxMsg->Data[4]<<8 | hcan->pRxMsg->Data[5]);
+	//3508 DATA[6]
+	ptr->temp 			= (uint8_t)hcan->pRxMsg->Data[6];
+	//Set unused data to prevent bug
+	ptr->givenCurrent	= 0; //3508 don't have given current feedback
+}
+
+static void RM_CAN_GetGimbalData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
+	//6623 DATA[0]DATA[1]
+	ptr->lastAngle 		= ptr->angle;
+	ptr->angle 			= (uint16_t)(hcan->pRxMsg->Data[0]<<8 | hcan->pRxMsg->Data[1]);
+	if (ptr->angle - ptr->lastAngle > 4096)
+		ptr->roundCnt --;
+	else if (ptr->angle - ptr->lastAngle < -4096)
+		ptr->roundCnt ++;
+	ptr->totalAngle 	= ptr->roundCnt * 8192 + ptr->angle - ptr->offsetAngle;
+	//6623 DATA[2]DATA[3]
+	ptr->torqueCurrent 	= (int16_t)(hcan->pRxMsg->Data[2]<<8 | hcan->pRxMsg->Data[3]);
+	//6623 DATA[4]DATA[5]
+	ptr->givenCurrent	= (int16_t)(hcan->pRxMsg->Data[4]<<8 | hcan->pRxMsg->Data[5]);
+	//Set unused data to prevent bug
+	ptr->speedRPM		= 0; //6623 don't have speed and temperature feedback
+	ptr->temp			= 0;
+}
+
+
+{switch (hcan->pRxMsg->StdId) {
+	case CAN_3508_1_RX:
+	case CAN_3508_2_RX:
+	case CAN_3508_3_RX:
+	case CAN_3508_4_RX:
+		{ //Delete this bracket will cause compile error
+			static uint8_t i;
+			i = hcan->pRxMsg->StdId - CAN_3508_1_RX;
+			// First 50 messages are used to set the initial offset. Message @ 1kHz, 50 messages = 50ms
+			// Every one is using 50 here. So I just use 50. Will try smaller number later
+			motorChassis[i].msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorChassis[i]) : RM_CAN_GetChassisData(hcan, &motorChassis[i]);
+			break;
+		}
+	case CAN_3508_5_RX:
+	case CAN_3508_6_RX:
+		{
+			static uint8_t i;
+			i = hcan->pRxMsg->StdId - CAN_3508_5_RX;
+			motorLauncher[i].msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorLauncher[i]) : RM_CAN_GetChassisData(hcan, &motorLauncher[i]);
+			break;
+		}
+	case CAN_3508_7_RX:
+		motorPoke.msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorPoke) : RM_CAN_GetChassisData(hcan, &motorPoke);
+		break;
+	case CAN_PITCH_RX:
+		motorPitch.msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorPitch) : RM_CAN_GetGimbalData(hcan, &motorPitch);
+		break;
+	case CAN_YAW_RX:
+		motorYaw.msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorYaw) : RM_CAN_GetGimbalData(hcan, &motorYaw);
+		break;
+}
+}
+
+
+static void RM_CAN_GetOffset(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
+	//3508 DATA[0]DATA[1], 6623 DATA[0]DATA[1]
+	ptr->angle 		 = (uint16_t)(hcan->pRxMsg->Data[0]<<8 | hcan->pRxMsg->Data[1]);
+	ptr->offsetAngle = ptr->angle;
+}
