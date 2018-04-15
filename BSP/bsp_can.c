@@ -8,6 +8,8 @@
 
 #include "bsp_can.h"
 
+uint8_t can1_rx_buffer[CAN_CALLBACK_BUFFER_SIZE];
+uint8_t can2_rx_buffer[CAN_CALLBACK_BUFFER_SIZE];
 
 void CAN1_init(void) {
 	CAN_init(&hcan1);
@@ -81,123 +83,23 @@ static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
     }
 }
 
-
-
-
-static void RM_CAN_GetChassisData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
-	//3508 DATA[0]DATA[1]
-	ptr->lastAngle 		= ptr->angle;
-	ptr->angle 			= (uint16_t)(hcan->pRxMsg->Data[0]<<8 | hcan->pRxMsg->Data[1]);
-	if (ptr->angle - ptr->lastAngle > 4096)
-		ptr->roundCnt --;
-	else if (ptr->angle - ptr->lastAngle < -4096)
-		ptr->roundCnt ++;
-	ptr->totalAngle 	= ptr->roundCnt * 8192 + ptr->angle - ptr->offsetAngle;
-	//3508 DATA[2]DATA[3]
-	ptr->speedRPM 		= (int16_t)(hcan->pRxMsg->Data[2]<<8 | hcan->pRxMsg->Data[3]);
-	//3508 DATA[4]DATA[5]
-	ptr->torqueCurrent	= (int16_t)(hcan->pRxMsg->Data[4]<<8 | hcan->pRxMsg->Data[5]);
-	//3508 DATA[6]
-	ptr->temp 			= (uint8_t)hcan->pRxMsg->Data[6];
-	//Set unused data to prevent bug
-	ptr->givenCurrent	= 0; //3508 don't have given current feedback
-}
-
-/******************************************************************************
-	Input
-		hcan, motor ptr
-	Output
-	Description
-		For 6623
-			Receive and change data in moto struc
-	Log
-		11/24/17 Nickel Liang	First Draft
-		12/05/17 Nickel Liang	Add more comment, make it static
- ******************************************************************************/
-static void RM_CAN_GetGimbalData(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
-	//6623 DATA[0]DATA[1]
-	ptr->lastAngle 		= ptr->angle;
-	ptr->angle 			= (uint16_t)(hcan->pRxMsg->Data[0]<<8 | hcan->pRxMsg->Data[1]);
-	if (ptr->angle - ptr->lastAngle > 4096)
-		ptr->roundCnt --;
-	else if (ptr->angle - ptr->lastAngle < -4096)
-		ptr->roundCnt ++;
-	ptr->totalAngle 	= ptr->roundCnt * 8192 + ptr->angle - ptr->offsetAngle;
-	//6623 DATA[2]DATA[3]
-	ptr->torqueCurrent 	= (int16_t)(hcan->pRxMsg->Data[2]<<8 | hcan->pRxMsg->Data[3]);
-	//6623 DATA[4]DATA[5]
-	ptr->givenCurrent	= (int16_t)(hcan->pRxMsg->Data[4]<<8 | hcan->pRxMsg->Data[5]);
-	//Set unused data to prevent bug
-	ptr->speedRPM		= 0; //6623 don't have speed and temperature feedback
-	ptr->temp			= 0;
-}
-
-/******************************************************************************
-	Input
-		hcan, motor ptr
-	Output
-	Description
-		For M3508 P19 Motor with C620 ESC
-			Receive and set initial angle
-		For 6623
-			Receive and set initial angle
-	Log
-		11/24/17 Nickel Liang	First Draft
-		12/05/17 Nickel Liang	Make it static
- ******************************************************************************/
-static void RM_CAN_GetOffset(CAN_HandleTypeDef* hcan, motor_measure_t *ptr) {
-	//3508 DATA[0]DATA[1], 6623 DATA[0]DATA[1]
-	ptr->angle 		 = (uint16_t)(hcan->pRxMsg->Data[0]<<8 | hcan->pRxMsg->Data[1]);
-	ptr->offsetAngle = ptr->angle;
-}
-
-/******************************************************************************
-	Input
-		hcan
-	Output
-	Description
-		DO NOT DECLARE THIS FUNCTION
-		Rx CALLBACK function, declared by HAL, no need to declare here
-		This is the function that will actually change the data in motor_measure_t
-		structs. This function will be called when the system finish interrupt
-		and come back to RTOS kernal.
-	Log
-		11/24/17 Nickel Liang	First Draft
-		12/05/17 Nickel Liang	Add more comment
- ******************************************************************************/
+/**
+ * CAN bus callback function, no need to define in h file. This will overwrite
+ *
+ * @param  hcan       [description]
+ * @author Nickel_Liang
+ * @date   2018-04-14
+ */
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
-	switch (hcan->pRxMsg->StdId) {
-		case CAN_3508_1_RX:
-		case CAN_3508_2_RX:
-		case CAN_3508_3_RX:
-		case CAN_3508_4_RX:
-			{ //Delete this bracket will cause compile error
-				static uint8_t i;
-				i = hcan->pRxMsg->StdId - CAN_3508_1_RX;
-				// First 50 messages are used to set the initial offset. Message @ 1kHz, 50 messages = 50ms
-				// Every one is using 50 here. So I just use 50. Will try smaller number later
-				motorChassis[i].msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorChassis[i]) : RM_CAN_GetChassisData(hcan, &motorChassis[i]);
-				break;
-			}
-		case CAN_3508_5_RX:
-		case CAN_3508_6_RX:
-			{
-				static uint8_t i;
-				i = hcan->pRxMsg->StdId - CAN_3508_5_RX;
-				motorLauncher[i].msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorLauncher[i]) : RM_CAN_GetChassisData(hcan, &motorLauncher[i]);
-				break;
-			}
-		case CAN_3508_7_RX:
-			motorPoke.msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorPoke) : RM_CAN_GetChassisData(hcan, &motorPoke);
-			break;
-		case CAN_PITCH_RX:
-			motorPitch.msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorPitch) : RM_CAN_GetGimbalData(hcan, &motorPitch);
-			break;
-		case CAN_YAW_RX:
-			motorYaw.msgCnt++ <= 50 ? RM_CAN_GetOffset(hcan, &motorYaw) : RM_CAN_GetGimbalData(hcan, &motorYaw);
-			break;
+	if (hcan == &hcan1) {
+		memcpy(can1_rx_buffer, hcan->pRxMsg->Data, CAN_CALLBACK_DATA_SIZE);
+		can1_rx_buffer[CAN_CALLBACK_BUFFER_SIZE - 1] = hcan->pRxMsg->StdId;
 	}
-    // Reset CAN receive interrupt to prevent bug
+	else if (hcan == &hcan2) {
+		memcpy(can2_rx_buffer, hcan->pRxMsg->Data, CAN_CALLBACK_DATA_SIZE);
+		can2_rx_buffer[CAN_CALLBACK_BUFFER_SIZE - 1] = hcan->pRxMsg->StdId;
+	}
+	// Reset CAN receive interrupt to prevent bug
 	__HAL_CAN_ENABLE_IT(&hcan1, CAN_IT_FMP0);
 	__HAL_CAN_ENABLE_IT(&hcan2, CAN_IT_FMP0);
 }
