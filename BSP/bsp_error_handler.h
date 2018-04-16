@@ -10,6 +10,12 @@
 #define _BSP_ERROR_HANDLER_
 
 /**
+ * @ingroup bsp
+ * @defgroup bsp_error_handler BSP Error Handler
+ * @{
+ */
+
+/**
  * Handle error condition printf etc.
  *
  * @param  file       Which file the error occured
@@ -21,5 +27,7 @@
 inline void bsp_error_handler(char* file, int line, char* msg) {
     return;
 }
+
+/** @} */
 
 #endif

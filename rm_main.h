@@ -9,6 +9,9 @@
  * @note    All functions should begin with "RM_" due to the nature of interaction with driver codes.
  */
 
+/** @defgroup library User Library */
+/** @defgroup bsp BSP Library */
+
 #ifndef _RM_MAIN_
 #define _RM_MAIN_
 

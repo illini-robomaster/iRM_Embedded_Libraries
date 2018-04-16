@@ -12,6 +12,12 @@
 #include "stm32f4xx_hal.h"
 #include "tim.h"
 
+/**
+ * @ingroup bsp
+ * @defgroup bsp_buzzer BSP Buzzer
+ * @{
+ */
+
 typedef enum{
     Do1L = 262,     ///*261.63Hz*/    3822us
     Re2L = 294,     ///*293.66Hz*/    3405us
@@ -72,5 +78,7 @@ void buzzer_sing_sone(BUZZER_FREQ *freq, int volume);
 
 extern BUZZER_FREQ Startup[];
 extern BUZZER_FREQ LittleStar[];
+
+/** @} */
 
 #endif

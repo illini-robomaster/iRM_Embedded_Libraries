@@ -13,6 +13,12 @@
 #include "main.h"
 
 /**
+ * @ingroup bsp
+ * @defgroup bsp_laser BSP Laser
+ * @{
+ */
+
+/**
  * Turn on laser
  *
  * @author Nickel_Liang
@@ -27,5 +33,7 @@ void laser_on(void);
  * @date   2018-04-15
  */
 void laser_off(void);
+
+/** @} */
 
 #endif

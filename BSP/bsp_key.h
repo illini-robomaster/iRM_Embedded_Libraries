@@ -12,7 +12,15 @@
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
+/**
+ * @ingroup bsp
+ * @defgroup bsp_key BSP Key
+ * @{
+ */
+
 #define key_pressed !HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) // Read val is 0
 #define key_released HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin)
+
+/** @} */
 
 #endif

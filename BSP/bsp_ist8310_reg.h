@@ -9,6 +9,12 @@
 #ifndef _BSP_IST8310_REG_
 #define _BSP_IST8310_REG_
 
+/**
+ * @ingroup bsp
+ * @defgroup bsp_ist7310_reg BSP IST8310 REG
+ * @{
+ */
+
 typedef enum {
     IST8310_WHO_AM_I           = 0x00,
     IST8310_ODR_MODE           = 0x01,
@@ -26,5 +32,7 @@ typedef enum {
     IST8310_AVGCNTL            = 0x41,
     IST8310_PDCNTL             = 0x42,
 } IST8310_REG;
+
+/** @} */
 
 #endif

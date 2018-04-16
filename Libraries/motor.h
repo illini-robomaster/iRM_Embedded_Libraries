@@ -10,6 +10,12 @@
 
 #include <inttypes.h>
 
+/**
+ * @ingroup library
+ * @defgroup motor Motor
+ * @{
+ */
+
 #define CAN1_ID 1
 #define CAN2_ID 2
 
@@ -154,5 +160,7 @@ uint8_t get_extra_gimbal_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor)
  * @return 1 if successfully parsed data, otherwise 0
  */
 uint8_t get_poke_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor);
+
+/** @} */
 
 #endif

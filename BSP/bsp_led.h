@@ -13,6 +13,12 @@
 #include "main.h"
 
 /**
+ * @ingroup bsp
+ * @defgroup bsp_led BSP LED
+ * @{
+ */
+
+/**
  * Turn on red LED
  *
  * @author Nickel_Liang
@@ -86,5 +92,7 @@ void LED_off(void);
  * @todo   Not tested yet
  */
 void LED_toggle(void);
+
+/** @} */
 
 #endif

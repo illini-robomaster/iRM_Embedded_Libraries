@@ -16,6 +16,12 @@
 #include <inttypes.h>
 #include <string.h>
 
+/**
+ * @ingroup bsp
+ * @defgroup bsp_can BSP CAN
+ * @{
+ */
+
 #define CAN1_DEVICE_NUM     12
 #define CAN2_DEVICE_NUM     12
 #define CAN_DATA_SIZE       8
@@ -122,5 +128,7 @@ static void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int
  * @date   2018-04-14
  */
 static void CAN_filter_config(CAN_HandleTypeDef* hcan);
+
+/** @} */
 
 #endif
