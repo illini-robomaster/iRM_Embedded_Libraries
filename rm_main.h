@@ -12,12 +12,17 @@
 /** @defgroup library User Library */
 /** @defgroup bsp BSP Library */
 
-#ifndef _RM_MAIN_
-#define _RM_MAIN_
+#ifndef _RM_MAIN_H_
+#define _RM_MAIN_H_
 
 /* Includes */
 #include "rm_config.h"
 #include "bsp_print.h"
+#include "bsp_buzzer.h"
+#include "bsp_can.h"
+#include "bsp_gpio.h"
+#include "bsp_led.h"
+
 /**
  * Initialize peripherals before get into RTOS
  *
@@ -25,9 +30,18 @@
  * @date    2018-04-13
  */
 extern inline void RM_Main_Init(void) {
-    while (1){
-        print("objk\n\n\n");
-    }
+    buzzer_init();
+    buzzer_sing_tone(So5L, 1); // Control board power up.
+    LED_red_toggle();
+    CAN1_init();
+    CAN2_init();
+    GPIO_interrupt_init();
+    /* Indicate successfully initialized */
+    LED_green_toggle();
+    print("All peripherals initialized.\n");
+    /* Wait for ESC to initialize */
+    /* @todo change to more delicate CAN bus condition check function */
+    HAL_Delay(STARTUP_DELAY);
     return;
 }
 

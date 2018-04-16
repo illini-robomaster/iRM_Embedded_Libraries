@@ -26,7 +26,7 @@ void buzzer_sing_tone(BUZZER_FREQ freq, int volume) {
     }
 }
 
-void buzzer_sing_sone(BUZZER_FREQ *freq, int volume) {
+void buzzer_sing_song(BUZZER_FREQ *freq, int volume) {
     int i = 0;
     while (freq[i] != Finish) {
         buzzer_sing_tone(freq[i], volume);

@@ -6,8 +6,8 @@
  * @log     2018-04-15 nickelliang
  */
 
-#ifndef _BSP_IST8310_REG_
-#define _BSP_IST8310_REG_
+#ifndef _BSP_IST8310_REG_H_
+#define _BSP_IST8310_REG_H_
 
 /**
  * @ingroup bsp

@@ -6,8 +6,8 @@
  * @log     2018-04-16 nickelliang
  */
 
-#ifndef _BSP_PRINT_
-#define _BSP_PRINT_
+#ifndef _BSP_PRINT_H_
+#define _BSP_PRINT_H_
 
 #include "stm32f4xx_hal.h"
 #include "bsp_config.h"
@@ -28,9 +28,12 @@ static char printf_temp[512];
  * @author Yixiao Sun
  * @date   2017-12-20
  */
-#define print(expr...) do {                                                    \
-    sprintf(printf_temp, expr);                                                \
-    HAL_UART_Transmit(&BSP_PRINT_PORT, printf_temp, strlen(printf_temp), 2);   \
+#define print(expr...) do {                                                      \
+    sprintf(printf_temp, expr);                                                  \
+    if (PRINT_TO_UART == 1)                                                      \
+        HAL_UART_Transmit(&BSP_PRINT_PORT, printf_temp, strlen(printf_temp), 2); \
+    if (PRINT_TO_SD == 1)                                                        \
+        break;                                                                   \
 } while(0)
 
 /** @} */

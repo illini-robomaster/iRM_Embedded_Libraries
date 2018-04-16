@@ -6,8 +6,8 @@
  * @log     2018-04-13 nickelliang
  */
 
-#ifndef _BSP_GPIO_
-#define _BSP_GPIO_
+#ifndef _BSP_GPIO_H_
+#define _BSP_GPIO_H_
 
 #include "stm32f4xx_hal.h"
 

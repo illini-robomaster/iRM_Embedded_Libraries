@@ -9,6 +9,7 @@
 #include "bsp_led.h"
 
 void LED_red_on(void) {
+    LED_green_off();
     HAL_GPIO_WritePin(GPIOE, LED_RED_Pin, GPIO_PIN_RESET);
 }
 
@@ -17,10 +18,12 @@ void LED_red_off(void) {
 }
 
 void LED_red_toggle(void) {
+    LED_green_off();
     HAL_GPIO_TogglePin(GPIOE, LED_RED_Pin);
 }
 
 void LED_green_on(void) {
+    LED_red_off();
     HAL_GPIO_WritePin(GPIOF, LED_GREEN_Pin, GPIO_PIN_RESET);
 }
 
@@ -29,6 +32,7 @@ void LED_green_off(void) {
 }
 
 void LED_green_toggle(void) {
+    LED_red_off();
     HAL_GPIO_TogglePin(GPIOF, LED_GREEN_Pin);
 }
 

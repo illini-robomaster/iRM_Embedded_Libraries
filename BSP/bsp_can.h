@@ -6,8 +6,8 @@
  * @log     2018-04-13 nickelliang
  */
 
-#ifndef _BSP_CAN_
-#define _BSP_CAN_
+#ifndef _BSP_CAN_H_
+#define _BSP_CAN_H_
 
 #include "stm32f4xx_hal.h"
 #include "main.h"

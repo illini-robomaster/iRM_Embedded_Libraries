@@ -9,11 +9,20 @@
  * @note    All functions should begin with "RM_" due to the nature of interaction with driver codes.
  */
 
-#ifndef _RM_RTOS_
-#define _RM_RTOS_
+#ifndef _RM_RTOS_H_
+#define _RM_RTOS_H_
 
 /* Includes */
 #include "rm_config.h"
+#include "bsp_print.h"
+#include "bsp_buzzer.h"
+#include "bsp_led.h"
+#include "bsp_laser.h"
+
+/* RTOS includes */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "cmsis_os.h"
 
 /**
  * Initialize after RTOS is initialized.
@@ -22,6 +31,7 @@
  * @date    2018-04-13
  */
 extern inline void RM_RTOS_Init(void) {
+    /* Initialize RTOS */
     return;
 }
 
@@ -84,11 +94,25 @@ extern inline void RM_RTOS_QUEUES_Init(void) {
  */
 extern inline void RM_RTOS_Default_Task(void const * argument) {
     /* Add codes to initialize default thread here */
-
-    /* There must be a while loop here. Use empty for loop to prevent compiler from complaining. */
-    for(;;) {
-
+    print("Enter default task.\n");
+    /* There must be a while loop here. */
+    while(1) {
+        osDelay(1);
     }
+}
+
+/**
+ * RTOS is ready.
+ *
+ * @author Nickel_Liang
+ * @date   2018-04-16
+ */
+extern inline void RM_RTOS_Ready() {
+    /* Indicate RTOS booted. Ready to battle. */
+    buzzer_sing_song(Startup, 1);
+    LED_green_on();
+    laser_on();
+    print("RTOS initialzed. Ready to battle.\n");
 }
 
 #endif

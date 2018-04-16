@@ -9,6 +9,7 @@
 #define _MOTOR_H_
 
 #include <inttypes.h>
+#include "bsp_can.h"
 
 /**
  * @ingroup library

@@ -6,8 +6,8 @@
  * @log     2018-04-15 nickelliang
  */
 
-#ifndef _BSP_KEY_
-#define _BSP_KEY_
+#ifndef _BSP_KEY_H_
+#define _BSP_KEY_H_
 
 #include "stm32f4xx_hal.h"
 #include "main.h"

@@ -1,5 +1,4 @@
 #include "motor.h"
-#include "bsp_can.h"
 
 /* undocumented yet, do not use */
 uint8_t get_chassis_prev_angle(motor_u *motor, uint8_t n) {
@@ -20,7 +19,7 @@ uint8_t get_gimbal_prev_angle(motor_u *motor, uint8_t n) {
 uint8_t get_3508_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor) {
     uint8_t buf[CAN_DATA_SIZE];
     switch (can_id) {
-        case CAN1_ID: 
+        case CAN1_ID:
             if (!CAN1_read(sensor_id, buf)) return 0;
             break;
         case CAN2_ID:
@@ -42,7 +41,7 @@ uint8_t get_3508_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor) {
 uint8_t get_6623_data(uint8_t can_id, uint8_t sensor_id, motor_u *motor) {
     uint8_t buf[CAN_DATA_SIZE];
     switch (can_id) {
-        case CAN1_ID: 
+        case CAN1_ID:
             if (!CAN1_read(sensor_id, buf)) return 0;
             break;
         case CAN2_ID:
@@ -50,7 +49,7 @@ uint8_t get_6623_data(uint8_t can_id, uint8_t sensor_id, motor_u *motor) {
             break;
         default: return 0;
     }
-    
+
     uint8_t idx = motor->extra_gimbal.cur_idx % MAXIMUM_STATE;
     motor->gimbal.angle[idx]    = (uint16_t)(buf[0] << 8 | buf[1]);
     motor->gimbal.current_get   = (int16_t)(buf[2] << 8 | buf[3]);
@@ -63,7 +62,7 @@ uint8_t get_6623_data(uint8_t can_id, uint8_t sensor_id, motor_u *motor) {
 uint8_t get_3510_data(uint8_t can_id, uint8_t sensor_id, motor_u *motor) {
     uint8_t buf[CAN_DATA_SIZE];
     switch (can_id) {
-        case CAN1_ID: 
+        case CAN1_ID:
             if (!CAN1_read(sensor_id, buf)) return 0;
             break;
         case CAN2_ID:
@@ -83,7 +82,7 @@ uint8_t get_3510_data(uint8_t can_id, uint8_t sensor_id, motor_u *motor) {
 uint8_t get_2006_data(uint8_t can_id, uint8_t sensor_id, motor_u *motor) {
     uint8_t buf[CAN_DATA_SIZE];
     switch (can_id) {
-        case CAN1_ID: 
+        case CAN1_ID:
             if (!CAN1_read(sensor_id, buf)) return 0;
             break;
         case CAN2_ID:
@@ -120,4 +119,3 @@ uint8_t get_extra_gimbal_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor)
 uint8_t get_poke_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor) {
     return get_2006_data(can_id, sensor_id, motor);
 }
-

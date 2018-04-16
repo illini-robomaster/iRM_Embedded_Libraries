@@ -6,8 +6,8 @@
  * @log     2018-04-14 nickelliang
  */
 
-#ifndef _BSP_LED_
-#define _BSP_LED_
+#ifndef _BSP_LED_H_
+#define _BSP_LED_H_
 
 #include "stm32f4xx_hal.h"
 #include "main.h"

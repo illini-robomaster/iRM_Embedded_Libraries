@@ -6,8 +6,8 @@
  * @log     2018-04-15 nickelliang
  */
 
-#ifndef _BSP_BUZZER_
-#define _BSP_BUZZER_
+#ifndef _BSP_BUZZER_H_
+#define _BSP_BUZZER_H_
 
 #include "stm32f4xx_hal.h"
 #include "tim.h"
@@ -74,7 +74,7 @@ void buzzer_sing_tone(BUZZER_FREQ freq, int volume);
  * @date   2018-04-16
  * @note   This function CAN NOT be used in RTOS due to HAL_Delay
  */
-void buzzer_sing_sone(BUZZER_FREQ *freq, int volume);
+void buzzer_sing_song(BUZZER_FREQ *freq, int volume);
 
 extern BUZZER_FREQ Startup[];
 extern BUZZER_FREQ LittleStar[];

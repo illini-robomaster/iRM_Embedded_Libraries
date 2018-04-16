@@ -6,8 +6,11 @@
  * @log     2018-04-15 nickelliang
  */
 
-#ifndef _BSP_ERROR_HANDLER_
-#define _BSP_ERROR_HANDLER_
+#ifndef _BSP_ERROR_HANDLER_H_
+#define _BSP_ERROR_HANDLER_H_
+
+#include "bsp_led.h"
+// #include "bsp_print.h"
 
 /**
  * @ingroup bsp
@@ -24,9 +27,7 @@
  * @author Nickel_Liang
  * @date   2018-04-15
  */
-inline void bsp_error_handler(char* file, int line, char* msg) {
-    return;
-}
+extern void bsp_error_handler(char* file, int line, char* msg);
 
 /** @} */
 

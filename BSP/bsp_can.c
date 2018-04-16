@@ -8,7 +8,6 @@
 
 #include "bsp_can.h"
 
-
 uint8_t can1_rx_buffer[CAN1_DEVICE_NUM][CAN_DATA_SIZE];
 uint8_t can2_rx_buffer[CAN2_DEVICE_NUM][CAN_DATA_SIZE];
 /* This is intended to use as a local spin lock */

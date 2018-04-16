@@ -6,8 +6,8 @@
  * @log     2018-04-15 nickelliang
  */
 
-#ifndef _BSP_LASER_
-#define _BSP_LASER_
+#ifndef _BSP_LASER_H_
+#define _BSP_LASER_H_
 
 #include "stm32f4xx_hal.h"
 #include "main.h"
