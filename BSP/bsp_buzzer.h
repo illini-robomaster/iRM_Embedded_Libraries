@@ -1,15 +1,15 @@
-/******************************************************************************
-	Description
-		BUZZER Utility
-	Log
-		12/05/17 Nickel Liang	First Draft
-        12/06/17 Nickel Liang	Bug Fix
-*******************************************************************************/
+/**
+ * @author  Nickel_Liang <nickelliang>
+ * @date    2018-04-15
+ * @file    bsp_buzzer.h
+ * @brief   Board support package for buzzer
+ * @log     2018-04-15 nickelliang
+ */
 
-#ifndef __BUZZER
-#define __BUZZER
+#ifndef _BSP_BUZZER_
+#define _BSP_BUZZER_
 
-#include "mytype.h"
+
 
 /* Buzzer Frequency */
 typedef enum{

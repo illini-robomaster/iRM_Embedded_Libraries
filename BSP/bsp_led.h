@@ -9,8 +9,8 @@
 #ifndef _BSP_LED_
 #define _BSP_LED_
 
-#include "rm_config.h"
 #include "stm32f4xx_hal.h"
+#include "main.h"
 
 /**
  * Turn on red LED

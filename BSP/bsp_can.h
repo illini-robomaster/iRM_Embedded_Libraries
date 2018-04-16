@@ -12,14 +12,18 @@
 #include "stm32f4xx_hal.h"
 #include "main.h"
 #include "can.h"
+#include "bsp_error_handler.h"
 #include <inttypes.h>
+#include <string.h>
 
-#define CAN_CALLBACK_BUFFER_SIZE    9
-#define CAN_CALLBACK_DATA_SIZE      8
+#define CAN1_DEVICE_NUM     12
+#define CAN2_DEVICE_NUM     12
+#define CAN_DATA_SIZE       8
+#define CAN1_RX_ID_START    0x201
+#define CAN2_RX_ID_START    0x201
 
-/* RX buffer[8] = StdId, RX buffer[0:7] contains Data[0:7] */
-extern uint8_t can1_rx_buffer[CAN_CALLBACK_BUFFER_SIZE];
-extern uint8_t can2_rx_buffer[CAN_CALLBACK_BUFFER_SIZE];
+#define BUF_BUSY            1
+#define BUF_OK              0
 
 /**
  * CAN1 init wrapper
@@ -62,6 +66,30 @@ void CAN1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_
  * @date   2018-04-14
  */
 void CAN2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+
+/**
+ * Interface for read CAN1 data
+ *
+ * @param  id         Node ID
+ * @param  buf        Buffer want to copy to
+ * @return            0 for failed
+ *                    1 for success
+ * @author Nickel_Liang
+ * @date   2018-04-15
+ */
+uint8_t CAN1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
+
+/**
+ * Interface for read CAN2 data
+ *
+ * @param  id         Node ID
+ * @param  buf        Buffer want to copy to
+ * @return            0 for failed
+ *                    1 for success
+ * @author Nickel_Liang
+ * @date   2018-04-15
+ */
+uint8_t CAN2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
 
 /**
  * CAN initialization implementation
