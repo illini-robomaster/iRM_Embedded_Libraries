@@ -9,9 +9,9 @@
 #ifndef _BSP_BUZZER_
 #define _BSP_BUZZER_
 
+#include "stm32f4xx_hal.h"
+#include "tim.h"
 
-
-/* Buzzer Frequency */
 typedef enum{
     Do1L = 262,     ///*261.63Hz*/    3822us
     Re2L = 294,     ///*293.66Hz*/    3405us
@@ -39,15 +39,38 @@ typedef enum{
 
     Silent  = 0,
     Finish  = -1,
-} RM_BUZZER_Freq;
+} BUZZER_FREQ;
 
-/* Global Functions */
-void RM_BUZZER_Init(void);
-void RM_BUZZER_SingTone(RM_BUZZER_Freq freq, int volume);
-void RM_BUZZER_SingSong(RM_BUZZER_Freq *freq, int volume);
+/**
+ * Initialize the buzzer.
+ *
+ * @author Nickel_Liang
+ * @date   2018-04-16
+ */
+void buzzer_init(void);
 
-/* Song */
-extern RM_BUZZER_Freq Startup[];
-extern RM_BUZZER_Freq LittleStar[];
+/**
+ * Let buzzer sing a tone.
+ *
+ * @param  freq       A frequency or note in BUZZER_FREQ
+ * @param  volume     Volume of the buzzer
+ * @author Nickel_Liang
+ * @date   2018-04-16
+ */
+void buzzer_sing_tone(BUZZER_FREQ freq, int volume);
+
+/**
+ * Let buzzer sing a sone.
+ *
+ * @param  freq       A song
+ * @param  volume     Volume of the buzzer
+ * @author Nickel_Liang
+ * @date   2018-04-16
+ * @note   This function CAN NOT be used in RTOS due to HAL_Delay
+ */
+void buzzer_sing_sone(BUZZER_FREQ *freq, int volume);
+
+extern BUZZER_FREQ Startup[];
+extern BUZZER_FREQ LittleStar[];
 
 #endif
