@@ -37,10 +37,10 @@ int pid_calc(motor_pid_t* pid, float get, float set) {
     if(pid->pid_mode == POSITION_PID) //Calculate Position PID
     {
         // modified
-        if (pid->max_err != 0 && abs(pid->err[NOW]) > pid->max_err){
+        if (pid->max_err != 0 && fabsf(pid->err[NOW]) > pid->max_err){
             return 0;
         } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && abs(pid->err[NOW]) < pid->deadband){
+        if (pid->deadband != 0 && fabsf(pid->err[NOW]) < pid->deadband){
             return 0;
         } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
 
@@ -75,10 +75,10 @@ int pid_calc(motor_pid_t* pid, float get, float set) {
         pid->last_delta_out = pid->delta_out;
 
         // modified
-        if (pid->max_err != 0 && abs(pid->err[NOW]) > pid->max_err){
+        if (pid->max_err != 0 && fabsf(pid->err[NOW]) > pid->max_err){
             pid->delta_out = 0;
         } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && abs(pid->err[NOW]) < pid->deadband){
+        if (pid->deadband != 0 && fabsf(pid->err[NOW]) < pid->deadband){
             pid->delta_out = 0;
         } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
     }
@@ -86,10 +86,10 @@ int pid_calc(motor_pid_t* pid, float get, float set) {
     // rune
     else if(pid->pid_mode == GIMBAL_AUTO_SHOOT){
 
-        if (pid->max_err != 0 && abs(pid->err[NOW]) > pid->max_err){
+        if (pid->max_err != 0 && fabsf(pid->err[NOW]) > pid->max_err){
             return 0;
         } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && abs(pid->err[NOW]) < pid->deadband){
+        if (pid->deadband != 0 && fabsf(pid->err[NOW]) < pid->deadband){
             return 0;
         } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
 
@@ -112,10 +112,10 @@ int pid_calc(motor_pid_t* pid, float get, float set) {
     // manual shoot (from client)
     else if(pid->pid_mode == GIMBAL_MAN_SHOOT){
 
-        if (pid->max_err != 0 && abs(pid->err[NOW]) > pid->max_err){
+        if (pid->max_err != 0 && fabs(pid->err[NOW]) > pid->max_err){
             return 0;
         } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && abs(pid->err[NOW]) < pid->deadband){
+        if (pid->deadband != 0 && fabs(pid->err[NOW]) < pid->deadband){
             return 0;
         } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
         if (pid->err[NOW] >= 8191/2)
@@ -137,10 +137,10 @@ int pid_calc(motor_pid_t* pid, float get, float set) {
     // correct version! man shoot (with IMU calibration)
     else if(pid->pid_mode == GIMBAL_MOUSE_IMU_SHOOT){
 
-        if (pid->max_err != 0 && abs(pid->err[NOW]) > pid->max_err){
+        if (pid->max_err != 0 && fabs(pid->err[NOW]) > pid->max_err){
             return 0;
         } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && abs(pid->err[NOW]) < pid->deadband){
+        if (pid->deadband != 0 && fabs(pid->err[NOW]) < pid->deadband){
             return 0;
         } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
         if (pid->err[NOW] >= 8191/2)
@@ -161,10 +161,10 @@ int pid_calc(motor_pid_t* pid, float get, float set) {
     // use chassis motor input to calibrate motor speed
     else if(pid->pid_mode == CHASSISS_ROTATE){
         // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->max_err != 0 && abs(pid->err[NOW]) > pid->max_err)
+        if (pid->max_err != 0 && fabs(pid->err[NOW]) > pid->max_err)
             return 0;
         // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
-        if (pid->deadband != 0 && abs(pid->err[NOW]) < pid->deadband)
+        if (pid->deadband != 0 && fabs(pid->err[NOW]) < pid->deadband)
             return 0;
         pid->pout = pid->p * pid->err[NOW]; //pout=kp*err
         pid->iout += pid->i * pid->err[NOW]; //iout=sum[ki*err]

@@ -18,7 +18,7 @@
  * @author Nickel_Liang
  * @date   2018-04-15
  */
-void bsp_error_handler(char* file, int line, char* msg) {
+inline void bsp_error_handler(char* file, int line, char* msg) {
     return;
 }
 
