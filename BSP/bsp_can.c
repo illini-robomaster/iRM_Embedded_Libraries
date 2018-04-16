@@ -8,12 +8,15 @@
 
 #include "bsp_can.h"
 
+
 uint8_t can1_rx_buffer[CAN1_DEVICE_NUM][CAN_DATA_SIZE];
 uint8_t can2_rx_buffer[CAN2_DEVICE_NUM][CAN_DATA_SIZE];
+/* This is intended to use as a local spin lock */
 volatile uint8_t can1_rx_lock[CAN1_DEVICE_NUM];
 volatile uint8_t can2_rx_lock[CAN2_DEVICE_NUM];
 
 void CAN1_init(void) {
+    /* Initialize the lock to OK condition */
     for (int i = 0; i < CAN1_DEVICE_NUM; i++) {
         can1_rx_lock[i] = BUF_OK;
     }
@@ -128,19 +131,25 @@ static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
  * @param  hcan       Which CAN to get data from
  * @author Nickel_Liang
  * @date   2018-04-14
+ * @note   This function is intended to fully abstract away the usage of HAL library in upper layer.
  */
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
     if (hcan == &hcan1) {
         uint8_t idx = hcan->pRxMsg->StdId - CAN1_RX_ID_START;
-        can1_rx_lock[idx] = BUF_BUSY;
-        memcpy(can1_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
-        can1_rx_lock[idx] = BUF_OK;
+        /* Design choice: if buffer is in use, just ignore current receiving */
+        if (can1_rx_lock[idx] == BUF_OK) {
+            can1_rx_lock[idx] = BUF_BUSY;
+            memcpy(can1_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
+            can1_rx_lock[idx] = BUF_OK;
+        }
     }
     else if (hcan == &hcan2) {
         uint8_t idx = hcan->pRxMsg->StdId - CAN2_RX_ID_START;
-        can2_rx_lock[idx] = BUF_BUSY;
-        memcpy(can2_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
-        can2_rx_lock[idx] = BUF_OK;
+        if (can2_rx_lock[idx] == BUF_OK) {
+            can2_rx_lock[idx] = BUF_BUSY;
+            memcpy(can2_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
+            can2_rx_lock[idx] = BUF_OK;
+        }
     }
     // Reset CAN receive interrupt to prevent bug
     __HAL_CAN_ENABLE_IT(&hcan1, CAN_IT_FMP0);
