@@ -1,6 +1,6 @@
 /**
  * @author  Alvin Sun
- * @data    2018-04-16
+ * @date    2018-04-16
  * @file    motor.h
  * @brief   library level motor data processing
  */
@@ -45,14 +45,12 @@
 /**
  * @struct  motor_3508_t
  * @brief   store 3508 motor data
- * @var cur_idx     current index to write into the buffer
  * @var angle       a circular buffer to store current and previous angle
  * @var current_get actual current / torque output
  * @var speedRPM    rotational speed in RPM (Rotation Per Minute)
  * @var temperature sensor temperature in celcius degree
  */
 typedef struct {
-    uint8_t     cur_idx;
     uint16_t    angle[MAXIMUM_STATE];
     int16_t     current_get;
     int16_t     speedRPM[MAXIMUM_STATE];
@@ -62,13 +60,11 @@ typedef struct {
 /**
  * @struct  motor_6623_t
  * @brief   store 6623 motor data
- * @var cur_idx     current index to write into the buffer
  * @var angle       a circular buffer to store current and previous angle
  * @var current_get actual current / torque output
  * @var current_set target current / torque output
  */
 typedef struct {
-    uint8_t     cur_idx;
     uint16_t    angle[MAXIMUM_STATE];
     int16_t     current_get;
     int16_t     current_set;
@@ -77,12 +73,10 @@ typedef struct {
 /**
  * @struct  motor_3510_t
  * @brief   store 3510 motor data
- * @var cur_idx     current index to write into the buffer
  * @var angle       a circular buffer to store current and previous angle
  * @var current_get actual current / torque output
  */
 typedef struct {
-    uint8_t     cur_idx;
     uint16_t    angle[MAXIMUM_STATE];
     int16_t     current_get;
 }   motor_3510_t;
@@ -90,19 +84,17 @@ typedef struct {
 /**
  * @struct  motor_2006_t
  * @brief   store 2006 motor data
- * @var cur_idx     current index to write into the buffer
  * @var angle       a circular buffer to store current and previous angle
  * @var speedRPM    rotational speed in RPM (Rotation Per Minute)
  */
 typedef struct {
-    uint8_t     cur_idx;
     uint16_t    angle[MAXIMUM_STATE];
     int16_t     speedRPM[MAXIMUM_STATE];
 }   motor_2006_t;
 
 /**
- * @union   motor_u
- * @brief   can be interpreted as all kinds of motors
+ * @union   motor_interp_t
+ * @brief   motor data interpretation as all kinds of motors
  * @var chassis         chassis motor
  * @var friction        friction pully for shooting
  * @var gimbal          main gimbal
@@ -115,52 +107,64 @@ typedef union {
     motor_6623_t gimbal;
     motor_3510_t extra_gimbal;
     motor_2006_t poke;
-}   motor_u;
+}   motor_interp_t;
 
 /**
- * @brief   parse chassis motor data from CAN buffers
- * @param can_id    can bus id choosing from [CAN1, CAN2]
- * @param sensor_id hardware sensor id for a specific motor
- * @param motor     union pointer that stores the parsed results
+ * @struct  motor_t
+ * @var as          a unior structure motor interpretation
+ * @var cur_idx     current index to write into the cicular buffer
+ * @var sensor_id   hardware sensor id as in CAN address
+ * @var can_id      CAN id chosen from [CAN1, CAN2]
+ */
+typedef struct {
+    motor_interp_t  as;
+    uint8_t         cur_idx;
+    uint8_t         sensor_id;
+    uint8_t         can_id;
+}   motor_t;
+
+/**
+ * @brief initialize generic motor variable with specific sensor id and can id
+ * @param motor     motor_t type variable to be initialized
+ * @param sensor_id hardware sensor id as in CAN address
+ * @param can_id    CAN id chosen from [CAN1, CAN2]
+ */
+void motor_id_init(motor_t *motor, uint8_t sensor_id, uint8_t can_id);
+
+/**
+ * @brief parse chassis motor data from CAN buffers
+ * @param motor motor_t typed pointer that stores the parsed results
  * @return 1 if successfully parsed data, otherwise 0
  */
-uint8_t get_chassis_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor);
+uint8_t get_chassis_data(motor_t* motor);
 
 /**
  * @brief   parse friction motor data from CAN buffers
- * @param can_id    can bus id choosing from [CAN1, CAN2]
- * @param sensor_id hardware sensor id for a specific motor
- * @param motor     union pointer that stores the parsed results
+ * @param motor motor_t typed pointer that stores the parsed results
  * @return 1 if successfully parsed data, otherwise 0
  */
-uint8_t get_friction_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor);
+uint8_t get_friction_data(motor_t* motor);
 
 /**
  * @brief   parse main gimbal motor data from CAN buffers
- * @param can_id    can bus id choosing from [CAN1, CAN2]
- * @param sensor_id hardware sensor id for a specific motor
- * @param motor     union pointer that stores the parsed results
+ * @param motor motor_t typed pointer that stores the parsed results
  * @return 1 if successfully parsed data, otherwise 0
  */
-uint8_t get_gimbal_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor);
+uint8_t get_gimbal_data(motor_t* motor);
 
 /**
  * @brief   parse extra gimbal motor data from CAN buffers
- * @param can_id    can bus id choosing from [CAN1, CAN2]
- * @param sensor_id hardware sensor id for a specific motor
- * @param motor     union pointer that stores the parsed results
+ * @param motor motor_t typed pointer that stores the parsed results
  * @return 1 if successfully parsed data, otherwise 0
  */
-uint8_t get_extra_gimbal_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor);
+uint8_t get_extra_gimbal_data(motor_t* motor);
 
 /**
  * @brief   parse bullet supply motor data from CAN buffers
- * @param can_id    can bus id choosing from [CAN1, CAN2]
- * @param sensor_id hardware sensor id for a specific motor
- * @param motor     union pointer that stores the parsed results
+ * @param motor motor_t typed pointer that stores the parsed results
  * @return 1 if successfully parsed data, otherwise 0
  */
-uint8_t get_poke_data(uint8_t can_id, uint8_t sensor_id, motor_u* motor);
+uint8_t get_poke_data(motor_t* motor);
 
 /** @} */
 
