@@ -38,11 +38,15 @@ void buzzer_sing_song(BUZZER_FREQ *freq, int volume) {
     buzzer_sing_tone(Silent, 0);
 }
 
-BUZZER_FREQ Startup[] = {
+BUZZER_FREQ startup[] = {
     So5L, La6L, Mi3M, Silent, Finish
 };
 
-BUZZER_FREQ LittleStar[] = {
+BUZZER_FREQ initialize[] = {
+    So5L, Finish
+};
+
+BUZZER_FREQ littleStar[] = {
     Do1M, Do1M, So5M, So5M, La6M, La6M, So5M, Silent,
     Fa4M, Fa4M, Mi3M, Mi3M, Re2M, Re2M, Do1M, Silent,
     So5M, So5M, Fa4M, Fa4M, Mi3M, Mi3M, Re2M, Silent,

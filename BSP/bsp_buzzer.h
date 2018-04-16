@@ -76,8 +76,9 @@ void buzzer_sing_tone(BUZZER_FREQ freq, int volume);
  */
 void buzzer_sing_song(BUZZER_FREQ *freq, int volume);
 
-extern BUZZER_FREQ Startup[];
-extern BUZZER_FREQ LittleStar[];
+extern BUZZER_FREQ startup[];
+extern BUZZER_FREQ initialize[];
+extern BUZZER_FREQ littleStar[];
 
 /** @} */
 
