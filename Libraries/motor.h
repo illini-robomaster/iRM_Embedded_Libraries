@@ -111,7 +111,7 @@ typedef union {
 
 /**
  * @struct  motor_t
- * @var as          a unior structure motor interpretation
+ * @var as          a union structure motor interpretation
  * @var cur_idx     current index to write into the cicular buffer
  * @var sensor_id   hardware sensor id as in CAN address
  * @var can_id      CAN id chosen from [CAN1, CAN2]

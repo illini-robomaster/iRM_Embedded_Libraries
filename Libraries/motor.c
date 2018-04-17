@@ -36,18 +36,18 @@ uint8_t get_6623_data(motor_t *motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!CAN1_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 9, "CAN1_read failed");
+                bsp_error_handler("motor.c", 39, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!CAN2_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 15, "CAN2_read failed");
+                bsp_error_handler("motor.c", 45, "CAN2_read failed");
                 return 0;
             }
             break;
         default: 
-            bsp_error_handler("motor.c", 20, "CAN ID doest not exist");
+            bsp_error_handler("motor.c", 50, "CAN ID doest not exist");
             return 0;
     }
 
@@ -65,18 +65,18 @@ uint8_t get_3510_data(motor_t *motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!CAN1_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 9, "CAN1_read failed");
+                bsp_error_handler("motor.c", 68, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!CAN2_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 15, "CAN2_read failed");
+                bsp_error_handler("motor.c", 74, "CAN2_read failed");
                 return 0;
             }
             break;
         default: 
-            bsp_error_handler("motor.c", 20, "CAN ID doest not exist");
+            bsp_error_handler("motor.c", 79, "CAN ID doest not exist");
             return 0;
     }
 
@@ -93,18 +93,18 @@ uint8_t get_2006_data(motor_t *motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!CAN1_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 9, "CAN1_read failed");
+                bsp_error_handler("motor.c", 96, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!CAN2_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 15, "CAN2_read failed");
+                bsp_error_handler("motor.c", 102, "CAN2_read failed");
                 return 0;
             }
             break;
         default: 
-            bsp_error_handler("motor.c", 20, "CAN ID doest not exist");
+            bsp_error_handler("motor.c", 107, "CAN ID doest not exist");
             return 0;
     }
 
