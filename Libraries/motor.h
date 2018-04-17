@@ -24,25 +24,26 @@
 
 #define MAXIMUM_STATE 4
 
+// CCW and CW are looking towards the aixs
 #define ANGLE_MIN_3510      0       // 0    degree
 #define ANGLE_MAX_3510      8191    // 360  degree
-#define CURRENT_MIN_3510    UNKNOWN
-#define CURRENT_MAX_3510    UNKNOWN
+#define CURRENT_MIN_3510    -29000  // CCW  ~1.3A
+#define CURRENT_MAX_3510    29000   // CW   ~1.3A Looking towards LED
 
 #define ANGLE_MIN_3508      0       // 0    degree
 #define ANGLE_MAX_3508      8191    // 360  degree
-#define CURRENT_MIN_3508    -16384
-#define CURRENT_MAX_3508    16384
+#define CURRENT_MIN_3508    -16384  // CW   20A
+#define CURRENT_MAX_3508    16384   // CCW  20A
 
 #define ANGLE_MIN_6623      0       // 0    degree
 #define ANGLE_MAX_6623      8191    // 360  degree
-#define CURRENT_MIN_6623    -13000
-#define CURRENT_MAX_6623    13000
+#define CURRENT_MIN_6623    -13000  // CCW  ~5.3A
+#define CURRENT_MAX_6623    13000   // CW   ~5.3A
 
 #define ANGLE_MIN_2006      0       // 0    degree
 #define ANGLE_MAX_2006      8191    // 360  degree
-#define CURRENT_MIN_2006    -10000
-#define CURRENT_MAX_2006    10000
+#define CURRENT_MIN_2006    -10000  // CCW  10A
+#define CURRENT_MAX_2006    10000   // CW   10A
 
 /**
  * @struct  motor_3508_t

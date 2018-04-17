@@ -24,27 +24,6 @@
 #include "task.h"
 #include "cmsis_os.h"
 
-/* Test includes */
-#include "motor.h"
-
-#define TEST_CAN        1
-#define MOTOR_6623      0x209
-#define MOTOR_6623_TX   0x2FF
-
-#define MOTOR_3510      0x206
-#define MOTOR_3510_TX   0x1FF
-
-#define MOTOR_3508      0x201
-#define MOTOR_3508_TX   0x200
-
-#define MOTOR_2006      0x202
-#define MOTOR_2006_TX   0x200
-
-motor_t test_6623;
-motor_t test_3508;
-motor_t test_3510;
-motor_t test_2006;
-
 /**
  * Initialize after RTOS is initialized.
  *
@@ -116,21 +95,8 @@ extern inline void RM_RTOS_QUEUES_Init(void) {
 extern inline void RM_RTOS_Default_Task(void const * argument) {
     /* Add codes to initialize default thread here */
     print("Enter default task.\n");
-    // test_3510.extra_gimbal
-    motor_id_init(&test_3510, MOTOR_3510, TEST_CAN);
-    motor_id_init(&test_3508, MOTOR_3508, TEST_CAN);
-    motor_id_init(&test_2006, MOTOR_2006, TEST_CAN);
-    motor_id_init(&test_6623, MOTOR_6623, TEST_CAN);
     /* There must be a while loop here. */
     while(1) {
-        get_extra_gimbal_data(&test_3510);
-        get_friction_data(&test_3508);
-        get_poke_data(&test_2006);
-        get_gimbal_data(&test_6623);
-        print_3510_data(&test_3510);
-        // print_3508_data(&test_3508);
-        // print_2006_data(&test_2006);
-        // print_6623_data(&test_6623);
         osDelay(1);
     }
 }
