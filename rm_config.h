@@ -18,6 +18,7 @@
 /* @note    Macros should be injected via cmake */
 #ifdef  DEBUG
 
+
 #endif
 
 /* Constants and Parameters for all infantries */

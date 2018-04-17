@@ -10,6 +10,8 @@
 
 #include <inttypes.h>
 #include "bsp_can.h"
+#include "bsp_error_handler.h"
+#include "bsp_print.h"
 
 /**
  * @ingroup library
@@ -119,7 +121,7 @@ typedef union {
 typedef struct {
     motor_interp_t  as;
     uint8_t         cur_idx;
-    uint8_t         sensor_id;
+    uint16_t        sensor_id;
     uint8_t         can_id;
 }   motor_t;
 
@@ -129,7 +131,7 @@ typedef struct {
  * @param sensor_id hardware sensor id as in CAN address
  * @param can_id    CAN id chosen from [CAN1, CAN2]
  */
-void motor_id_init(motor_t *motor, uint8_t sensor_id, uint8_t can_id);
+void motor_id_init(motor_t *motor, uint16_t sensor_id, uint8_t can_id);
 
 /**
  * @brief parse chassis motor data from CAN buffers
@@ -137,6 +139,15 @@ void motor_id_init(motor_t *motor, uint8_t sensor_id, uint8_t can_id);
  * @return 1 if successfully parsed data, otherwise 0
  */
 uint8_t get_chassis_data(motor_t* motor);
+
+/**
+ * Print out 3508 data
+ *
+ * @param  motor      [description]
+ * @author Nickel_Liang
+ * @date   2018-04-17
+ */
+void print_3508_data(motor_t* motor);
 
 /**
  * @brief   parse friction motor data from CAN buffers

@@ -1,5 +1,4 @@
 #include "motor.h"
-#include "bsp_error_handler.h"
 
 uint8_t get_3508_data(motor_t* motor) {
     uint8_t buf[CAN_DATA_SIZE];
@@ -16,7 +15,7 @@ uint8_t get_3508_data(motor_t* motor) {
                 return 0;
             }
             break;
-        default: 
+        default:
             bsp_error_handler("motor.c", 20, "CAN ID doest not exist");
             return 0;
     }
@@ -29,6 +28,16 @@ uint8_t get_3508_data(motor_t* motor) {
     motor->cur_idx++;
 
     return 1;
+}
+
+void print_3508_data(motor_t* motor) {
+    uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
+    print("== 3508 at CAN bus %u node %x ==\n", motor->can_id, motor->sensor_id);
+    print("Angle    %u\n", motor->as.chassis.angle[idx]);
+    print("Current  %d\n", motor->as.chassis.current_get);
+    print("Speed    %d\n", motor->as.chassis.speedRPM[idx]);
+    print("Temp     %u\n", motor->as.chassis.temperature);
+    print("================================\n");
 }
 
 uint8_t get_6623_data(motor_t *motor) {
@@ -46,7 +55,7 @@ uint8_t get_6623_data(motor_t *motor) {
                 return 0;
             }
             break;
-        default: 
+        default:
             bsp_error_handler("motor.c", 50, "CAN ID doest not exist");
             return 0;
     }
@@ -75,7 +84,7 @@ uint8_t get_3510_data(motor_t *motor) {
                 return 0;
             }
             break;
-        default: 
+        default:
             bsp_error_handler("motor.c", 79, "CAN ID doest not exist");
             return 0;
     }
@@ -103,7 +112,7 @@ uint8_t get_2006_data(motor_t *motor) {
                 return 0;
             }
             break;
-        default: 
+        default:
             bsp_error_handler("motor.c", 107, "CAN ID doest not exist");
             return 0;
     }
@@ -116,7 +125,7 @@ uint8_t get_2006_data(motor_t *motor) {
     return 1;
 }
 
-void motor_id_init(motor_t *motor, uint8_t sensor_id, uint8_t can_id) {
+void motor_id_init(motor_t *motor, uint16_t sensor_id, uint8_t can_id) {
     motor->can_id       = can_id;
     motor->sensor_id    = sensor_id;
     motor->cur_idx      = 0;

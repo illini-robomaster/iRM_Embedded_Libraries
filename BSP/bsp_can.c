@@ -19,22 +19,22 @@ void CAN1_init(void) {
     for (int i = 0; i < CAN1_DEVICE_NUM; i++) {
         can1_rx_lock[i] = BUF_OK;
     }
-    CAN_init(&hcan1);
+    CAN_init(&CAN_BUS_1);
 }
 
 void CAN2_init(void) {
     for (int i = 0; i < CAN2_DEVICE_NUM; i++) {
         can2_rx_lock[i] = BUF_OK;
     }
-    CAN_init(&hcan2);
+    CAN_init(&CAN_BUS_2);
 }
 
 void CAN1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
-    CAN_transmit(&hcan1, id, msg1, msg2, msg3, msg4);
+    CAN_transmit(&CAN_BUS_1, id, msg1, msg2, msg3, msg4);
 }
 
 void CAN2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
-    CAN_transmit(&hcan2, id, msg1, msg2, msg3, msg4);
+    CAN_transmit(&CAN_BUS_2, id, msg1, msg2, msg3, msg4);
 }
 
 uint8_t CAN1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
@@ -108,12 +108,12 @@ static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
     CAN_FilterConfigStructure.FilterActivation = ENABLE;
     CAN_FilterConfigStructure.BankNumber = 14;	//CAN1 and CAN2 split all 28 filters
 
-    if (hcan == &hcan1) {
+    if (hcan == &CAN_BUS_1) {
         CAN_FilterConfigStructure.FilterNumber = 0; //Master CAN1 get filter 0-13
         hcan->pTxMsg = &Tx1Message;
         hcan->pRxMsg = &Rx1Message;
     }
-    else if (hcan == &hcan2) {
+    else if (hcan == &CAN_BUS_2) {
         CAN_FilterConfigStructure.FilterNumber = 14; //Slave CAN2 get filter 14-27
         hcan->pTxMsg = &Tx2Message;
         hcan->pRxMsg = &Rx2Message;
@@ -133,7 +133,7 @@ static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
  * @note   This function is intended to fully abstract away the usage of HAL library in upper layer.
  */
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
-    if (hcan == &hcan1) {
+    if (hcan == &CAN_BUS_1) {
         uint8_t idx = hcan->pRxMsg->StdId - CAN1_RX_ID_START;
         /* Design choice: if buffer is in use, just ignore current receiving */
         if (can1_rx_lock[idx] == BUF_OK) {
@@ -142,7 +142,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
             can1_rx_lock[idx] = BUF_OK;
         }
     }
-    else if (hcan == &hcan2) {
+    else if (hcan == &CAN_BUS_2) {
         uint8_t idx = hcan->pRxMsg->StdId - CAN2_RX_ID_START;
         if (can2_rx_lock[idx] == BUF_OK) {
             can2_rx_lock[idx] = BUF_BUSY;
@@ -151,6 +151,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
         }
     }
     // Reset CAN receive interrupt to prevent bug
-    __HAL_CAN_ENABLE_IT(&hcan1, CAN_IT_FMP0);
-    __HAL_CAN_ENABLE_IT(&hcan2, CAN_IT_FMP0);
+    __HAL_CAN_ENABLE_IT(&CAN_BUS_1, CAN_IT_FMP0);
+    __HAL_CAN_ENABLE_IT(&CAN_BUS_2, CAN_IT_FMP0);
 }

@@ -31,6 +31,9 @@
 #define BUF_BUSY            1
 #define BUF_OK              0
 
+#define CAN_BUS_1           hcan1
+#define CAN_BUS_2           hcan2
+
 /**
  * CAN1 init wrapper
  *
