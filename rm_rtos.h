@@ -31,7 +31,7 @@
 #define MOTOR_6623      0x209
 #define MOTOR_6623_TX   0x2FF
 
-#define MOTOR_3510      0x205
+#define MOTOR_3510      0x206
 #define MOTOR_3510_TX   0x1FF
 
 #define MOTOR_3508      0x201
@@ -124,9 +124,13 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
     /* There must be a while loop here. */
     while(1) {
         get_extra_gimbal_data(&test_3510);
-        get_chassis_data(&test_3508);
+        get_friction_data(&test_3508);
         get_poke_data(&test_2006);
         get_gimbal_data(&test_6623);
+        print_3510_data(&test_3510);
+        // print_3508_data(&test_3508);
+        // print_2006_data(&test_2006);
+        // print_6623_data(&test_6623);
         osDelay(1);
     }
 }
@@ -140,7 +144,7 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
 extern inline void RM_RTOS_Ready() {
     /* Indicate RTOS booted. Ready to battle. */
     buzzer_sing_song(startup, 1);
-    LED_green_toggle();
+    LED_green_on();
     laser_on();
     print("RTOS initialzed. Ready to battle.\n");
 }

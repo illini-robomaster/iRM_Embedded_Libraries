@@ -120,7 +120,7 @@ static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
     }
 
     if (HAL_CAN_ConfigFilter(hcan, &CAN_FilterConfigStructure) != HAL_OK) {
-        Error_Handler();
+        bsp_error_handler(__FILE__, __LINE__, "CAN filter configuration failed.");
     }
 }
 

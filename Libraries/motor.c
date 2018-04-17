@@ -33,10 +33,10 @@ uint8_t get_3508_data(motor_t* motor) {
 void print_3508_data(motor_t* motor) {
     uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
     print("== 3508 at CAN bus %u node %x ==\n", motor->can_id, motor->sensor_id);
-    print("Angle    %u\n", motor->as.m3508.angle[idx]);
-    print("Current  %d\n", motor->as.m3508.current_get);
-    print("Speed    %d\n", motor->as.m3508.speedRPM[idx]);
-    print("Temp     %u\n", motor->as.m3508.temperature);
+    print("Angle        %u\n", motor->as.m3508.angle[idx]);
+    print("Current      %d\n", motor->as.m3508.current_get);
+    print("Speed        %d\n", motor->as.m3508.speedRPM[idx]);
+    print("Temperature  %u\n", motor->as.m3508.temperature);
     print("================================\n");
 }
 
@@ -69,6 +69,15 @@ uint8_t get_6623_data(motor_t *motor) {
     return 1;
 }
 
+void print_6623_data(motor_t* motor) {
+    uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
+    print("== 6623 at CAN bus %u node %x ==\n", motor->can_id, motor->sensor_id);
+    print("Angle        %u\n", motor->as.m6623.angle[idx]);
+    print("Current      %d\n", motor->as.m6623.current_get);
+    print("Set Current  %d\n", motor->as.m6623.current_set);
+    print("================================\n");
+}
+
 uint8_t get_3510_data(motor_t *motor) {
     uint8_t buf[CAN_DATA_SIZE];
     switch (motor->can_id) {
@@ -97,6 +106,14 @@ uint8_t get_3510_data(motor_t *motor) {
     return 1;
 }
 
+void print_3510_data(motor_t* motor) {
+    uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
+    print("== 3510 at CAN bus %u node %x ==\n", motor->can_id, motor->sensor_id);
+    print("Angle        %u\n", motor->as.m3510.angle[idx]);
+    print("Current      %d\n", motor->as.m3510.current_get);
+    print("================================\n");
+}
+
 uint8_t get_2006_data(motor_t *motor) {
     uint8_t buf[CAN_DATA_SIZE];
     switch (motor->can_id) {
@@ -120,9 +137,19 @@ uint8_t get_2006_data(motor_t *motor) {
     uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
     motor->as.m2006.angle[idx]      = (uint16_t)(buf[0] << 8 | buf[1]);
     motor->as.m2006.speedRPM[idx]   = (int16_t)(buf[2] << 8 | buf[3]);
+    motor->as.m2006.current_get     = (int16_t)(buf[4] << 8 | buf[5]);
     motor->cur_idx++;
 
     return 1;
+}
+
+void print_2006_data(motor_t* motor) {
+    uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
+    print("== 2006 at CAN bus %u node %x ==\n", motor->can_id, motor->sensor_id);
+    print("Angle        %u\n", motor->as.m2006.angle[idx]);
+    print("Current      %d\n", motor->as.m2006.current_get);
+    print("Speed        %d\n", motor->as.m2006.speedRPM[idx]);
+    print("================================\n");
 }
 
 void motor_id_init(motor_t *motor, uint16_t sensor_id, uint8_t can_id) {

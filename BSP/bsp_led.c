@@ -17,11 +17,6 @@ void LED_red_off(void) {
     HAL_GPIO_WritePin(GPIOE, LED_RED_Pin, GPIO_PIN_SET);
 }
 
-void LED_red_toggle(void) {
-    LED_green_off();
-    HAL_GPIO_TogglePin(GPIOE, LED_RED_Pin);
-}
-
 void LED_green_on(void) {
     LED_red_off();
     HAL_GPIO_WritePin(GPIOF, LED_GREEN_Pin, GPIO_PIN_RESET);
@@ -29,11 +24,6 @@ void LED_green_on(void) {
 
 void LED_green_off(void) {
     HAL_GPIO_WritePin(GPIOF, LED_GREEN_Pin, GPIO_PIN_SET);
-}
-
-void LED_green_toggle(void) {
-    LED_red_off();
-    HAL_GPIO_TogglePin(GPIOF, LED_GREEN_Pin);
 }
 
 void LED_on(void) {
@@ -44,9 +34,4 @@ void LED_on(void) {
 void LED_off(void) {
     LED_green_off();
     LED_red_off();
-}
-
-void LED_toggle(void) {
-    LED_green_toggle();
-    LED_red_toggle();
 }

@@ -35,15 +35,6 @@ void LED_red_on(void);
 void LED_red_off(void);
 
 /**
- * Toggle red LED
- *
- * @author Nickel_Liang
- * @date   2018-04-14
- * @todo   Not tested yet
- */
-void LED_red_toggle(void);
-
-/**
  * Turn on green LED
  *
  * @author Nickel_Liang
@@ -60,15 +51,6 @@ void LED_green_on(void);
 void LED_green_off(void);
 
 /**
- * Toggle green LED
- *
- * @author Nickel_Liang
- * @date   2018-04-14
- * @todo   Not tested yet
- */
-void LED_green_toggle(void);
-
-/**
  * Turn on all LED
  *
  * @author Nickel_Liang
@@ -83,15 +65,6 @@ void LED_on(void);
  * @date   2018-04-14
  */
 void LED_off(void);
-
-/**
- * Toggle all LED
- *
- * @author Nickel_Liang
- * @date   2018-04-14
- * @todo   Not tested yet
- */
-void LED_toggle(void);
 
 /** @} */
 

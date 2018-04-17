@@ -32,13 +32,13 @@
 extern inline void RM_Main_Init(void) {
     buzzer_init();
     buzzer_sing_song(initialize, 1); // Control board power up.
-    LED_red_toggle();
+    LED_on();
     CAN1_init();
     CAN2_init();
     GPIO_interrupt_init();
 
     /* Indicate successfully initialized */
-    LED_green_toggle();
+    LED_red_on();
     print("All peripherals initialized.\n");
 
     /* Wait for ESC to initialize */

@@ -92,6 +92,7 @@ typedef struct {
 typedef struct {
     uint16_t    angle[MAXIMUM_STATE];
     int16_t     speedRPM[MAXIMUM_STATE];
+    int16_t     current_get;
 }   motor_2006_t;
 
 /**
@@ -136,6 +137,42 @@ typedef struct {
 }   motor_t;
 
 /**
+ * Print out 3508 data
+ *
+ * @param  motor      A 3508 motor
+ * @author Nickel_Liang
+ * @date   2018-04-17
+ */
+void print_3508_data(motor_t* motor);
+
+/**
+ * Print out 6623 data
+ *
+ * @param  motor      A 6623 motor
+ * @author Nickel_Liang
+ * @date   2018-04-17
+ */
+void print_6623_data(motor_t* motor);
+
+/**
+ * Print out 3510 data
+ *
+ * @param  motor      A 3510 motor
+ * @author Nickel_Liang
+ * @date   2018-04-17
+ */
+void print_3510_data(motor_t* motor);
+
+/**
+ * Print out 2006 data
+ *
+ * @param  motor      A 2006 motor
+ * @author Nickel_Liang
+ * @date   2018-04-17
+ */
+void print_2006_data(motor_t* motor);
+
+/**
  * @brief initialize generic motor variable with specific sensor id and can id
  * @param motor     motor_t type variable to be initialized
  * @param sensor_id hardware sensor id as in CAN address
@@ -149,15 +186,6 @@ void motor_id_init(motor_t *motor, uint16_t sensor_id, uint8_t can_id);
  * @return 1 if successfully parsed data, otherwise 0
  */
 uint8_t get_chassis_data(motor_t* motor);
-
-/**
- * Print out 3508 data
- *
- * @param  motor      [description]
- * @author Nickel_Liang
- * @date   2018-04-17
- */
-void print_3508_data(motor_t* motor);
 
 /**
  * @brief   parse friction motor data from CAN buffers
