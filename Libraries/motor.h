@@ -124,6 +124,7 @@ typedef union {
 
 /**
  * @struct  motor_t
+ * @brief   ultimate structure that holds all information for a motor
  * @var as          a union structure motor interpretation
  * @var cur_idx     current index to write into the cicular buffer
  * @var sensor_id   hardware sensor id as in CAN address
