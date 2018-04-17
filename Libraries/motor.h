@@ -27,23 +27,40 @@
 // CCW and CW are looking towards the aixs
 #define ANGLE_MIN_3510      0       // 0    degree
 #define ANGLE_MAX_3510      8191    // 360  degree
+#define ANGLE_CRT_3510      1       // angle value normal
 #define CURRENT_MIN_3510    -29000  // CCW  ~1.3A
 #define CURRENT_MAX_3510    29000   // CW   ~1.3A Looking towards LED
+#define CURRENT_CRT_3510    1       // current value normal
 
 #define ANGLE_MIN_3508      0       // 0    degree
 #define ANGLE_MAX_3508      8191    // 360  degree
+#define ANGLE_CRT_3508      1       // angle value normal
 #define CURRENT_MIN_3508    -16384  // CW   20A
 #define CURRENT_MAX_3508    16384   // CCW  20A
+#define CURRENT_CRT_3508    1       // current value normal
+#define SPEED_CRT_3508      1       // speed value normal
 
 #define ANGLE_MIN_6623      0       // 0    degree
 #define ANGLE_MAX_6623      8191    // 360  degree
+#define ANGLE_CRT_6623      1       // angle value normal
 #define CURRENT_MIN_6623    -13000  // CCW  ~5.3A
 #define CURRENT_MAX_6623    13000   // CW   ~5.3A
+#define CURRENT_CRT_6623    1       // current value normal
 
 #define ANGLE_MIN_2006      0       // 0    degree
 #define ANGLE_MAX_2006      8191    // 360  degree
+#define ANGLE_CRT_2006      1       // angle value normal
 #define CURRENT_MIN_2006    -10000  // CCW  10A
 #define CURRENT_MAX_2006    10000   // CW   10A
+#define CURRENT_CRT_2006    1       // current value normal
+#define SPEED_CRT_2006      1       // speed value noraml
+
+typedef enum {
+    M3508,
+    M3510,
+    M2006,
+    M6623
+}   motor_type_t;
 
 /**
  * @struct  motor_3508_t
@@ -54,7 +71,7 @@
  * @var temperature sensor temperature in celcius degree
  */
 typedef struct {
-    uint16_t    angle[MAXIMUM_STATE];
+    int16_t     angle[MAXIMUM_STATE];
     int16_t     current_get;
     int16_t     speedRPM[MAXIMUM_STATE];
     uint8_t     temperature;
@@ -68,7 +85,7 @@ typedef struct {
  * @var current_set target current / torque output
  */
 typedef struct {
-    uint16_t    angle[MAXIMUM_STATE];
+    int16_t     angle[MAXIMUM_STATE];
     int16_t     current_get;
     int16_t     current_set;
 }   motor_6623_t;
@@ -80,7 +97,7 @@ typedef struct {
  * @var current_get actual current / torque output
  */
 typedef struct {
-    uint16_t    angle[MAXIMUM_STATE];
+    int16_t     angle[MAXIMUM_STATE];
     int16_t     current_get;
 }   motor_3510_t;
 
@@ -91,7 +108,7 @@ typedef struct {
  * @var speedRPM    rotational speed in RPM (Rotation Per Minute)
  */
 typedef struct {
-    uint16_t    angle[MAXIMUM_STATE];
+    int16_t     angle[MAXIMUM_STATE];
     int16_t     speedRPM[MAXIMUM_STATE];
     int16_t     current_get;
 }   motor_2006_t;
@@ -133,6 +150,7 @@ typedef union {
  */
 typedef struct {
     motor_interp_t  as;
+    motor_type_t    type;
     uint8_t         cur_idx;
     uint16_t        sensor_id;
     uint8_t         can_id;
@@ -145,7 +163,7 @@ typedef struct {
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_3508_data(motor_t* motor);
+void print_3508_data(motor_t *motor);
 
 /**
  * Print out 6623 data
@@ -154,7 +172,7 @@ void print_3508_data(motor_t* motor);
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_6623_data(motor_t* motor);
+void print_6623_data(motor_t *motor);
 
 /**
  * Print out 3510 data
@@ -163,7 +181,7 @@ void print_6623_data(motor_t* motor);
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_3510_data(motor_t* motor);
+void print_3510_data(motor_t *motor);
 
 /**
  * Print out 2006 data
@@ -172,50 +190,30 @@ void print_3510_data(motor_t* motor);
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_2006_data(motor_t* motor);
+void print_2006_data(motor_t *motor);
 
 /**
  * @brief initialize generic motor variable with specific sensor id and can id
  * @param motor     motor_t type variable to be initialized
  * @param sensor_id hardware sensor id as in CAN address
- * @param can_id    CAN id chosen from [CAN1, CAN2]
+ * @param can_id    CAN id chosen from [CAN1_ID, CAN2_ID]
+ * @param type      type of the motor
  */
-void motor_id_init(motor_t *motor, uint16_t sensor_id, uint8_t can_id);
+void motor_init(motor_t *motor, 
+        uint16_t sensor_id, uint8_t can_id, motor_type_t type);
 
 /**
- * @brief parse chassis motor data from CAN buffers
+ * @brief get generic motor data (type inferred from the data structure) 
  * @param motor motor_t typed pointer that stores the parsed results
  * @return 1 if successfully parsed data, otherwise 0
  */
-uint8_t get_chassis_data(motor_t* motor);
+uint8_t get_motor_data(motor_t *motor);
 
 /**
- * @brief   parse friction motor data from CAN buffers
- * @param motor motor_t typed pointer that stores the parsed results
- * @return 1 if successfully parsed data, otherwise 0
+ * @brief print out generic motor data (type inferred from the data structure)
+ * @param motor motor_t typed pointer that stores the data to be printed
  */
-uint8_t get_friction_data(motor_t* motor);
-
-/**
- * @brief   parse main gimbal motor data from CAN buffers
- * @param motor motor_t typed pointer that stores the parsed results
- * @return 1 if successfully parsed data, otherwise 0
- */
-uint8_t get_gimbal_data(motor_t* motor);
-
-/**
- * @brief   parse extra gimbal motor data from CAN buffers
- * @param motor motor_t typed pointer that stores the parsed results
- * @return 1 if successfully parsed data, otherwise 0
- */
-uint8_t get_extra_gimbal_data(motor_t* motor);
-
-/**
- * @brief   parse bullet supply motor data from CAN buffers
- * @param motor motor_t typed pointer that stores the parsed results
- * @return 1 if successfully parsed data, otherwise 0
- */
-uint8_t get_poke_data(motor_t* motor);
+void print_motor_data(motor_t *motor);
 
 /** @} */
 
