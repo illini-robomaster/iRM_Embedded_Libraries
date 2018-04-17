@@ -22,6 +22,7 @@
 #include "bsp_can.h"
 #include "bsp_gpio.h"
 #include "bsp_led.h"
+#include "bsp_uart.h"
 
 /**
  * Initialize peripherals before get into RTOS
@@ -32,13 +33,14 @@
 extern inline void RM_Main_Init(void) {
     buzzer_init();
     buzzer_sing_song(initialize, 1); // Control board power up.
-    LED_on();
-    CAN1_init();
-    CAN2_init();
-    GPIO_interrupt_init();
+    led_on();
+    can1_init();
+    can2_init();
+    gpio_interrupt_init();
+    dbus_init();
 
     /* Indicate successfully initialized */
-    LED_red_on();
+    led_red_on();
     print("All peripherals initialized.\n");
 
     /* Wait for ESC to initialize */

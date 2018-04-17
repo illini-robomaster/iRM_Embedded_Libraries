@@ -10,7 +10,7 @@
 #include "main.h"
 
 /* @todo Need to add support for upto 5 switches */
-void GPIO_interrupt_init(void) {
+void gpio_interrupt_init(void) {
     /* For SWITCH_1_Pin */
     HAL_NVIC_SetPriority(EXTI4_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(EXTI4_IRQn);

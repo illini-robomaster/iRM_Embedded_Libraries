@@ -14,30 +14,30 @@ uint8_t can2_rx_buffer[CAN2_DEVICE_NUM][CAN_DATA_SIZE];
 volatile uint8_t can1_rx_lock[CAN1_DEVICE_NUM];
 volatile uint8_t can2_rx_lock[CAN2_DEVICE_NUM];
 
-void CAN1_init(void) {
+void can1_init(void) {
     /* Initialize the lock to OK condition */
     for (int i = 0; i < CAN1_DEVICE_NUM; i++) {
         can1_rx_lock[i] = BUF_OK;
     }
-    CAN_init(&CAN_BUS_1);
+    can_init(&CAN_BUS_1);
 }
 
-void CAN2_init(void) {
+void can2_init(void) {
     for (int i = 0; i < CAN2_DEVICE_NUM; i++) {
         can2_rx_lock[i] = BUF_OK;
     }
-    CAN_init(&CAN_BUS_2);
+    can_init(&CAN_BUS_2);
 }
 
-void CAN1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
-    CAN_transmit(&CAN_BUS_1, id, msg1, msg2, msg3, msg4);
+void can1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
+    can_transmit(&CAN_BUS_1, id, msg1, msg2, msg3, msg4);
 }
 
-void CAN2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
-    CAN_transmit(&CAN_BUS_2, id, msg1, msg2, msg3, msg4);
+void can2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
+    can_transmit(&CAN_BUS_2, id, msg1, msg2, msg3, msg4);
 }
 
-uint8_t CAN1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
+uint8_t can1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
     uint8_t idx = id - CAN1_RX_ID_START;
     if (idx < 0 || idx >= CAN1_DEVICE_NUM) {
         bsp_error_handler(__FILE__, __LINE__, "Out of bound.");
@@ -52,7 +52,7 @@ uint8_t CAN1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
     return 1;
 }
 
-uint8_t CAN2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
+uint8_t can2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
     uint8_t idx = id - CAN2_RX_ID_START;
     if (idx < 0 || idx >= CAN2_DEVICE_NUM) {
         bsp_error_handler(__FILE__, __LINE__, "Out of bound.");
@@ -67,14 +67,14 @@ uint8_t CAN2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
     return 1;
 }
 
-static void CAN_init(CAN_HandleTypeDef* hcan) {
-    CAN_filter_config(hcan);   //Initialize filter 0
+static void can_init(CAN_HandleTypeDef* hcan) {
+    can_filter_config(hcan);   //Initialize filter 0
     if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK) {
         bsp_error_handler(__FILE__, __LINE__, "CAN init failed.");
     }
 }
 
-static void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
+static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
     hcan->pTxMsg->StdId = id;
     hcan->pTxMsg->IDE = CAN_ID_STD;
     hcan->pTxMsg->RTR = CAN_RTR_DATA;
@@ -90,7 +90,7 @@ static void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int
     HAL_CAN_Transmit(hcan, 1000);
 }
 
-static void CAN_filter_config(CAN_HandleTypeDef* hcan) {
+static void can_filter_config(CAN_HandleTypeDef* hcan) {
     CAN_FilterConfTypeDef	CAN_FilterConfigStructure;
 
     static CanTxMsgTypeDef	Tx1Message;	//Allocate memory for data storage

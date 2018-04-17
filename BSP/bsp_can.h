@@ -40,7 +40,7 @@
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-void CAN1_init(void);
+void can1_init(void);
 
 /**
  * CAN2 init wrapper
@@ -48,7 +48,7 @@ void CAN1_init(void);
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-void CAN2_init(void);
+void can2_init(void);
 
 /**
  * CAN1 transmit data
@@ -61,7 +61,7 @@ void CAN2_init(void);
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-void CAN1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+void can1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
 
 /**
  * CAN2 transmit data
@@ -74,7 +74,7 @@ void CAN1_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-void CAN2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+void can2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
 
 /**
  * Interface for read CAN1 data
@@ -86,7 +86,7 @@ void CAN2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_
  * @author Nickel_Liang
  * @date   2018-04-15
  */
-uint8_t CAN1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
+uint8_t can1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
 
 /**
  * Interface for read CAN2 data
@@ -98,7 +98,7 @@ uint8_t CAN1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
  * @author Nickel_Liang
  * @date   2018-04-15
  */
-uint8_t CAN2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
+uint8_t can2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
 
 /**
  * CAN initialization implementation
@@ -107,7 +107,7 @@ uint8_t CAN2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]);
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-static void CAN_init(CAN_HandleTypeDef* hcan);
+static void can_init(CAN_HandleTypeDef* hcan);
 
 /**
  * CAN transmission implementation
@@ -121,7 +121,7 @@ static void CAN_init(CAN_HandleTypeDef* hcan);
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-static void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
+static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4);
 
 /**
  * Configure CAN filter to ACCEPT ALL incoming messages
@@ -130,7 +130,7 @@ static void CAN_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-static void CAN_filter_config(CAN_HandleTypeDef* hcan);
+static void can_filter_config(CAN_HandleTypeDef* hcan);
 
 /** @} */
 

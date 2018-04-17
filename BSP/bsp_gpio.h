@@ -23,7 +23,7 @@
  * @author Eric_Liang
  * @date   2018-04-13
  */
-void GPIO_interrupt_init(void);
+void gpio_interrupt_init(void);
 
 /** @} */
 
