@@ -31,7 +31,7 @@ static char printf_temp[512];
 #define print(expr...) do {                                                      \
     sprintf(printf_temp, expr);                                                  \
     if (PRINT_TO_UART == 1)                                                      \
-        HAL_UART_Transmit(&BSP_PRINT_PORT, printf_temp, strlen(printf_temp), 2); \
+        HAL_UART_Transmit(&BSP_PRINT_PORT, (uint8_t*)printf_temp, strlen(printf_temp), 2); \
     if (PRINT_TO_SD == 1)                                                        \
         break;                                                                   \
 } while(0)

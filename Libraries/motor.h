@@ -97,6 +97,10 @@ typedef struct {
 /**
  * @union   motor_interp_t
  * @brief   motor data interpretation as all kinds of motors
+ * @var m3508           generic 3508 motor
+ * @var m3510           generic 3510 motor
+ * @var m2006           generic 2006 motor
+ * @var m6623           generic 6623 motor
  * @var chassis         chassis motor
  * @var friction        friction pully for shooting
  * @var gimbal          main gimbal
@@ -104,6 +108,12 @@ typedef struct {
  * @var poke            bullet supply motor
  */
 typedef union {
+    /* generic motor */
+    motor_3508_t m3508;
+    motor_3510_t m3510;
+    motor_2006_t m2006;
+    motor_6623_t m6623;
+    /* specific functioning motor */
     motor_3508_t chassis;
     motor_3508_t friction;
     motor_6623_t gimbal;

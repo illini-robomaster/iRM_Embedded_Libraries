@@ -5,26 +5,26 @@ uint8_t get_3508_data(motor_t* motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!CAN1_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 9, "CAN1_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!CAN2_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 15, "CAN2_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN2_read failed");
                 return 0;
             }
             break;
         default:
-            bsp_error_handler("motor.c", 20, "CAN ID doest not exist");
+            bsp_error_handler(__FILE__, __LINE__, "CAN ID doest not exist");
             return 0;
     }
 
     uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
-    motor->as.chassis.angle[idx]       = (uint16_t)(buf[0] << 8 | buf[1]);
-    motor->as.chassis.speedRPM[idx]    = (int16_t)(buf[2] << 8 | buf[3]);
-    motor->as.chassis.current_get      = (int16_t)(buf[4] << 8 | buf[5]);
-    motor->as.chassis.temperature      = (uint8_t)buf[6];
+    motor->as.m3508.angle[idx]       = (uint16_t)(buf[0] << 8 | buf[1]);
+    motor->as.m3508.speedRPM[idx]    = (int16_t)(buf[2] << 8 | buf[3]);
+    motor->as.m3508.current_get      = (int16_t)(buf[4] << 8 | buf[5]);
+    motor->as.m3508.temperature      = (uint8_t)buf[6];
     motor->cur_idx++;
 
     return 1;
@@ -33,10 +33,10 @@ uint8_t get_3508_data(motor_t* motor) {
 void print_3508_data(motor_t* motor) {
     uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
     print("== 3508 at CAN bus %u node %x ==\n", motor->can_id, motor->sensor_id);
-    print("Angle    %u\n", motor->as.chassis.angle[idx]);
-    print("Current  %d\n", motor->as.chassis.current_get);
-    print("Speed    %d\n", motor->as.chassis.speedRPM[idx]);
-    print("Temp     %u\n", motor->as.chassis.temperature);
+    print("Angle    %u\n", motor->as.m3508.angle[idx]);
+    print("Current  %d\n", motor->as.m3508.current_get);
+    print("Speed    %d\n", motor->as.m3508.speedRPM[idx]);
+    print("Temp     %u\n", motor->as.m3508.temperature);
     print("================================\n");
 }
 
@@ -45,25 +45,25 @@ uint8_t get_6623_data(motor_t *motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!CAN1_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 39, "CAN1_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!CAN2_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 45, "CAN2_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN2_read failed");
                 return 0;
             }
             break;
         default:
-            bsp_error_handler("motor.c", 50, "CAN ID doest not exist");
+            bsp_error_handler(__FILE__, __LINE__, "CAN ID doest not exist");
             return 0;
     }
 
     uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
-    motor->as.gimbal.angle[idx]    = (uint16_t)(buf[0] << 8 | buf[1]);
-    motor->as.gimbal.current_get   = (int16_t)(buf[2] << 8 | buf[3]);
-    motor->as.gimbal.current_set   = (int16_t)(buf[4] << 8 | buf[5]);
+    motor->as.m6623.angle[idx]    = (uint16_t)(buf[0] << 8 | buf[1]);
+    motor->as.m6623.current_get   = (int16_t)(buf[2] << 8 | buf[3]);
+    motor->as.m6623.current_set   = (int16_t)(buf[4] << 8 | buf[5]);
     motor->cur_idx++;
 
     return 1;
@@ -74,24 +74,24 @@ uint8_t get_3510_data(motor_t *motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!CAN1_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 68, "CAN1_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!CAN2_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 74, "CAN2_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN2_read failed");
                 return 0;
             }
             break;
         default:
-            bsp_error_handler("motor.c", 79, "CAN ID doest not exist");
+            bsp_error_handler(__FILE__, __LINE__, "CAN ID doest not exist");
             return 0;
     }
 
     uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
-    motor->as.extra_gimbal.angle[idx]  = (uint16_t)(buf[0] << 8 | buf[1]);
-    motor->as.extra_gimbal.current_get = (int16_t)(buf[2] << 8 | buf[3]);
+    motor->as.m3510.angle[idx]  = (uint16_t)(buf[0] << 8 | buf[1]);
+    motor->as.m3510.current_get = (int16_t)(buf[2] << 8 | buf[3]);
     motor->cur_idx++;
 
     return 1;
@@ -102,24 +102,24 @@ uint8_t get_2006_data(motor_t *motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!CAN1_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 96, "CAN1_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!CAN2_read(motor->sensor_id, buf)) {
-                bsp_error_handler("motor.c", 102, "CAN2_read failed");
+                bsp_error_handler(__FILE__, __LINE__, "CAN2_read failed");
                 return 0;
             }
             break;
         default:
-            bsp_error_handler("motor.c", 107, "CAN ID doest not exist");
+            bsp_error_handler(__FILE__, __LINE__, "CAN ID doest not exist");
             return 0;
     }
 
     uint8_t idx = motor->cur_idx % MAXIMUM_STATE;
-    motor->as.poke.angle[idx]      = (uint16_t)(buf[0] << 8 | buf[1]);
-    motor->as.poke.speedRPM[idx]   = (int16_t)(buf[2] << 8 | buf[3]);
+    motor->as.m2006.angle[idx]      = (uint16_t)(buf[0] << 8 | buf[1]);
+    motor->as.m2006.speedRPM[idx]   = (int16_t)(buf[2] << 8 | buf[3]);
     motor->cur_idx++;
 
     return 1;
