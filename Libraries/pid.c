@@ -43,6 +43,7 @@ void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
     pid->high_lim   = high_lim;
     pid->idx        = 0;
     pid->integrator = 0;
+    pid_set_param(pid, kp, ki, kd);
 }
 
 void pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle) {

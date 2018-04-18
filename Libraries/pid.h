@@ -42,4 +42,11 @@ typedef struct pid_ctl_s
     int16_t     high_lim;
 }   pid_ctl_t;
 
+void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor, 
+        float kp, float ki, float kd,
+        float low_lim, float high_lim, float deadband, float dt);
+
+uint8_t pid_calc(pid_ctl_t *pid, int16_t target);
+
+
 #endif

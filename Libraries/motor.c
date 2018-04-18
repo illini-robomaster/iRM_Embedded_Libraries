@@ -87,16 +87,28 @@ int16_t clip(int16_t val, int16_t range) {
     return val;
 }
 
+int16_t current_limit(int16_t val, int16_t low, int16_t high) {
+    if (val < low)
+        return low;
+    if (val > high)
+        return high;
+    return val;
+}
+
 int16_t correct_output(motor_t *motor) {
     switch (motor->type) {
         case M3508:
-            return motor->out * CURRENT_CRT_3508;
+            return current_limit(motor->out * CURRENT_CRT_3508,
+                    CURRENT_MIN_3508, CURRENT_MAX_3508);
         case M3510:
-            return motor->out * CURRENT_CRT_3510;
+            return current_limit(motor->out * CURRENT_CRT_3510,
+                    CURRENT_MIN_3510, CURRENT_MAX_3510);
         case M6623:
-            return motor->out * CURRENT_CRT_6623;
+            return current_limit(motor->out * CURRENT_CRT_6623,
+                    CURRENT_MIN_6623, CURRENT_MAX_6623);
         case M2006:
-            return motor->out * CURRENT_CRT_2006;
+            return current_limit(motor->out * CURRENT_CRT_2006,
+                    CURRENT_MIN_2006, CURRENT_MAX_2006);
         default:
             bsp_error_handler(__FILE__, __LINE__, "motor type undefined");
             return 0;
