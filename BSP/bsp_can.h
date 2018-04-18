@@ -13,8 +13,13 @@
 #include "main.h"
 #include "can.h"
 #include "bsp_error_handler.h"
+#include "bsp_config.h"
 #include <inttypes.h>
 #include <string.h>
+
+#include "FreeRTOS.h"
+#include "task.h"
+#include "cmsis_os.h"
 
 /**
  * @ingroup bsp
@@ -27,9 +32,6 @@
 #define CAN_DATA_SIZE       8
 #define CAN1_RX_ID_START    0x201
 #define CAN2_RX_ID_START    0x201
-
-#define BUF_BUSY            1
-#define BUF_OK              0
 
 #define CAN_BUS_1           hcan1
 #define CAN_BUS_2           hcan2

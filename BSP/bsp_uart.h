@@ -12,27 +12,19 @@
 #include "bsp_config.h"
 #include "usart.h"
 #include "dma.h"
+#include "bsp_dbus.h"
 #include "bsp_error_handler.h"
 #include "stm32f4xx_hal.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
+#include "cmsis_os.h"
 
 /**
  * @ingroup bsp
  * @defgroup bsp_uart BSP UART
  * @{
  */
-
-#define DBUS_BUF_LEN        18
-#define DBUS_MAX_LEN        50
-
-extern uint8_t dbus_rx_buffer[DBUS_BUF_LEN];
-
-/**
- * Initialize DBUS to DMA ready with interrupt disabled
- *
- * @author Nickel_Liang
- * @date   2018-04-17
- */
-void dbus_init(void);
 
 /**
  * Callback function after IDLE interrupt. Process interrupt incomming data.
@@ -55,7 +47,7 @@ uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart);
  * @date   2018-04-17
  * @note   Reference from HAL_UART_Receive_DMA
  */
-static uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32_t size);
+uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32_t size);
 
 /**
  * Count how many data remain in DMA buffer
@@ -64,6 +56,7 @@ static uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData,
  * @return            Number of bytes remain in DMA buffer
  * @author Nickel_Liang
  * @date   2018-04-17
+ * @source https://blog.frankvh.com/2011/08/18/stm32f2xx-dma-controllers/
  */
 static uint16_t dma_current_data_counter(DMA_Stream_TypeDef *dma_stream);
 

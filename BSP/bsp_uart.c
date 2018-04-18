@@ -8,17 +8,6 @@
 
 #include "bsp_uart.h"
 
-uint8_t  dbus_rx_buffer[DBUS_BUF_LEN];
-
-void dbus_init(void) {
-    /* Clear the UART IDLE pending flag */
-    __HAL_UART_CLEAR_IDLEFLAG(&BSP_DBUS_PORT);
-    /* Idle line detection interrupt mode */
-    __HAL_UART_ENABLE_IT(&BSP_DBUS_PORT, UART_IT_IDLE);
-    /* Start DMA transfer with interrupt disabled */
-    uart_rx_dma_without_it(&BSP_DBUS_PORT, dbus_rx_buffer, DBUS_MAX_LEN);
-}
-
 uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart) {
     /* Clear IDEL IT flag, avoid interrupt again, prevent package adhesion */
     __HAL_UART_CLEAR_IDLEFLAG(huart);
@@ -29,16 +18,15 @@ uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart) {
         __HAL_DMA_DISABLE(huart->hdmarx);
 
         /* Handle dbus data from DMA */
-        /* @todo Enter critical section here */
-        // uint32_t status = taskENTER_CRITICAL_FROM_ISR();
+        /* Enter critical section here */
+        UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
         if ((DBUS_MAX_LEN - dma_current_data_counter(huart->hdmarx->Instance)) == DBUS_BUF_LEN) {
-            /* @todo Process DBUS data here */
-            // rc_callback_handler(&rc, dbus_buf);
+            /* @todo Consider add signal handling here? */
+            dbus_data_process(dbus_get_buffer(), dbus_get_struct());
             /* @todo Add offline detection for dbus */
-            // err_detector_hook(REMOTE_CTRL_OFFLINE);
         }
-        /* @todo Exit critical section here */
-        // taskEXIT_CRITICAL_FROM_ISR(status);
+        /* Exit critical section here */
+        taskEXIT_CRITICAL_FROM_ISR(it_status);
 
         /* restart dma transmission */
         __HAL_DMA_SET_COUNTER(huart->hdmarx, DBUS_MAX_LEN);
@@ -47,7 +35,7 @@ uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart) {
     }
     else if ((huart == &BSP_REFEREE_PORT) || (huart == &BSP_TX2_PORT)) {
         /* @todo Process REFEREE and TX2 data here */
-        // uart_idle_interrupt_signal(huart);
+        /* @todo Add offline detection for referee and tx2 */
         return 1;
     }
     else {
@@ -55,7 +43,7 @@ uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart) {
     }
 }
 
-static uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32_t size) {
+uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32_t size) {
     /* Check if we can change UART setting */
     if (huart->RxState == HAL_UART_STATE_READY) {
         /* Check parameter validity */
@@ -67,7 +55,7 @@ static uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData,
         __HAL_LOCK(huart);
         /* Set UART properties */
         huart->pRxBuffPtr = pData;
-        huart->RxXferSize = size;
+        huart->RxXferSize = size;   // NDTR value in fact
         huart->ErrorCode  = HAL_UART_ERROR_NONE;
         /* No need to set Callback functions since we are not using interrupt */
         /* Enable the DMA Stream */

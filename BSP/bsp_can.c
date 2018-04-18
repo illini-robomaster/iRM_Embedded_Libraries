@@ -10,22 +10,12 @@
 
 uint8_t can1_rx_buffer[CAN1_DEVICE_NUM][CAN_DATA_SIZE];
 uint8_t can2_rx_buffer[CAN2_DEVICE_NUM][CAN_DATA_SIZE];
-/* This is intended to use as a local spin lock */
-volatile uint8_t can1_rx_lock[CAN1_DEVICE_NUM];
-volatile uint8_t can2_rx_lock[CAN2_DEVICE_NUM];
 
 void can1_init(void) {
-    /* Initialize the lock to OK condition */
-    for (int i = 0; i < CAN1_DEVICE_NUM; i++) {
-        can1_rx_lock[i] = BUF_OK;
-    }
     can_init(&CAN_BUS_1);
 }
 
 void can2_init(void) {
-    for (int i = 0; i < CAN2_DEVICE_NUM; i++) {
-        can2_rx_lock[i] = BUF_OK;
-    }
     can_init(&CAN_BUS_2);
 }
 
@@ -43,12 +33,11 @@ uint8_t can1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
         bsp_error_handler(__FILE__, __LINE__, "Out of bound.");
         return 0;
     }
-    while (can1_rx_lock[idx] == BUF_BUSY) {
-        /* Wait for unlock */
-    }
-    can1_rx_lock[idx] = BUF_BUSY;
+    /* Enter critical section here */
+    taskENTER_CRITICAL();
     memcpy(buf, can1_rx_buffer[idx], CAN_DATA_SIZE);
-    can1_rx_lock[idx] = BUF_OK;
+    /* Exit critical section here */
+    taskEXIT_CRITICAL();
     return 1;
 }
 
@@ -58,12 +47,11 @@ uint8_t can2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
         bsp_error_handler(__FILE__, __LINE__, "Out of bound.");
         return 0;
     }
-    while (can2_rx_lock[idx] == BUF_BUSY) {
-        /* Wait for unlock */
-    }
-    can2_rx_lock[idx] = BUF_BUSY;
+    /* Enter critical section here */
+    taskENTER_CRITICAL();
     memcpy(buf, can2_rx_buffer[idx], CAN_DATA_SIZE);
-    can2_rx_lock[idx] = BUF_OK;
+    /* Exit critical section here */
+    taskEXIT_CRITICAL();
     return 1;
 }
 
@@ -91,13 +79,12 @@ static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int
 }
 
 static void can_filter_config(CAN_HandleTypeDef* hcan) {
-    CAN_FilterConfTypeDef	CAN_FilterConfigStructure;
-
-    static CanTxMsgTypeDef	Tx1Message;	//Allocate memory for data storage
-    static CanRxMsgTypeDef 	Rx1Message;
-    static CanTxMsgTypeDef	Tx2Message;
-    static CanRxMsgTypeDef 	Rx2Message;
-
+    CAN_FilterConfTypeDef   CAN_FilterConfigStructure;
+    static CanTxMsgTypeDef  Tx1Message; //Allocate memory for data storage
+    static CanRxMsgTypeDef  Rx1Message;
+    static CanTxMsgTypeDef  Tx2Message;
+    static CanRxMsgTypeDef  Rx2Message;
+    /* Configure Filter Property */
     CAN_FilterConfigStructure.FilterIdHigh = 0x0000;
     CAN_FilterConfigStructure.FilterIdLow = 0x0000;
     CAN_FilterConfigStructure.FilterMaskIdHigh = 0x0000;
@@ -106,8 +93,8 @@ static void can_filter_config(CAN_HandleTypeDef* hcan) {
     CAN_FilterConfigStructure.FilterMode = CAN_FILTERMODE_IDMASK;
     CAN_FilterConfigStructure.FilterScale = CAN_FILTERSCALE_32BIT;
     CAN_FilterConfigStructure.FilterActivation = ENABLE;
-    CAN_FilterConfigStructure.BankNumber = 14;	//CAN1 and CAN2 split all 28 filters
-
+    CAN_FilterConfigStructure.BankNumber = 14;  //CAN1 and CAN2 split all 28 filters
+    /* Configure each CAN bus */
     if (hcan == &CAN_BUS_1) {
         CAN_FilterConfigStructure.FilterNumber = 0; //Master CAN1 get filter 0-13
         hcan->pTxMsg = &Tx1Message;
@@ -118,7 +105,6 @@ static void can_filter_config(CAN_HandleTypeDef* hcan) {
         hcan->pTxMsg = &Tx2Message;
         hcan->pRxMsg = &Rx2Message;
     }
-
     if (HAL_CAN_ConfigFilter(hcan, &CAN_FilterConfigStructure) != HAL_OK) {
         bsp_error_handler(__FILE__, __LINE__, "CAN filter configuration failed.");
     }
@@ -131,24 +117,24 @@ static void can_filter_config(CAN_HandleTypeDef* hcan) {
  * @author Nickel_Liang
  * @date   2018-04-14
  * @note   This function is intended to fully abstract away the usage of HAL library in upper layer.
+ * @todo   Add offline detection for CAN motors
  */
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
     if (hcan == &CAN_BUS_1) {
+        /* Enter critical section here */
+        UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
         uint8_t idx = hcan->pRxMsg->StdId - CAN1_RX_ID_START;
-        /* Design choice: if buffer is in use, just ignore current receiving */
-        if (can1_rx_lock[idx] == BUF_OK) {
-            can1_rx_lock[idx] = BUF_BUSY;
-            memcpy(can1_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
-            can1_rx_lock[idx] = BUF_OK;
-        }
+        memcpy(can1_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
+        /* Exit critical section here */
+        taskEXIT_CRITICAL_FROM_ISR(it_status);
     }
     else if (hcan == &CAN_BUS_2) {
+        /* Enter critical section here */
+        UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
         uint8_t idx = hcan->pRxMsg->StdId - CAN2_RX_ID_START;
-        if (can2_rx_lock[idx] == BUF_OK) {
-            can2_rx_lock[idx] = BUF_BUSY;
-            memcpy(can2_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
-            can2_rx_lock[idx] = BUF_OK;
-        }
+        memcpy(can2_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
+        /* Exit critical section here */
+        taskEXIT_CRITICAL_FROM_ISR(it_status);
     }
     // Reset CAN receive interrupt to prevent bug
     __HAL_CAN_ENABLE_IT(&CAN_BUS_1, CAN_IT_FMP0);

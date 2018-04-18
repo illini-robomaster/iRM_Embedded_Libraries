@@ -47,9 +47,9 @@ extern inline void RM_Main_Init(void) {
     /* Wait for ESC to initialize */
     /* @todo change to more delicate CAN bus condition check function */
     HAL_Delay(STARTUP_DELAY);
-#ifdef TEST
+    #ifdef TEST
     run_all_tests();
-#endif
+    #endif
     return;
 }
 
