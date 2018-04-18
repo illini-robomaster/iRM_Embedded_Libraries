@@ -12,7 +12,7 @@ int16_t position_pid_calc(pid_ctl_t *pid) {
 
     float pout = pid->kp * err_now;
     float iout = (pid->integrator += pid->ki * err_now);
-    float dout = (err_now - err_last) / pid->dt;
+    float dout = pid->kd * (err_now - err_last) / pid->dt;
 
     return pout + iout + dout;
 }
