@@ -6,9 +6,9 @@
  * @log     2018-04-17 nickelliang
  */
 
-#include "test_bsp_dbus.h"
+#include "test_dbus.h"
 
-uint8_t test_bsp_dbus(void) {
+uint8_t test_dbus(void) {
     uint8_t ret = 1;
     size_t i;
     dbus_t* rc = dbus_get_struct();

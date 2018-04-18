@@ -8,42 +8,6 @@
 
 #include "bsp_uart.h"
 
-uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart) {
-    /* Clear IDEL IT flag, avoid interrupt again, prevent package adhesion */
-    __HAL_UART_CLEAR_IDLEFLAG(huart);
-    /* Handle received data */
-    if (huart == &BSP_DBUS_PORT) {
-        /* Only dbus is using no interrupt mode */
-        /* Clear DMA transfer complete flag */
-        __HAL_DMA_DISABLE(huart->hdmarx);
-
-        /* Handle dbus data from DMA */
-        /* Enter critical section here */
-        /* @todo Critical Section not tested yet */
-        UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
-        if ((DBUS_MAX_LEN - dma_current_data_counter(huart->hdmarx->Instance)) == DBUS_BUF_LEN) {
-            /* @todo Consider add signal handling here? */
-            dbus_data_process(dbus_get_buffer(), dbus_get_struct());
-            /* @todo Add offline detection for dbus */
-        }
-        /* Exit critical section here */
-        taskEXIT_CRITICAL_FROM_ISR(it_status);
-
-        /* restart dma transmission */
-        __HAL_DMA_SET_COUNTER(huart->hdmarx, DBUS_MAX_LEN);
-        __HAL_DMA_ENABLE(huart->hdmarx);
-        return 1;
-    }
-    else if ((huart == &BSP_REFEREE_PORT) || (huart == &BSP_TX2_PORT)) {
-        /* @todo Process REFEREE and TX2 data here */
-        /* @todo Add offline detection for referee and tx2 */
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-
 uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32_t size) {
     /* Check if we can change UART setting */
     if (huart->RxState == HAL_UART_STATE_READY) {
@@ -73,7 +37,18 @@ uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32
     }
 }
 
-static uint16_t dma_current_data_counter(DMA_Stream_TypeDef *dma_stream) {
+void uart_port_init(UART_HandleTypeDef* huart) {
+    /* Clear the UART IDLE pending flag */
+    __HAL_UART_CLEAR_IDLEFLAG(huart);
+    /* Idle line detection interrupt mode */
+    __HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
+}
+
+uint16_t dma_current_data_counter(DMA_Stream_TypeDef *dma_stream) {
     /* Return the number of remaining data units for DMAy Streamx */
     return ((uint16_t)(dma_stream->NDTR));
+}
+
+__weak void uart_dbus_callback(void) {
+    /* Implement this function in dbus library */
 }

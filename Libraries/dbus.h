@@ -1,21 +1,22 @@
 /**
  * @author  Nickel_Liang <nickelliang>
  * @date    2018-04-17
- * @file    bsp_dbus.h
- * @brief   Board support package for dbus
+ * @file    dbus.h
+ * @brief   DBUS utility
  * @log     2018-04-17 nickelliang
  */
 
-#ifndef _BSP_DBUS_H_
-#define _BSP_DBUS_H_
+#ifndef _DBUS_H_
+#define _DBUS_H_
 
 #include "bsp_error_handler.h"
 #include "bsp_uart.h"
+#include "bsp_config.h"
 #include <string.h>
 #include <stdlib.h>
+#include "cmsis_os.h"
 
 #define DBUS_BUF_LEN        18
-#define DBUS_MAX_LEN        50
 
 typedef enum {
     RC_SWITCH_UP = 1,
@@ -105,14 +106,5 @@ uint8_t dbus_data_process(uint8_t buffer[DBUS_BUF_LEN], dbus_t* dbus);
  * @date   2018-04-18
  */
 dbus_t* dbus_get_struct(void);
-
-/**
- * Wrapper to get dbus buffer
- *
- * @return            A dbus buffer
- * @author Nickel_Liang
- * @date   2018-04-18
- */
-uint8_t* dbus_get_buffer(void);
 
 #endif

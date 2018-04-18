@@ -28,8 +28,30 @@
 extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
     /* Check if interrupt comming from IDLE interrupt */
     if (__HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE) && __HAL_UART_GET_IT_SOURCE(huart, UART_IT_IDLE)) {
-        /* Process callback conditions in bsp layer */
-        uart_rx_idle_callback(huart);
+        /* Clear IDEL IT flag, avoid interrupt again, prevent package adhesion */
+        __HAL_UART_CLEAR_IDLEFLAG(huart);
+        /* Handle received data */
+        if (huart == &BSP_DBUS_PORT) {
+            /* Only dbus is using no interrupt mode */
+            /* Clear DMA transfer complete flag */
+            __HAL_DMA_DISABLE(huart->hdmarx);
+            /* Process DBUS data */
+            uart_dbus_callback();
+            /* restart dma transmission */
+            __HAL_DMA_SET_COUNTER(huart->hdmarx, BSP_DBUS_MAX_LEN);
+            __HAL_DMA_ENABLE(huart->hdmarx);
+        }
+        else if (huart == &BSP_REFEREE_PORT) {
+            /* @todo Process REFEREE data here */
+            /* @todo Add offline detection for referee */
+        }
+        else if (huart == &BSP_TX2_PORT) {
+            /* @todo Process TX2 data here */
+            /* @todo Add offline detection for tx2 */
+        }
+        else {
+            bsp_error_handler(__FILE__, __LINE__, "Undefined active UART device callbacked.");
+        }
     }
 }
 

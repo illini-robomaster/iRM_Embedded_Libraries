@@ -1,23 +1,21 @@
 /**
  * @author  Nickel_Liang <nickelliang>
  * @date    2018-04-17
- * @file    bsp_dbus.c
- * @brief   Board support package for dbus
+ * @file    dbus.c
+ * @brief   DBUS utility
  * @log     2018-04-17 nickelliang
  */
 
-#include "bsp_dbus.h"
+#include "dbus.h"
 
 uint8_t dbus_rx_buffer[DBUS_BUF_LEN];
 dbus_t rc;
 
 uint8_t dbus_init(void) {
-    /* Clear the UART IDLE pending flag */
-    __HAL_UART_CLEAR_IDLEFLAG(&BSP_DBUS_PORT);
-    /* Idle line detection interrupt mode */
-    __HAL_UART_ENABLE_IT(&BSP_DBUS_PORT, UART_IT_IDLE);
+    /* Initialize DBUS to IDLE interrupt */
+    uart_port_init(&BSP_DBUS_PORT);
     /* Start DMA transfer with interrupt disabled */
-    uart_rx_dma_without_it(&BSP_DBUS_PORT, dbus_get_buffer(), DBUS_MAX_LEN);
+    uart_rx_dma_without_it(&BSP_DBUS_PORT, dbus_rx_buffer, BSP_DBUS_MAX_LEN);
     /* Initialize DBUS struct */
     memset(dbus_get_struct(), 0, sizeof(dbus_t));
 }
@@ -83,10 +81,26 @@ uint8_t dbus_data_process(uint8_t buff[DBUS_BUF_LEN], dbus_t* dbus) {
     return 1;
 }
 
-dbus_t* dbus_get_struct(void) {
+inline dbus_t* dbus_get_struct(void) {
     return &rc;
 }
 
-uint8_t* dbus_get_buffer(void) {
-    return dbus_rx_buffer;
+/**
+ * Callback function declared in bsp_uart
+ *
+ * @author Nickel_Liang
+ * @date   2018-04-18
+ */
+void uart_dbus_callback(void) {
+    /* Handle dbus data from DMA */
+    /* Enter critical section here */
+    /* @todo Critical Section not tested yet */
+    UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
+    if ((BSP_DBUS_MAX_LEN - dma_current_data_counter(BSP_DBUS_PORT.hdmarx->Instance)) == DBUS_BUF_LEN) {
+        /* @todo Consider add signal handling here? */
+        dbus_data_process(dbus_rx_buffer, dbus_get_struct());
+        /* @todo Add offline detection for dbus */
+    }
+    /* Exit critical section here */
+    taskEXIT_CRITICAL_FROM_ISR(it_status);
 }

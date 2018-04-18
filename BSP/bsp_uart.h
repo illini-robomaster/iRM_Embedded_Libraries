@@ -12,12 +12,8 @@
 #include "bsp_config.h"
 #include "usart.h"
 #include "dma.h"
-#include "bsp_dbus.h"
 #include "bsp_error_handler.h"
 #include "stm32f4xx_hal.h"
-
-#include "FreeRTOS.h"
-#include "task.h"
 #include "cmsis_os.h"
 
 /**
@@ -25,16 +21,6 @@
  * @defgroup bsp_uart BSP UART
  * @{
  */
-
-/**
- * Callback function after IDLE interrupt. Process interrupt incomming data.
- *
- * @param  huart      Which uart IT from
- * @return            0 for no data processed, 1 for success
- * @author Nickel_Liang
- * @date   2018-04-17
- */
-uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart);
 
 /**
  * Start DMA transfer with interrupt disabled
@@ -50,6 +36,15 @@ uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart);
 uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32_t size);
 
 /**
+ * Initialize a UART port with IDLE interrupt
+ *
+ * @param  huart      UART port to be initialize
+ * @author Nickel_Liang
+ * @date   2018-04-18
+ */
+void uart_port_init(UART_HandleTypeDef* huart);
+
+/**
  * Count how many data remain in DMA buffer
  *
  * @param  dma_stream Which DMA stream to count
@@ -58,7 +53,15 @@ uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32
  * @date   2018-04-17
  * @source https://blog.frankvh.com/2011/08/18/stm32f2xx-dma-controllers/
  */
-static uint16_t dma_current_data_counter(DMA_Stream_TypeDef *dma_stream);
+uint16_t dma_current_data_counter(DMA_Stream_TypeDef *dma_stream);
+
+/**
+ * This is a weak function. Implement this function in dbus library.
+ *
+ * @author Nickel_Liang
+ * @date   2018-04-18
+ */
+void uart_dbus_callback(void);
 
 /** @} */
 
