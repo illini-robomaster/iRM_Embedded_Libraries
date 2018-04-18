@@ -18,6 +18,8 @@
  * @{
  */
 
+/* This is a naive implementation of key press */
+/* @todo Should change key press to interrupt mode */
 #define key_pressed !HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) // Read val is 0
 #define key_released HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin)
 

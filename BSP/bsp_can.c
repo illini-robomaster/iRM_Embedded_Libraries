@@ -35,10 +35,11 @@ uint8_t can1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
     }
     /* Enter critical section here */
     /* @todo Critical Section not tested yet */
-    taskENTER_CRITICAL();
+    /* @bug Actually not working. Try to use in a thread later */
+    // taskENTER_CRITICAL();
     memcpy(buf, can1_rx_buffer[idx], CAN_DATA_SIZE);
     /* Exit critical section here */
-    taskEXIT_CRITICAL();
+    // taskEXIT_CRITICAL();
     return 1;
 }
 
@@ -49,10 +50,10 @@ uint8_t can2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
         return 0;
     }
     /* Enter critical section here */
-    taskENTER_CRITICAL();
+    // taskENTER_CRITICAL();
     memcpy(buf, can2_rx_buffer[idx], CAN_DATA_SIZE);
     /* Exit critical section here */
-    taskEXIT_CRITICAL();
+    // taskEXIT_CRITICAL();
     return 1;
 }
 
