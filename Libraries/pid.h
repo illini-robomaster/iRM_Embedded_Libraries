@@ -3,6 +3,7 @@
 
 #include "stm32f4xx_hal.h"
 #include <math.h>
+#include "motor.h"
 #include <stdlib.h>
 
 /**
@@ -12,10 +13,13 @@
  */
 void abs_limit(float *candidate, float ABS_MAX);
 
+#define HISTORY_DATA_SIZE 4
+
 enum{
-    LLAST,
-    LAST,
-    NOW,
+    NOW    = 0,
+    LAST   = 1,
+    LLAST  = 2,
+    LLLAST = 3,
 };
 
 enum{
@@ -35,11 +39,12 @@ typedef struct __motor_pid_t
     float d;
     float v;
 
-    /* arrays that contain recent data (3 calls) */
-    float set[3]; //target value
-    float get[3]; //observed(measured) value
-    float err[3]; //error
+    motor_t *motor; //motor it controls
 
+    /* arrays that contain recent data (4 recent calls) */
+    uint16_t *set; //target value
+    uint16_t *err; //error
+    int buffer_idx;
 
     float pout; //calculated p output
     float iout; //calculated i output
@@ -86,14 +91,21 @@ void PID_struct_init( motor_pid_t* pid, uint32_t mode,  uint32_t maxout,
 static void pid_reset(motor_pid_t *pid, float kp, float ki, float kd, float kv);
 
 /**
+ * @brief  translate user-friendly input value into motor raw value
+ *              (do nothing for now; edit it after finishing pid.)
+ * @param  _input user input value e.g., desired angle
+ * @return        corresponding raw value
+ */
+int motor_val_translate(float _input);
+
+/**
  * @brief  calculate pid output given pid struct,
  *                              observed value and desired value. Designed for 3508 and 6623 motor
- * @param  pid desired pid object
- * @param  get current feedback value
- * @param  set target value
+ * @param  my_motor desired pid struct
+ * @param  desired_value target value
  * @return 1 or 0, where 0 means it doesn't modify anything (because constraints are not satisfied)
  */
-int pid_calc(motor_pid_t* pid, float fdb, float ref);
+int pid_calc(motor_pid_t *my_motor_pid, float desired_value);
 
 extern motor_pid_t pid_pit;
 extern motor_pid_t pid_yaw;

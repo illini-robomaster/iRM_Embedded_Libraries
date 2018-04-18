@@ -26,180 +26,106 @@ static void pid_reset(motor_pid_t *pid, float kp, float ki, float kd, float kv) 
     pid->v = kv;
 }
 
-int pid_calc(motor_pid_t* pid, float get, float set) {
-    pid->get[NOW] = get;
-    pid->set[NOW] = set;
-    pid->err[NOW] = set - get;	//expected - measured
+int get_circular_buffer_ind(int cur_idx, int enum_flag){
+    return (cur_idx + HISTORY_DATA_SIZE - enum_flag) % HISTORY_DATA_SIZE;
+}
 
-    /* Basic position PID
-     * Used for chassis motor, gimbal auto-shooting mode
-     */
-    if(pid->pid_mode == POSITION_PID) //Calculate Position PID
-    {
-        // modified
-        if (pid->max_err != 0 && fabsf(pid->err[NOW]) > pid->max_err){
-            return 0;
-        } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && fabsf(pid->err[NOW]) < pid->deadband){
-            return 0;
-        } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
+int motor_val_translate(float _input){
+    return _input;
+}
 
-        pid->pout = pid->p * pid->err[NOW]; //pout=kp*err
-        pid->iout += pid->i * pid->err[NOW]; //iout=sum[ki*err]
-        pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST]); //dout=kd*d(err)/dt
-        pid->vout = pid->v * (pid->get[NOW] - pid->get[LAST]); //vout=kv*v_get
-        abs_limit(&(pid->iout), pid->IntegralLimit);
-        pid->pos_out = pid->pout + pid->iout + pid->dout - pid->vout; //pos_out=pout+iout+dout-vout
-        abs_limit(&(pid->pos_out), pid->MaxOutput);
-        pid->last_pos_out = pid->pos_out; //Update last time
+int pid_calc(motor_pid_t *my_motor_pid, float desired_value){
+    my_motor_pid->buffer_idx = (++my_motor_pid->buffer_idx) % HISTORY_DATA_SIZE;
+    my_motor_pid->set[my_motor_pid->buffer_idx] = motor_val_translate(desired_value);
+    my_motor_pid->err[my_motor_pid->buffer_idx] = 1;//TODO
+
+    int LAST_POS = get_circular_buffer_ind(my_motor_pid->buffer_idx, LAST);
+    int LLAST_POS = get_circular_buffer_ind(my_motor_pid->buffer_idx, LLAST);
+
+    switch(my_motor_pid->pid_mode) {
+        // Basic position PID; Used for chassis motor, gimbal auto-shooting mode
+        case POSITION_PID:
+        case GIMBAL_AUTO_SHOOT:
+        case GIMBAL_MOUSE_IMU_SHOOT:
+        case GIMBAL_MAN_SHOOT: //manual shoot
+        case CHASSISS_ROTATE: // use chassis motor input to calibrate motor speed
+            { //delete this bracket may cause compiler error
+                // modified
+                if (my_motor_pid->max_err != 0 && fabsf(my_motor_pid->err[NOW]) > my_motor_pid->max_err){
+                    return 0;
+                } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
+                if (my_motor_pid->deadband != 0 && fabsf(my_motor_pid->err[NOW]) < my_motor_pid->deadband){
+                    return 0;
+                } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
+
+                if(my_motor_pid->pid_mode != CHASSISS_ROTATE){
+                    if (my_motor_pid->err[NOW] >= 8191/2)
+                        my_motor_pid->err[NOW] = my_motor_pid->err[NOW] - 8191;	//expected - measured
+                    else if (my_motor_pid->err[NOW] <= -8191/2)
+                        my_motor_pid->err[NOW] = my_motor_pid->err[NOW] + 8191;	//expected - measured
+                }
+
+                if(my_motor_pid->pid_mode == GIMBAL_MOUSE_IMU_SHOOT){
+                    //do nothing for now
+                }
+
+                my_motor_pid->pout =  my_motor_pid->p *  my_motor_pid->err[NOW]; //pout=kp*err
+                my_motor_pid->iout += my_motor_pid->i *  my_motor_pid->err[NOW]; //iout=sum[ki*err]
+                my_motor_pid->dout =  my_motor_pid->d * (my_motor_pid->err[NOW] - my_motor_pid->err[LAST_POS]); //dout=kd*d(err)/dt
+                my_motor_pid->vout =  my_motor_pid->v * get_motor_d_angle(my_motor_pid->motor); //vout=kv*v_get
+
+                abs_limit(&(my_motor_pid->iout), my_motor_pid->IntegralLimit);
+                my_motor_pid->pos_out = my_motor_pid->pout
+                                        + my_motor_pid->iout + my_motor_pid->dout - my_motor_pid->vout;
+
+                abs_limit(&(my_motor_pid->pos_out), my_motor_pid->MaxOutput);
+                my_motor_pid->last_pos_out = my_motor_pid->pos_out; //Update last time
+                break;
+            }
+        case DELTA_PID:
+            if (my_motor_pid->err[NOW] >= 8191/2)
+                my_motor_pid->err[NOW] = my_motor_pid->err[NOW] - 8191;	//expected - measured
+            else if (my_motor_pid->err[NOW] <= -8191/2)
+                my_motor_pid->err[NOW] = my_motor_pid->err[NOW] + 8191;	//expected - measured
+
+            my_motor_pid->pout = my_motor_pid->p
+                            * (my_motor_pid->err[NOW] - my_motor_pid->err[LAST_POS]); //pout=kp*d(err)/dt
+            my_motor_pid->iout = my_motor_pid->i * my_motor_pid->err[NOW]; //iout=ki*err
+            my_motor_pid->dout = my_motor_pid->d
+                            * (my_motor_pid->err[NOW] - 2*my_motor_pid->err[LAST_POS] + my_motor_pid->err[LLAST_POS]); //dout=kd*d(d(err)/dt)/dt
+            //my_motor_pid->vout = my_motor_pid->v
+            //                * (my_motor_pid->get[NOW] - 2*my_motor_pid->get[LAST_POS] + my_motor_pid->get[LLAST_POS]); //vout=kv*a_get
+            my_motor_pid->vout = 0;
+
+            abs_limit(&(my_motor_pid->iout), my_motor_pid->IntegralLimit);
+
+            my_motor_pid->delta_u = my_motor_pid->pout
+                            + my_motor_pid->iout + my_motor_pid->dout - my_motor_pid->vout; //delta_u=pout+iout+dout-vout
+            my_motor_pid->delta_out = my_motor_pid->last_delta_out
+                            + my_motor_pid->delta_u; //delta_out=last_delta_out+delta_u
+            abs_limit(&(my_motor_pid->delta_out), my_motor_pid->MaxOutput);
+            my_motor_pid->last_delta_out = my_motor_pid->delta_out;
+
+            // modified
+            if (my_motor_pid->max_err != 0 && fabsf(my_motor_pid->err[NOW]) > my_motor_pid->max_err){
+                my_motor_pid->delta_out = 0;
+            } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
+            if (my_motor_pid->deadband != 0 && fabsf(my_motor_pid->err[NOW]) < my_motor_pid->deadband){
+                my_motor_pid->delta_out = 0;
+            } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
+            break;
+        case POKE:
+            my_motor_pid->pout = my_motor_pid->p * my_motor_pid->err[NOW]; //pout=kp*err
+            my_motor_pid->iout += my_motor_pid->i * my_motor_pid->err[NOW]; //iout=sum[ki*err]
+            my_motor_pid->dout = my_motor_pid->d * (my_motor_pid->err[NOW] - my_motor_pid->err[LAST_POS]); //dout=kd*d(err)/dt
+            my_motor_pid->vout = my_motor_pid->v * get_motor_d_angle(my_motor_pid->motor); //vout=kv*v_get
+            abs_limit(&(my_motor_pid->iout), my_motor_pid->IntegralLimit);
+            my_motor_pid->pos_out = my_motor_pid->pout + my_motor_pid->iout + my_motor_pid->dout - my_motor_pid->vout; //pos_out=pout+iout+dout-vout
+            abs_limit(&(my_motor_pid->pos_out), my_motor_pid->MaxOutput);
+            my_motor_pid->last_pos_out = my_motor_pid->pos_out; //Update last time
+            break;
     }
-    /* Basic delta PID
-     * Used for gimbal man-shooting mode
-     */
-    //use speed to control pos.
-    else if(pid->pid_mode == DELTA_PID)//Calculate Delta PID
-    {
-        if (pid->err[NOW] >= 8191/2)
-            pid->err[NOW] = pid->err[NOW] - 8191;	//expected - measured
-        else if (pid->err[NOW] <= -8191/2)
-            pid->err[NOW] = pid->err[NOW] + 8191;	//expected - measured
-
-        pid->pout = pid->p * (pid->err[NOW] - pid->err[LAST]); //pout=kp*d(err)/dt
-        pid->iout = pid->i * pid->err[NOW]; //iout=ki*err
-        pid->dout = pid->d * (pid->err[NOW] - 2*pid->err[LAST] + pid->err[LLAST]); //dout=kd*d(d(err)/dt)/dt
-        pid->vout = pid->v * (pid->get[NOW] - 2*pid->get[LAST] + pid->get[LLAST]); //vout=kv*a_get
-        abs_limit(&(pid->iout), pid->IntegralLimit);
-        pid->delta_u = pid->pout + pid->iout + pid->dout - pid->vout; //delta_u=pout+iout+dout-vout
-        pid->delta_out = pid->last_delta_out + pid->delta_u; //delta_out=last_delta_out+delta_u
-        abs_limit(&(pid->delta_out), pid->MaxOutput);
-        pid->last_delta_out = pid->delta_out;
-
-        // modified
-        if (pid->max_err != 0 && fabsf(pid->err[NOW]) > pid->max_err){
-            pid->delta_out = 0;
-        } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && fabsf(pid->err[NOW]) < pid->deadband){
-            pid->delta_out = 0;
-        } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
-    }
-    //for gimbal auto-shooting mode
-    // rune
-    else if(pid->pid_mode == GIMBAL_AUTO_SHOOT){
-
-        if (pid->max_err != 0 && fabsf(pid->err[NOW]) > pid->max_err){
-            return 0;
-        } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && fabsf(pid->err[NOW]) < pid->deadband){
-            return 0;
-        } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
-
-        if (pid->err[NOW] >= 8191/2)
-            pid->err[NOW] = pid->err[NOW] - 8191;	//expected - measured
-        else if (pid->err[NOW] <= -8191/2)
-            pid->err[NOW] = pid->err[NOW] + 8191;	//expected - measured
-
-        pid->pout = pid->p * pid->err[NOW]; //pout=kp*err
-        pid->iout += pid->i * pid->err[NOW]; //iout=sum[ki*err]
-        pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST]); //dout=kd*d(err)/dt
-        pid->vout = pid->v * (pid->get[NOW] - pid->get[LAST]); //vout=kv*v_get
-        abs_limit(&(pid->iout), pid->IntegralLimit);
-        pid->pos_out = pid->pout + pid->iout + pid->dout - pid->vout; //pos_out=pout+iout+dout-vout
-        abs_limit(&(pid->pos_out), pid->MaxOutput);
-        pid->last_pos_out = pid->pos_out; //Update last time
-
-    }
-    //for gimbal man-shooting mode
-    // manual shoot (from client)
-    else if(pid->pid_mode == GIMBAL_MAN_SHOOT){
-
-        if (pid->max_err != 0 && fabs(pid->err[NOW]) > pid->max_err){
-            return 0;
-        } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && fabs(pid->err[NOW]) < pid->deadband){
-            return 0;
-        } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
-        if (pid->err[NOW] >= 8191/2)
-            pid->err[NOW] = pid->err[NOW] - 8191;	//expected - measured
-        else if (pid->err[NOW] <= -8191/2)
-            pid->err[NOW] = pid->err[NOW] + 8191;	//expected - measured
-
-        pid->pout = pid->p * pid->err[NOW]; //pout=kp*err
-        pid->iout += pid->i * pid->err[NOW]; //iout=sum[ki*err]
-        pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST]); //dout=kd*d(err)/dt
-        pid->vout = pid->v * (pid->get[NOW] - pid->get[LAST]); //vout=kv*v_get
-        abs_limit(&(pid->iout), pid->IntegralLimit);
-        pid->pos_out = pid->pout + pid->iout + pid->dout - pid->vout; //pos_out=pout+iout+dout-vout
-        abs_limit(&(pid->pos_out), pid->MaxOutput);
-        pid->last_pos_out = pid->pos_out; //Update last time
-
-    }
-    //for gimbal mouse imu mode
-    // correct version! man shoot (with IMU calibration)
-    else if(pid->pid_mode == GIMBAL_MOUSE_IMU_SHOOT){
-
-        if (pid->max_err != 0 && fabs(pid->err[NOW]) > pid->max_err){
-            return 0;
-        } // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->deadband != 0 && fabs(pid->err[NOW]) < pid->deadband){
-            return 0;
-        } // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
-        if (pid->err[NOW] >= 8191/2)
-            pid->err[NOW] = pid->err[NOW] - 8191;	//expected - measured
-        else if (pid->err[NOW] <= -8191/2)
-            pid->err[NOW] = pid->err[NOW] + 8191;	//expected - measured
-
-        pid->pout = pid->p * pid->err[NOW]; //pout=kp*err
-        pid->iout += pid->i * pid->err[NOW]; //iout=sum[ki*err]
-        pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST]); //dout=kd*d(err)/dt
-        pid->vout = pid->v * (pid->get[NOW] - pid->get[LAST]); //vout=kv*v_get
-        abs_limit(&(pid->iout), pid->IntegralLimit);
-        pid->pos_out = pid->pout + pid->iout + pid->dout - pid->vout; //pos_out=pout+iout+dout-vout
-        abs_limit(&(pid->pos_out), pid->MaxOutput);
-        pid->last_pos_out = pid->pos_out; //Update last time
-
-    }
-    // use chassis motor input to calibrate motor speed
-    else if(pid->pid_mode == CHASSISS_ROTATE){
-        // PID does not apply if max_err=0 or err is larger than max_err; Keep original PID output
-        if (pid->max_err != 0 && fabs(pid->err[NOW]) > pid->max_err)
-            return 0;
-        // PID does not apply if deadband=0 or err is smaller than deadband; Keep original PID output
-        if (pid->deadband != 0 && fabs(pid->err[NOW]) < pid->deadband)
-            return 0;
-        pid->pout = pid->p * pid->err[NOW]; //pout=kp*err
-        pid->iout += pid->i * pid->err[NOW]; //iout=sum[ki*err]
-        pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST]); //dout=kd*d(err)/dt
-        pid->vout = pid->v * (pid->get[NOW] - pid->get[LAST]); //vout=kv*v_get
-        abs_limit(&(pid->iout), pid->IntegralLimit);
-        pid->pos_out = pid->pout + pid->iout + pid->dout - pid->vout; //pos_out=pout+iout+dout-vout
-        abs_limit(&(pid->pos_out), pid->MaxOutput);
-        pid->last_pos_out = pid->pos_out; //Update last time
-    }
-    // poker PID
-    else if(pid->pid_mode == POKE){
-        pid->pout = pid->p * pid->err[NOW]; //pout=kp*err
-        pid->iout += pid->i * pid->err[NOW]; //iout=sum[ki*err]
-        pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST]); //dout=kd*d(err)/dt
-        pid->vout = pid->v * (pid->get[NOW] - pid->get[LAST]); //vout=kv*v_get
-        abs_limit(&(pid->iout), pid->IntegralLimit);
-        pid->pos_out = pid->pout + pid->iout + pid->dout - pid->vout; //pos_out=pout+iout+dout-vout
-        abs_limit(&(pid->pos_out), pid->MaxOutput);
-        pid->last_pos_out = pid->pos_out; //Update last time
-    }
-    else
-    {
-        //mode not supported?
-        return 0;
-    }
-    /* update pid history regardless of pid mode */
-    pid->err[LLAST] = pid->err[LAST];
-    pid->err[LAST] = pid->err[NOW];
-    pid->get[LLAST] = pid->get[LAST];
-    pid->get[LAST] = pid->get[NOW];
-    pid->set[LLAST] = pid->set[LAST];
-    pid->set[LAST] = pid->set[NOW];
     return 1;
-    //return pid->pid_mode==POSITION_PID ? pid->pos_out : pid->delta_out;
 }
 
 void PID_struct_init(motor_pid_t *pid, uint32_t mode, uint32_t maxout,
@@ -208,6 +134,16 @@ void PID_struct_init(motor_pid_t *pid, uint32_t mode, uint32_t maxout,
     pid->IntegralLimit = intergral_limit;
     pid->MaxOutput = maxout;
     pid->pid_mode = mode;
+
+    pid->set = (uint16_t *)malloc(HISTORY_DATA_SIZE * sizeof(uint16_t));
+    pid->err = (uint16_t *)malloc(HISTORY_DATA_SIZE * sizeof(uint16_t));
+    //initialize the dynamic array to prevent garbage value
+    for(int i = 0; i < HISTORY_DATA_SIZE; i++){
+        pid->set[i] = 0;
+        pid->err[i] = 0;
+    }
+
+    pid->buffer_idx = 0;
 
     pid->p = _p;
     pid->i = _i;
