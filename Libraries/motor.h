@@ -22,49 +22,51 @@
 #define CAN1_ID 1
 #define CAN2_ID 2
 
-#define TX1_ID  0x200
-#define TX2_ID  0x1FF
-#define TX3_ID  0x2FF
+#define CAN_TX1_ID  0x200
+#define CAN_TX2_ID  0x1FF
+#define CAN_TX3_ID  0x2FF
 
-#define RX1_MIN 0x201
-#define RX1_MAX 0x204
-#define RX2_MIN 0x205
-#define RX2_MAX 0x208
-#define RX3_MIN 0x209
-#define RX3_MAX 0x20C
+#define CAN_RX1_START 0x201
+#define CAN_RX2_START 0x205
+#define CAN_RX3_START 0x209
+#define CAN_GROUP_SIZE  4
 
 #define MAXIMUM_STATE 4
 
 // CCW and CW are looking towards the aixs
 #define ANGLE_MIN_3510      0       // 0    degree
 #define ANGLE_MAX_3510      8191    // 360  degree
-#define ANGLE_CRT_3510      1       // angle value normal
+#define ANGLE_RANGE_3510    8192
+#define ANGLE_CRT_3510      1       // angle direction normal
 #define CURRENT_MIN_3510    -29000  // CCW  ~1.3A
 #define CURRENT_MAX_3510    29000   // CW   ~1.3A Looking towards LED
-#define CURRENT_CRT_3510    1       // current value normal
+#define CURRENT_CRT_3510    1      // current direction reversed
 
 #define ANGLE_MIN_3508      0       // 0    degree
 #define ANGLE_MAX_3508      8191    // 360  degree
-#define ANGLE_CRT_3508      -1      // angle value reversed
+#define ANGLE_RANGE_3508    8192
+#define ANGLE_CRT_3508      1       // angle direction normal
 #define CURRENT_MIN_3508    -16384  // CW   20A
 #define CURRENT_MAX_3508    16384   // CCW  20A
 #define CURRENT_CRT_3508    1       // current value normal
-#define SPEED_CRT_3508      -1      // speed value reversed
+#define SPEED_CRT_3508      1       // speed direction noraml
 
 #define ANGLE_MIN_6623      0       // 0    degree
 #define ANGLE_MAX_6623      8191    // 360  degree
-#define ANGLE_CRT_6623      1       // angle value normal
+#define ANGLE_RANGE_6623    8192
+#define ANGLE_CRT_6623      1       // angle direction normal
 #define CURRENT_MIN_6623    -13000  // CCW  ~5.3A
 #define CURRENT_MAX_6623    13000   // CW   ~5.3A
-#define CURRENT_CRT_6623    1       // current value normal
+#define CURRENT_CRT_6623    -1      // current direction reversed
 
 #define ANGLE_MIN_2006      0       // 0    degree
 #define ANGLE_MAX_2006      8191    // 360  degree
-#define ANGLE_CRT_2006      1       // angle value normal
-#define CURRENT_MIN_2006    -10000  // CCW  10A
-#define CURRENT_MAX_2006    10000   // CW   10A
-#define CURRENT_CRT_2006    1       // current value normal
-#define SPEED_CRT_2006      1       // speed value noraml
+#define ANGLE_RANGE_2006    8192
+#define ANGLE_CRT_2006      1       // angle direction normal
+#define CURRENT_MIN_2006    -10000  // CW  10A
+#define CURRENT_MAX_2006    10000   // CCW   10A
+#define CURRENT_CRT_2006    1       // current direction normal
+#define SPEED_CRT_2006      1       // speed direction noraml
 
 typedef enum {
     M3508,
@@ -78,13 +80,13 @@ typedef enum {
  * @brief   store 3508 motor data
  * @var angle       a circular buffer to store current and previous angle
  * @var current_get actual current / torque output
- * @var speedRPM    rotational speed in RPM (Rotation Per Minute)
+ * @var speed_rpm   rotational speed in RPM (Rotation Per Minute)
  * @var temperature sensor temperature in celcius degree
  */
 typedef struct {
-    int16_t     angle[MAXIMUM_STATE];
+    int16_t     angle;
     int16_t     current_get;
-    int16_t     speedRPM[MAXIMUM_STATE];
+    int16_t     speed_rpm;
     uint8_t     temperature;
 }   motor_3508_t;
 
@@ -96,7 +98,7 @@ typedef struct {
  * @var current_set target current / torque output
  */
 typedef struct {
-    int16_t     angle[MAXIMUM_STATE];
+    int16_t     angle;
     int16_t     current_get;
     int16_t     current_set;
 }   motor_6623_t;
@@ -108,7 +110,7 @@ typedef struct {
  * @var current_get actual current / torque output
  */
 typedef struct {
-    int16_t     angle[MAXIMUM_STATE];
+    int16_t     angle;
     int16_t     current_get;
 }   motor_3510_t;
 
@@ -116,11 +118,11 @@ typedef struct {
  * @struct  motor_2006_t
  * @brief   store 2006 motor data
  * @var angle       a circular buffer to store current and previous angle
- * @var speedRPM    rotational speed in RPM (Rotation Per Minute)
+ * @var speed_rpm   rotational speed in RPM (Rotation Per Minute)
  */
 typedef struct {
-    int16_t     angle[MAXIMUM_STATE];
-    int16_t     speedRPM[MAXIMUM_STATE];
+    int16_t     angle;
+    int16_t     speed_rpm;
     int16_t     current_get;
 }   motor_2006_t;
 
@@ -162,7 +164,6 @@ typedef union {
 typedef struct {
     motor_interp_t  as;
     motor_type_t    type;
-    uint8_t         cur_idx;
     uint16_t        rx_id;
     uint16_t        tx_id;
     uint8_t         can_id;
@@ -223,6 +224,22 @@ void motor_init(motor_t *motor,
 uint8_t get_motor_data(motor_t *motor);
 
 /**
+ * @brief set output of a group of 4 motors
+ *       function work properly
+ * @param motor1 motor #1
+ * @param motor2 motor #2
+ * @param motor3 motor #3
+ * @param motor4 motor #4
+ * @note you need to set motor1.out, motor2.out, etc. to make this
+ * @note four motors are positioned strictly in order.
+ *       Put NULL to any position where you don't want to send any information.
+ * @return 1 if successfully sent, 0 for can / tx id inconsistency among
+ *         4 motors
+ */
+uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
+        motor_t *motor3, motor_t *motor4);
+
+/**
  * @brief get the latest angle data from a motor
  * @param motor a motor variable
  * @return the latest angle data
@@ -230,27 +247,20 @@ uint8_t get_motor_data(motor_t *motor);
 int16_t get_motor_angle(motor_t *motor);
 
 /**
- * @brief get the nth latest angle data from a motor
- * @param motor a motor variable
- * @param n     the nth lastest data to retrieve (e.g. to get the most recent angle data,
- *              set n to 0)
- * @return      the nth latest angle data; 
+ * @brief calculate angle error given a target angle
+ * @param motor     a motor variable
+ * @param target    target angle
+ * @return error angle given by target angle - current angle
  */
-int16_t get_motor_prev_angle(motor_t *motor, int n);
+int16_t get_angle_err(motor_t *motor, int16_t target);
 
 /**
- * @brief get the first derivative of latest angle data
- * @param motor a motor variable
- * @return the first derivative of latest angle data
+ * @brief calculate rotation speed error given a target speed
+ * @param motor     a motor variable
+ * @param target    target speed
+ * @return error speed given by target speed - current speed
  */
-int16_t get_motor_d_angle(motor_t *motor);
-
-/**
- * @brief get the second drivative of latest angle data
- * @param motor a motor variable
- * @return the second drivative of latest angle data
- */
-int16_t get_motor_dd_angle(motor_t *motor);
+int16_t get_speed_err(motor_t *motor, int16_t target);
 
 /**
  * @brief print out generic motor data (type inferred from the data structure)
