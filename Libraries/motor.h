@@ -8,16 +8,16 @@
 #ifndef _MOTOR_H_
 #define _MOTOR_H_
 
-#include <inttypes.h>
-#include "bsp_can.h"
-#include "bsp_error_handler.h"
-#include "bsp_print.h"
-
 /**
  * @ingroup library
  * @defgroup motor Motor
  * @{
  */
+
+#include <inttypes.h>
+#include "bsp_can.h"
+#include "bsp_error_handler.h"
+#include "bsp_print.h"
 
 #define CAN1_ID 1
 #define CAN2_ID 2
@@ -68,6 +68,14 @@
 #define CURRENT_CRT_2006    1       // current direction normal
 #define SPEED_CRT_2006      1       // speed direction noraml
 
+/**
+ * @enum    motor_type_t
+ * @brief   a enum type that defines avaiblable motor types
+ * @var M3508   3508 motor
+ * @var M3510   3510 motor
+ * @var M2006   2006 motor
+ * @var M6623   6623 motor
+ */
 typedef enum {
     M3508,
     M3510,
@@ -78,7 +86,7 @@ typedef enum {
 /**
  * @struct  motor_3508_t
  * @brief   store 3508 motor data
- * @var angle       a circular buffer to store current and previous angle
+ * @var angle       most recent angle data
  * @var current_get actual current / torque output
  * @var speed_rpm   rotational speed in RPM (Rotation Per Minute)
  * @var temperature sensor temperature in celcius degree
@@ -93,7 +101,7 @@ typedef struct {
 /**
  * @struct  motor_6623_t
  * @brief   store 6623 motor data
- * @var angle       a circular buffer to store current and previous angle
+ * @var angle       most recent angle data
  * @var current_get actual current / torque output
  * @var current_set target current / torque output
  */
@@ -106,7 +114,7 @@ typedef struct {
 /**
  * @struct  motor_3510_t
  * @brief   store 3510 motor data
- * @var angle       a circular buffer to store current and previous angle
+ * @var angle       most recent angle data
  * @var current_get actual current / torque output
  */
 typedef struct {
@@ -117,7 +125,7 @@ typedef struct {
 /**
  * @struct  motor_2006_t
  * @brief   store 2006 motor data
- * @var angle       a circular buffer to store current and previous angle
+ * @var angle       most recent angle data
  * @var speed_rpm   rotational speed in RPM (Rotation Per Minute)
  */
 typedef struct {
@@ -167,7 +175,7 @@ typedef struct {
     uint16_t        rx_id;
     uint16_t        tx_id;
     uint8_t         can_id;
-    int16_t         out;
+    float           out;
 }   motor_t;
 
 /**

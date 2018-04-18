@@ -6,7 +6,7 @@ int16_t get_prev_n_err(pid_ctl_t *pid, uint8_t n) {
     return pid->err[(pid->idx + HISTORY_DATA_SIZE - n) % HISTORY_DATA_SIZE];
 }
 
-int16_t position_pid_calc(pid_ctl_t *pid) {
+float position_pid_calc(pid_ctl_t *pid) {
     int16_t err_now     = pid->err[pid->idx];
     int16_t err_last    = get_prev_n_err(pid, 1);
 
@@ -17,7 +17,7 @@ int16_t position_pid_calc(pid_ctl_t *pid) {
     return pout + iout + dout;
 }
 
-int16_t delta_pid_calc(pid_ctl_t *pid) {
+float delta_pid_calc(pid_ctl_t *pid) {
     int16_t err_now     = get_prev_n_err(pid, 0);
     int16_t err_last    = get_prev_n_err(pid, 1);
     int16_t err_llast   = get_prev_n_err(pid, 2);
@@ -76,11 +76,10 @@ uint8_t pid_calc(pid_ctl_t *pid, int16_t target) {
     switch (pid->mode) {
         case GIMBAL_AUTO_SHOOT:
         case GIMBAL_MAN_SHOOT:
-        case GIMBAL_MOUSE_IMU_SHOOT:
         case POKE:
             pid_angle_ctl_angle(pid, target);
             return 1;
-        case CHASSISS_ROTATE:
+        case CHASSIS_ROTATE:
             pid_speed_ctl_speed(pid, target);
             return 1;
         default:

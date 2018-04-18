@@ -87,12 +87,12 @@ int16_t clip(int16_t val, int16_t range) {
     return val;
 }
 
-int16_t current_limit(int16_t val, int16_t low, int16_t high) {
+int16_t current_limit(float val, int16_t low, int16_t high) {
     if (val < low)
         return low;
     if (val > high)
         return high;
-    return val;
+    return (int16_t)val;
 }
 
 int16_t correct_output(motor_t *motor) {

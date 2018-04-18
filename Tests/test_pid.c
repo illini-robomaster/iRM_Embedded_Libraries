@@ -14,7 +14,7 @@ void test_pid_3508() {
     size_t i;
 
     motor_init(&motor, 0x201, CAN1_ID, M3508);
-    pid_init(&pid, CHASSISS_ROTATE, &motor, 0.9, 0.1, 8, 0, 1000, 0, 5);
+    pid_init(&pid, CHASSIS_ROTATE, &motor, 0.9, 0.1, 8, 0, 1000, 0, 5);
 
     for (i = 0; i < 50000; i++) {
         get_motor_data(&motor);
