@@ -22,6 +22,17 @@
 #define CAN1_ID 1
 #define CAN2_ID 2
 
+#define TX1_ID  0x200
+#define TX2_ID  0x1FF
+#define TX3_ID  0x2FF
+
+#define RX1_MIN 0x201
+#define RX1_MAX 0x204
+#define RX2_MIN 0x205
+#define RX2_MAX 0x208
+#define RX3_MIN 0x209
+#define RX3_MAX 0x20C
+
 #define MAXIMUM_STATE 4
 
 // CCW and CW are looking towards the aixs
@@ -34,11 +45,11 @@
 
 #define ANGLE_MIN_3508      0       // 0    degree
 #define ANGLE_MAX_3508      8191    // 360  degree
-#define ANGLE_CRT_3508      1       // angle value normal
+#define ANGLE_CRT_3508      -1      // angle value reversed
 #define CURRENT_MIN_3508    -16384  // CW   20A
 #define CURRENT_MAX_3508    16384   // CCW  20A
 #define CURRENT_CRT_3508    1       // current value normal
-#define SPEED_CRT_3508      1       // speed value normal
+#define SPEED_CRT_3508      -1      // speed value reversed
 
 #define ANGLE_MIN_6623      0       // 0    degree
 #define ANGLE_MAX_6623      8191    // 360  degree
@@ -143,17 +154,19 @@ typedef union {
 /**
  * @struct  motor_t
  * @brief   ultimate structure that holds all information for a motor
- * @var as          a union structure motor interpretation
- * @var cur_idx     current index to write into the cicular buffer
- * @var sensor_id   hardware sensor id as in CAN address
- * @var can_id      CAN id chosen from [CAN1, CAN2]
+ * @var as      a union structure motor interpretation
+ * @var cur_idx current index to write into the cicular buffer
+ * @var rx_id   hardware sensor id as in CAN address
+ * @var can_id  CAN id chosen from [CAN1, CAN2]
  */
 typedef struct {
     motor_interp_t  as;
     motor_type_t    type;
     uint8_t         cur_idx;
-    uint16_t        sensor_id;
+    uint16_t        rx_id;
+    uint16_t        tx_id;
     uint8_t         can_id;
+    int16_t         out;
 }   motor_t;
 
 /**
@@ -195,12 +208,12 @@ void print_2006_data(motor_t *motor);
 /**
  * @brief initialize generic motor variable with specific sensor id and can id
  * @param motor     motor_t type variable to be initialized
- * @param sensor_id hardware sensor id as in CAN address
+ * @param rx_id     hardware sensor id as in CAN address
  * @param can_id    CAN id chosen from [CAN1_ID, CAN2_ID]
  * @param type      type of the motor
  */
 void motor_init(motor_t *motor, 
-        uint16_t sensor_id, uint8_t can_id, motor_type_t type);
+        uint16_t rx_id, uint8_t can_id, motor_type_t type);
 
 /**
  * @brief get generic motor data (type inferred from the data structure) 
@@ -208,6 +221,36 @@ void motor_init(motor_t *motor,
  * @return 1 if successfully parsed data, otherwise 0
  */
 uint8_t get_motor_data(motor_t *motor);
+
+/**
+ * @brief get the latest angle data from a motor
+ * @param motor a motor variable
+ * @return the latest angle data
+ */
+int16_t get_motor_angle(motor_t *motor);
+
+/**
+ * @brief get the nth latest angle data from a motor
+ * @param motor a motor variable
+ * @param n     the nth lastest data to retrieve (e.g. to get the most recent angle data,
+ *              set n to 0)
+ * @return      the nth latest angle data; 
+ */
+int16_t get_motor_prev_angle(motor_t *motor, int n);
+
+/**
+ * @brief get the first derivative of latest angle data
+ * @param motor a motor variable
+ * @return the first derivative of latest angle data
+ */
+int16_t get_motor_d_angle(motor_t *motor);
+
+/**
+ * @brief get the second drivative of latest angle data
+ * @param motor a motor variable
+ * @return the second drivative of latest angle data
+ */
+int16_t get_motor_dd_angle(motor_t *motor);
 
 /**
  * @brief print out generic motor data (type inferred from the data structure)
