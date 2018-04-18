@@ -33,18 +33,24 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 }
 
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor, 
-        float kp, float ki, float kd, 
-        float max_err, float deadband, float dt) {
+        float kp, float ki, float kd,
+        float low_lim, float high_lim, float deadband, float dt) {
     pid->mode       = mode;
     pid->motor      = motor;
-    pid->max_err    = max_err;
     pid->deadband   = deadband;
     pid->dt         = dt;
+    pid->low_lim    = low_lim;
+    pid->high_lim   = high_lim;
     pid->idx        = 0;
     pid->integrator = 0;
 }
 
 void pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle) {
+    /* force target angle to be in range */
+    if (clip_angle_err(pid->motor, target_angle - pid->low_lim) < 0)
+        target_angle = pid->low_lim;
+    else if (clip_angle_err(pid->motor, target_angle - pid->high_lim) > 0)
+        target_angle = pid->high_lim;
     /* set angle error into the circular buffer */
     uint8_t idx = (++pid->idx) % HISTORY_DATA_SIZE;
     pid->err[idx] = get_angle_err(pid->motor, target_angle);
@@ -53,6 +59,11 @@ void pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle) {
 }
 
 void pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed) {
+    /* force target speed to be in range */
+    if (target_speed - pid->low_lim < 0)
+        target_speed = pid->low_lim;
+    else if (target_speed - pid->high_lim > 0)
+        target_speed = pid->high_lim;
     /* set speed error into the circular buffer */
     uint8_t idx = (++pid->idx) % HISTORY_DATA_SIZE;
     pid->err[idx] = get_speed_err(pid->motor, target_speed);

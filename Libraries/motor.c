@@ -217,6 +217,22 @@ int16_t get_angle_err(motor_t *motor, int16_t target) {
     }
 }
 
+int16_t clip_angle_err(motor_t *motor, int16_t err) {
+    switch (motor->type) {
+        case M3508:
+            return clip(err, ANGLE_RANGE_3508);
+        case M3510:
+            return clip(err, ANGLE_RANGE_3510);
+        case M6623:
+            return clip(err, ANGLE_RANGE_6623);
+        case M2006:
+            return clip(err, ANGLE_RANGE_2006);
+        default:
+            bsp_error_handler(__FILE__, __LINE__, "motor type does not support angle attribute");
+            return 0;
+    }
+}
+
 int16_t get_speed_err(motor_t *motor, int16_t target) {
     switch (motor->type) {
         case M3508:

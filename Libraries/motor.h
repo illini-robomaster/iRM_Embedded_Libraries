@@ -255,6 +255,14 @@ int16_t get_motor_angle(motor_t *motor);
 int16_t get_angle_err(motor_t *motor, int16_t target);
 
 /**
+ * @brief clip the error to stay in bound
+ * @param motor     a motor variable
+ * @param err       error value to be clipped
+ * @return clipped error value
+ */
+int16_t clip_angle_err(motor_t *motor, int16_t err);
+
+/**
  * @brief calculate rotation speed error given a target speed
  * @param motor     a motor variable
  * @param target    target speed

@@ -29,7 +29,6 @@ typedef struct pid_ctl_s
     float   ki;
     float   kd;
     float   integrator;
-    float   max_err;
     float   deadband;
     float   dt;
 
@@ -39,8 +38,8 @@ typedef struct pid_ctl_s
     int16_t err[HISTORY_DATA_SIZE];
     uint8_t idx;
 
-    uint32_t MaxOutput;
-    uint32_t IntegralLimit;
+    int16_t     low_lim;
+    int16_t     high_lim;
 }   pid_ctl_t;
 
 #endif
