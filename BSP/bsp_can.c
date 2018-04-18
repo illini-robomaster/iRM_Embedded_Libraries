@@ -34,6 +34,7 @@ uint8_t can1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
         return 0;
     }
     /* Enter critical section here */
+    /* @todo Critical Section not tested yet */
     taskENTER_CRITICAL();
     memcpy(buf, can1_rx_buffer[idx], CAN_DATA_SIZE);
     /* Exit critical section here */
@@ -122,6 +123,7 @@ static void can_filter_config(CAN_HandleTypeDef* hcan) {
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
     if (hcan == &CAN_BUS_1) {
         /* Enter critical section here */
+        /* @todo Critical section not tested yet */
         UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
         uint8_t idx = hcan->pRxMsg->StdId - CAN1_RX_ID_START;
         memcpy(can1_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);

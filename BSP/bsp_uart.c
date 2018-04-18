@@ -19,6 +19,7 @@ uint8_t uart_rx_idle_callback(UART_HandleTypeDef* huart) {
 
         /* Handle dbus data from DMA */
         /* Enter critical section here */
+        /* @todo Critical Section not tested yet */
         UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
         if ((DBUS_MAX_LEN - dma_current_data_counter(huart->hdmarx->Instance)) == DBUS_BUF_LEN) {
             /* @todo Consider add signal handling here? */
