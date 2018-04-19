@@ -23,10 +23,12 @@
 
 #define BSP_DBUS_PORT       huart1
 #define BSP_PRINT_PORT      huart6
-#define BSP_TX2_PORT        huart3
-#define BSP_REFEREE_PORT    UART_FREE_PORT
+#define BSP_TX2_PORT        UART_FREE_PORT
+#define BSP_REFEREE_PORT    huart3
 
 #define BSP_DBUS_MAX_LEN    50  // Adjust according to actual message length. Should be longer than expected message length.
+#define BSP_REFEREE_MAX_LEN 1024
+#define BSP_TX2_MAX_LEN     1024
 
 /* Choose where to print */
 #define PRINT_TO_UART       1   // Set to 1 to print to uart port specified above

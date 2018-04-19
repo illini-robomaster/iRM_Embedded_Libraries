@@ -15,9 +15,10 @@ uint8_t dbus_init(void) {
     /* Initialize DBUS to IDLE interrupt */
     uart_port_init(&BSP_DBUS_PORT);
     /* Start DMA transfer with interrupt disabled */
-    uart_rx_dma_without_it(&BSP_DBUS_PORT, dbus_rx_buffer, BSP_DBUS_MAX_LEN);
+    uint8_t ret = uart_rx_dma_without_it(&BSP_DBUS_PORT, dbus_rx_buffer, BSP_DBUS_MAX_LEN);
     /* Initialize DBUS struct */
     memset(dbus_get_struct(), 0, sizeof(dbus_t));
+    return ret;
 }
 
 uint8_t dbus_data_process(uint8_t buff[DBUS_BUF_LEN], dbus_t* dbus) {
@@ -86,7 +87,7 @@ inline dbus_t* dbus_get_struct(void) {
 }
 
 /**
- * Callback function declared in bsp_uart
+ * Callback function declared in bsp_uart. This is a weak function.
  *
  * @author Nickel_Liang
  * @date   2018-04-18

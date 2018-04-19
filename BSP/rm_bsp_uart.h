@@ -36,6 +36,7 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
             /* Clear DMA transfer complete flag */
             __HAL_DMA_DISABLE(huart->hdmarx);
             /* Process DBUS data */
+            /* @todo Consider use flag to handle dbus data here */
             uart_dbus_callback();
             /* restart dma transmission */
             __HAL_DMA_SET_COUNTER(huart->hdmarx, BSP_DBUS_MAX_LEN);
@@ -44,6 +45,9 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
         else if (huart == &BSP_REFEREE_PORT) {
             /* @todo Process REFEREE data here */
             /* @todo Add offline detection for referee */
+            /* @todo @important Consider flag handling */
+            /* reference: */
+            // osSignalSet(judge_unpack_task_t, JUDGE_UART_IDLE_SIGNAL);
         }
         else if (huart == &BSP_TX2_PORT) {
             /* @todo Process TX2 data here */

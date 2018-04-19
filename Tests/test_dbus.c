@@ -13,7 +13,8 @@ uint8_t test_dbus(void) {
     size_t i;
     dbus_t* rc = dbus_get_struct();
     for (i = 0; i < DBUS_TEST_COUNT; i++) {
-        print("CH0 %03d CH1 %03d CH2 %03d CH3 %03d \t", rc->ch0, rc->ch1, rc->ch2, rc->ch3);
+        print("CH0 %03d CH1 %03d ", rc->ch0, rc->ch1);
+        print("CH2 %03d CH3 %03d ", rc->ch2, rc->ch3);
         print("SL %u SR %u ", rc->swl, rc->swr);
         print("MX %04d MY %04d ", rc->mouse.x, rc->mouse.y);
         print("ML %u MR %u ", rc->mouse.l, rc->mouse.r);
@@ -33,8 +34,7 @@ uint8_t test_dbus(void) {
         if (rc->key.bit.C) print("C ");
         if (rc->key.bit.V) print("V ");
         if (rc->key.bit.B) print("B ");
-        print("\n");
+        print("\r\n");
     }
-
     return ret;
 }

@@ -82,6 +82,7 @@ typedef struct {
 /**
  * Initialize DBUS to DMA ready with interrupt disabled
  *
+ * @return      1 for success, 0 for error
  * @author Nickel_Liang
  * @date   2018-04-17
  */
