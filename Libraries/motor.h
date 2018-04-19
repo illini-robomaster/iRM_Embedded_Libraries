@@ -55,8 +55,8 @@
 #define ANGLE_MAX_6623      8191    // 360  degree
 #define ANGLE_RANGE_6623    8192
 #define ANGLE_CRT_6623      1       // angle direction normal
-#define CURRENT_MIN_6623    -13000  // CCW  ~5.3A
-#define CURRENT_MAX_6623    13000   // CW   ~5.3A
+#define CURRENT_MIN_6623    -5000   // CCW  ~5.3A
+#define CURRENT_MAX_6623    5000    // CW   ~5.3A
 #define CURRENT_CRT_6623    -1      // current direction reversed
 
 #define ANGLE_MIN_2006      0       // 0    degree

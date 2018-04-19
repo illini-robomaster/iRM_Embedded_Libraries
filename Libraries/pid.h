@@ -92,9 +92,9 @@ void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
  * @brief calculate pid value and set output to the motor
  * @param pid       pid instance
  * @param target    generic target value
- * @return 
+ * @return calculated motor output
  */
-uint8_t pid_calc(pid_ctl_t *pid, int16_t target);
+int16_t pid_calc(pid_ctl_t *pid, int16_t target);
 
 /** @} */
 

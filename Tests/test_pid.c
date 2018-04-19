@@ -2,10 +2,14 @@
 #include "motor.h"
 #include "pid.h"
 #include "bsp_print.h"
+#include "stdlib.h"
+
+#define MIN(x, y) x < y ? x : y
+#define MAX(x, y) x > y ? x : y
 
 void test_pid() {
-    test_pid_3508();
-    // test_pid_6623();
+    // test_pid_3508();
+    test_pid_6623();
 }
 
 void test_pid_3508() {
@@ -29,14 +33,30 @@ void test_pid_6623() {
     pid_ctl_t pid;
     size_t i;
 
-    motor_init(&motor, 0x209, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 0.9, 0, 0, 0, 4000, 0, 0.005);
-
-    for (i = 0; i < 50000; i++) {
+    motor_init(&motor, 0x20A, CAN1_ID, M6623);
+    for (i = 0; i < 100; i++) {
         get_motor_data(&motor);
-        pid_calc(&pid, 1000);
+        motor.out = 1;
         set_motor_output(&motor, NULL, NULL, NULL);
-        HAL_Delay(5);
+    }
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 2, 0.13, 40, 4800, 6200, 200, 2);
+    while (1) {
+        motor.out = pid_calc(&pid, 5300);
+        for (i = 0; i < 500; i++) {
+            get_motor_data(&motor);
+            int16_t err = get_angle_err(&motor, 5300);
+            motor.out = pid_calc(&pid, 5300);
+            set_motor_output(NULL, &motor, NULL, NULL);
+            HAL_Delay(2);
+        }
+        motor.out = pid_calc(&pid, 5000);
+        for (i = 0; i < 500; i++) {
+            get_motor_data(&motor);
+            int16_t err = get_angle_err(&motor, 5000);
+            motor.out = pid_calc(&pid, 5000);
+            set_motor_output(NULL, &motor, NULL, NULL);
+            HAL_Delay(2);
+        }
     }
 }
 

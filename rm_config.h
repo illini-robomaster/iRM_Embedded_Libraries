@@ -70,5 +70,6 @@
 
 /* General Constants */
 #define PI                          3.14159265358979f
+#define MILLISECOND_PER_SECOND      1000
 
 #endif
