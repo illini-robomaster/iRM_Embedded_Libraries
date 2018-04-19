@@ -59,7 +59,7 @@ uint8_t uart_dma_multibuffer_it(DMA_HandleTypeDef *hdma, uint32_t SrcAddress, ui
  * @author Nickel_Liang
  * @date   2018-04-19
  */
-void uart_enable_receiver_dma(UART_HandleTypeDef* huart);
+void uart_enable_rx_dma(UART_HandleTypeDef* huart);
 
 /**
  * Initialize a UART port with IDLE interrupt
@@ -69,6 +69,18 @@ void uart_enable_receiver_dma(UART_HandleTypeDef* huart);
  * @date   2018-04-18
  */
 void uart_port_init(UART_HandleTypeDef* huart);
+
+/**
+ * Transmit data in blocking mode
+ *
+ * @param  huart      Which UART to tx
+ * @param  p_data     Data to transmit
+ * @param  size       Size of data
+ * @author Nickel_Liang
+ * @date   2018-04-19
+ * @note   Timeout setting in config.h
+ */
+void uart_tx_blocking(UART_HandleTypeDef *huart, uint8_t *p_data, uint16_t size);
 
 /* ===== DMA Utilities ===== */
 
@@ -122,6 +134,22 @@ static void dma_m0_rxcplt_callback(DMA_HandleTypeDef *hdma);
  * @date   2018-04-18
  */
 void uart_dbus_callback(void);
+
+/**
+ * This is a weak function. Implement this function in referee library.
+ *
+ * @author Nickel_Liang
+ * @date   2018-04-18
+ */
+void uart_referee_callback(void);
+
+/**
+ * This is a weak function. Implement this function in tx2 library.
+ *
+ * @author Nickel_Liang
+ * @date   2018-04-18
+ */
+void uart_tx2_callback(void);
 
 /** @} */
 

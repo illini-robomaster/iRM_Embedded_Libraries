@@ -8,7 +8,9 @@
 
 #include "dbus.h"
 
+/* DMA buffer of raw data. Local var. */
 uint8_t dbus_rx_buffer[DBUS_BUF_LEN];
+/* Struct contain decoded rc data. Local var with helper. */
 dbus_t rc;
 
 uint8_t dbus_init(void) {
@@ -96,6 +98,7 @@ void uart_dbus_callback(void) {
     /* Handle dbus data from DMA */
     /* Enter critical section here */
     /* @todo Critical Section not tested yet */
+    /* @todo Although this is working fine, this is not a completely safe implementation since DMA will keep writing the buffer */
     UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
     if ((BSP_DBUS_MAX_LEN - dma_current_data_counter(BSP_DBUS_PORT.hdmarx->Instance)) == DBUS_BUF_LEN) {
         /* @todo Consider add signal handling here? */

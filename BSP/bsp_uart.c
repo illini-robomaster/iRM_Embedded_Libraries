@@ -97,7 +97,7 @@ uint8_t uart_dma_multibuffer_it(DMA_HandleTypeDef *hdma, uint32_t SrcAddress, ui
     return 1;
 }
 
-void uart_enable_receiver_dma(UART_HandleTypeDef* huart) {
+void uart_enable_rx_dma(UART_HandleTypeDef* huart) {
     SET_BIT(huart->Instance->CR3, USART_CR3_DMAR);
 }
 
@@ -106,6 +106,10 @@ void uart_port_init(UART_HandleTypeDef* huart) {
     __HAL_UART_CLEAR_IDLEFLAG(huart);
     /* Idle line detection interrupt mode */
     __HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
+}
+
+void uart_tx_blocking(UART_HandleTypeDef *huart, uint8_t *p_data, uint16_t size) {
+    HAL_UART_Transmit(huart, p_data, size, UART_TX_BLOCKING_TIMEOUT);
 }
 
 /* ===== DMA Utilities ===== */
@@ -134,6 +138,14 @@ static void dma_m0_rxcplt_callback(DMA_HandleTypeDef *hdma) {
 
 __weak void uart_dbus_callback(void) {
     /* Implement this function in dbus library */
+}
+
+__weak void uart_referee_callback(void) {
+    /* Implement this function in referee library */
+}
+
+__weak void uart_tx2_callback(void) {
+    /* Implement this function in tx2 library */
 }
 
 /**

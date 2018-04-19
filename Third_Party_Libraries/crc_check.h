@@ -11,22 +11,6 @@
 
 #include "stm32f4xx_hal.h"
 
-#define UP_REG_ID                   0xA0   // UP regional id
-#define DN_REG_ID                   0xA5   // DOWN regional id
-#define HEADER_LEN                  sizeof(frame_header_t)
-#define CMD_LEN                     2      // CMDID bytes
-#define CRC_LEN                     2      // CRC16 bytes
-
-/* @note this is not used in this lib */
-#define PROTOCAL_FRAME_MAX_SIZE     200
-
-typedef struct {
-  uint8_t  sof;
-  uint16_t data_length;
-  uint8_t  seq;
-  uint8_t  crc8;
-}  __packed frame_header_t;
-
 /**
  * CRC8 checksum calculation
  *

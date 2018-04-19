@@ -32,6 +32,7 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
         __HAL_UART_CLEAR_IDLEFLAG(huart);
         /* Handle received data */
         if (huart == &BSP_DBUS_PORT) {
+            /* @todo Do some experiment to adapt same method as referee and tx2 */
             /* Only dbus is using no interrupt mode */
             /* Clear DMA transfer complete flag */
             __HAL_DMA_DISABLE(huart->hdmarx);
@@ -44,6 +45,7 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
         }
         else if (huart == &BSP_REFEREE_PORT) {
             /* @todo Process REFEREE data here */
+
             /* @todo Add offline detection for referee */
             /* @todo @important Consider flag handling */
             /* reference: */
