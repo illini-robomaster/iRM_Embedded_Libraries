@@ -14,9 +14,9 @@
 #include "bsp_config.h"
 
 /**
- * Initialize referee system receive
+ * Initialize referee system dma
  *
- * @return            1 for success, 0 for error
+ * @return 1 for success, 0 for error
  * @author Nickel_Liang
  * @date   2018-04-19
  * @note   Since referee system tx and rx will take a relatively long period of time, consider put init / pack / unpack into a thread.
