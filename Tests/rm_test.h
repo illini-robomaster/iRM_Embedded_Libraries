@@ -5,6 +5,7 @@
 #include "test_pid.h"
 #include "test_dbus.h"
 #include "test_bsp_can.h"
+#include "test_servo.h"
 
 /* Test utility */
 #define PASS    1
@@ -17,10 +18,11 @@
     print("[TEST] %s %s\n", name, (result) ? "PASS" : "FAIL");
 
 /* Test config */
-#define TEST_PID        ON
+#define TEST_PID        OFF
 #define TEST_MOTOR      OFF
 #define TEST_DBUS       OFF
 #define TEST_BSP_CAN    OFF
+#define TEST_SERVO      ON
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -32,6 +34,8 @@ extern inline void run_all_tests() {
         TEST_OUTPUT("DBUS TEST", test_dbus());
     if (TEST_BSP_CAN == ON)
         TEST_OUTPUT("BSP CAN TEST", test_bsp_can());
+    if (TEST_SERVO == ON)
+        test_servo();
 }
 
 #endif
