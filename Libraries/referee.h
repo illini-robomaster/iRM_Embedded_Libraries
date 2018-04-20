@@ -12,6 +12,9 @@
 #include "bsp_error_handler.h"
 #include "bsp_uart.h"
 #include "bsp_config.h"
+#include "data_process.h"
+
+#define REFEREE_SOF 0xA5
 
 typedef enum {
     CMD_GAME_ROBOT_INFO     = 0x0001,
@@ -108,7 +111,7 @@ typedef enum {
     CARD_BLUE_RUNE      = 5,        // Blue team rune card
 } card_type_t;
 
-
+/* ===== CMD_GAME_RESULT 0x0006 ===== */
 typedef struct {
     uint8_t result;                 // Competition result [result_t]
 } __packed game_result_t;
@@ -119,7 +122,7 @@ typedef enum {
     RESULT_BLUE         = 2,        // Blue team win
 } result_t;
 
-/* ===== CMD_BUFF_DATA 0x0006 ===== */
+/* ===== CMD_BUFF_DATA 0x0007 ===== */
 typedef struct {
     uint8_t buff_type;              // Buff categories [buff_type_t]
     uint8_t buff_percent;           // Buff percentage (10 represents 10% buff)
@@ -150,7 +153,7 @@ typedef struct {
     game_result_t       game_result;        //0x0006
     buff_data_t         buff_data;          //0x0007
     custom_data_t       custom_data;        //0x0100
-} referee_info_t;
+} referee_t;
 
 /**
  * Initialize referee system dma

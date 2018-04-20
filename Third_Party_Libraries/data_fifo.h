@@ -91,7 +91,7 @@ int32_t fifo_s_puts(fifo_s_t *pfifo, uint8_t *psource, uint32_t number);
  * @param  pfifo      Pointer of valid FIFO
  * @return            Data element poped from FIFO
  */
-uint8_t  fifo_s_get(fifo_s_t* pfifo);
+uint8_t fifo_s_get(fifo_s_t* pfifo);
 
 /**
  * Get elements from FIFO
@@ -110,7 +110,7 @@ uint16_t fifo_s_gets(fifo_s_t* pfifo, uint8_t* source, uint8_t len);
  * @param  offset     Offset from current pointer
  * @return            Data at offset location
  */
-uint8_t  fifo_s_pre_read(fifo_s_t* pfifo, uint8_t offset);
+uint8_t fifo_s_pre_read(fifo_s_t* pfifo, uint8_t offset);
 
 /**
  * Check if FIFO is empty
@@ -118,7 +118,7 @@ uint8_t  fifo_s_pre_read(fifo_s_t* pfifo, uint8_t offset);
  * @param  pfifo      Pointer of a valid FIFO
  * @return            1 if empty, 0 otherwise
  */
-uint8_t  fifo_is_empty(fifo_s_t* pfifo);
+uint8_t fifo_is_empty(fifo_s_t* pfifo);
 
 /**
  * Check if FIFO is full
@@ -126,7 +126,7 @@ uint8_t  fifo_is_empty(fifo_s_t* pfifo);
  * @param  pfifo      Pointer of a valid FIFO
  * @return            1 if full, 0 otherwise
  */
-uint8_t  fifo_is_full(fifo_s_t* pfifo);
+uint8_t fifo_is_full(fifo_s_t* pfifo);
 
 /**
  * Check how many entries are filled

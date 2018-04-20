@@ -8,7 +8,12 @@
 
 #include "referee.h"
 
-uint8_t referee_rx_buffer[2][BSP_REFEREE_MAX_LEN];  // Double buffer
+/* DMA double buffer of raw data. Local var. */
+uint8_t referee_rx_buffer[2][BSP_REFEREE_MAX_LEN];
+/* FIFO to store temporary data */
+fifo_s_t referee_fifo;
+/* Struct contain decoded referee data. */
+referee_t referee;
 
 uint8_t referee_init(void) {
     /* Initialize REFEREE to IDLE interrupt */
@@ -26,5 +31,6 @@ uint8_t referee_init(void) {
  * @date   2018-04-18
  */
 void uart_referee_callback(void) {
+    /* @todo Signal handling here */
     return;
 }

@@ -9,14 +9,15 @@
 #ifndef _BSP_ERROR_HANDLER_H_
 #define _BSP_ERROR_HANDLER_H_
 
-#include "bsp_led.h"
-// #include "bsp_print.h"
+#include "bsp_print.h"
 
 /**
  * @ingroup bsp
  * @defgroup bsp_error_handler BSP Error Handler
  * @{
  */
+
+#define BSP_DEBUG   print("[DEBUG] %s:%d", __FILE__, __LINE__)
 
 /**
  * Handle error condition printf etc.

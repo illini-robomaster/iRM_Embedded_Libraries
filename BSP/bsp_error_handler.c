@@ -9,6 +9,6 @@
 #include "bsp_error_handler.h"
 
 void bsp_error_handler(char* file, int line, char* msg) {
-    led_red_on();
+    printf("[ERROR at %s:%d] %s\r\n", file, line, msg);
     return;
 }
