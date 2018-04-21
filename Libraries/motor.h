@@ -168,6 +168,7 @@ typedef union {
  * @var cur_idx current index to write into the cicular buffer
  * @var rx_id   hardware sensor id as in CAN address
  * @var can_id  CAN id chosen from [CAN1, CAN2]
+ * @var out     Motor output to be used; clockwise.
  */
 typedef struct {
     motor_interp_t  as;
@@ -221,11 +222,11 @@ void print_2006_data(motor_t *motor);
  * @param can_id    CAN id chosen from [CAN1_ID, CAN2_ID]
  * @param type      type of the motor
  */
-void motor_init(motor_t *motor, 
+void motor_init(motor_t *motor,
         uint16_t rx_id, uint8_t can_id, motor_type_t type);
 
 /**
- * @brief get generic motor data (type inferred from the data structure) 
+ * @brief get generic motor data (type inferred from the data structure)
  * @param motor motor_t typed pointer that stores the parsed results
  * @return 1 if successfully parsed data, otherwise 0
  */
