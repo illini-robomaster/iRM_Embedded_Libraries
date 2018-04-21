@@ -30,7 +30,7 @@ void can2_transmit(uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_
 uint8_t can1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
     uint8_t idx = id - CAN1_RX_ID_START;
     if (idx < 0 || idx >= CAN1_DEVICE_NUM) {
-        bsp_error_handler(__FILE__, __LINE__, "Out of bound.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Out of bound.");
         return 0;
     }
     /* Enter critical section here */
@@ -46,7 +46,7 @@ uint8_t can1_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
 uint8_t can2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
     uint8_t idx = id - CAN2_RX_ID_START;
     if (idx < 0 || idx >= CAN2_DEVICE_NUM) {
-        bsp_error_handler(__FILE__, __LINE__, "Out of bound.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Out of bound.");
         return 0;
     }
     /* Enter critical section here */
@@ -60,7 +60,7 @@ uint8_t can2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
 static void can_init(CAN_HandleTypeDef* hcan) {
     can_filter_config(hcan);   //Initialize filter 0
     if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK) {
-        bsp_error_handler(__FILE__, __LINE__, "CAN init failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "CAN init failed.");
     }
 }
 
@@ -108,7 +108,7 @@ static void can_filter_config(CAN_HandleTypeDef* hcan) {
         hcan->pRxMsg = &Rx2Message;
     }
     if (HAL_CAN_ConfigFilter(hcan, &CAN_FilterConfigStructure) != HAL_OK) {
-        bsp_error_handler(__FILE__, __LINE__, "CAN filter configuration failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "CAN filter configuration failed.");
     }
 }
 

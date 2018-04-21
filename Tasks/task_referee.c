@@ -27,11 +27,11 @@
 //     /* Initialize data process instance */
 //     &referee_process = data_process_init(&REFEREE_PORT, referee_rx_mutex, REFEREE_FIFO_SIZE, REFEREE_BUFF_SIZE, REFEREE_SOF, &referee_dispatcher, &referee_info);
 //     if (NULL == referee_process) {
-//         bsp_error_handler(__FILE__, __LINE__, "Referee data process instance initialization failed.");
+//         bsp_error_handler(__FUNCTION__, __LINE__, "Referee data process instance initialization failed.");
 //         return 0;
 //     }
 //     if (!referee_init(&referee_process)) {
-//         bsp_error_handler(__FILE__, __LINE__, "Referee UART hardware initialization failed.");
+//         bsp_error_handler(__FUNCTION__, __LINE__, "Referee UART hardware initialization failed.");
 //         return 0;
 //     }
 //     return 1;
@@ -39,7 +39,7 @@
 //
 // void referee_task(void const *argu) {
 //     while (!referee_task_init()) {
-//         bsp_error_handler(__FILE__, __LINE__, "Referee task failed to init.");
+//         bsp_error_handler(__FUNCTION__, __LINE__, "Referee task failed to init.");
 //     }
 //     while (1) {
 //         referee_event = osSignalWait(REFEREE_RX_SIGNAL | REFEREE_TX_SIGNAL, osWaitForever);

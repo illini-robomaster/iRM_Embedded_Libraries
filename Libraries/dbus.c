@@ -26,7 +26,7 @@ uint8_t dbus_init(void) {
 uint8_t dbus_data_process(uint8_t buff[DBUS_BUF_LEN], dbus_t* dbus) {
     /* Argument validity check */
     if (dbus == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Invalid DBUS struct.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid DBUS struct.");
         return 0;
     }
     /* Read in rocker value */
@@ -45,7 +45,7 @@ uint8_t dbus_data_process(uint8_t buff[DBUS_BUF_LEN], dbus_t* dbus) {
         (abs(dbus->ch2) > RC_ROCKER_MIN_MAX_DRIFT) || \
         (abs(dbus->ch3) > RC_ROCKER_MIN_MAX_DRIFT)) {
         memset(dbus, 0, sizeof(dbus_t));
-        bsp_error_handler(__FILE__, __LINE__, "Rocker value blew up.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Rocker value blew up.");
         return 0;
     }
     /* Prevent rocker zero drift */
@@ -68,15 +68,15 @@ uint8_t dbus_data_process(uint8_t buff[DBUS_BUF_LEN], dbus_t* dbus) {
     dbus->mouse.r = buff[13];
     /* Check mouse data validity */
     if (abs(dbus->mouse.x) >= MOUSE_MAX) {
-        bsp_error_handler(__FILE__, __LINE__, "Mouse X out of bound.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Mouse X out of bound.");
         return 0;
     }
     if (abs(dbus->mouse.y) >= MOUSE_MAX) {
-        bsp_error_handler(__FILE__, __LINE__, "Mouse Y out of bound.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Mouse Y out of bound.");
         return 0;
     }
     if (abs(dbus->mouse.z) >= MOUSE_MAX) {
-        bsp_error_handler(__FILE__, __LINE__, "Mouse Z out of bound.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Mouse Z out of bound.");
         return 0;
     }
     /* Read in keyboard value */

@@ -30,7 +30,6 @@
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
-    bsp_error_handler(__FILE__, __LINE__, "Test error handler");
     if (TEST_PID == ON)
         test_pid();
     if (TEST_MOTOR == ON)

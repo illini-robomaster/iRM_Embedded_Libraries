@@ -73,7 +73,7 @@ int16_t pid_calc(pid_ctl_t *pid, int16_t target) {
         case CHASSIS_ROTATE:
             return pid_speed_ctl_speed(pid, target);
         default:
-            bsp_error_handler(__FILE__, __LINE__, "pid mode does not exist");
+            bsp_error_handler(__FUNCTION__, __LINE__, "pid mode does not exist");
             return 0;
     }
 }

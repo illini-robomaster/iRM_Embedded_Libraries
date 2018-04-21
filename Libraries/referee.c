@@ -57,7 +57,7 @@
 //             /* @todo Tx signal processing here */
 //             break;
 //         default:
-//             bsp_error_handler(__FILE__, __LINE__, "How did SOF, CRC8 and CRC16 failed all together?!");
+//             bsp_error_handler(__FUNCTION__, __LINE__, "How did SOF, CRC8 and CRC16 failed all together?!");
 //             return 0;
 //     }
 //     return 1;

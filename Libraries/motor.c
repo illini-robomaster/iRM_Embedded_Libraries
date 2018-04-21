@@ -110,7 +110,7 @@ int16_t correct_output(motor_t *motor) {
             return current_limit(motor->out * CURRENT_CRT_2006,
                     CURRENT_MIN_2006, CURRENT_MAX_2006);
         default:
-            bsp_error_handler(__FILE__, __LINE__, "motor type undefined");
+            bsp_error_handler(__FUNCTION__, __LINE__, "motor type undefined");
             return 0;
     }
 }
@@ -133,7 +133,7 @@ void motor_init(motor_t *motor,
             rx_id < CAN_RX3_START + CAN_GROUP_SIZE)
         motor->tx_id = CAN_TX3_ID;
     else
-        bsp_error_handler(__FILE__, __LINE__, "rx id out of range");
+        bsp_error_handler(__FUNCTION__, __LINE__, "rx id out of range");
 }
 
 uint8_t get_motor_data(motor_t *motor) {
@@ -141,18 +141,18 @@ uint8_t get_motor_data(motor_t *motor) {
     switch (motor->can_id) {
         case CAN1_ID:
             if (!can1_read(motor->rx_id, buf)) {
-                bsp_error_handler(__FILE__, __LINE__, "CAN1_read failed");
+                bsp_error_handler(__FUNCTION__, __LINE__, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
             if (!can2_read(motor->rx_id, buf)) {
-                bsp_error_handler(__FILE__, __LINE__, "can2_read failed");
+                bsp_error_handler(__FUNCTION__, __LINE__, "can2_read failed");
                 return 0;
             }
             break;
         default:
-            bsp_error_handler(__FILE__, __LINE__, "CAN ID does not exist");
+            bsp_error_handler(__FUNCTION__, __LINE__, "CAN ID does not exist");
             return 0;
     }
     switch (motor->type) {
@@ -169,7 +169,7 @@ uint8_t get_motor_data(motor_t *motor) {
             get_2006_data(motor, buf);
             return 1;
         default:
-            bsp_error_handler(__FILE__, __LINE__, "motor type does not exist");
+            bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not exist");
             return 0;
     }
 }
@@ -203,7 +203,7 @@ int16_t get_motor_angle(motor_t *motor) {
         case M2006:
             return motor->as.m2006.angle;
         default:
-            bsp_error_handler(__FILE__, __LINE__, "motor type does not support angle attribute");
+            bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
             return 0;
     }
 }
@@ -224,7 +224,7 @@ int16_t get_angle_err(motor_t *motor, int16_t target) {
             diff = target - motor->as.m2006.angle;
             return clip(diff, ANGLE_RANGE_2006);
         default:
-            bsp_error_handler(__FILE__, __LINE__, "motor type does not support angle attribute");
+            bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
             return 0;
     }
 }
@@ -240,7 +240,7 @@ int16_t clip_angle_err(motor_t *motor, int16_t err) {
         case M2006:
             return clip(err, ANGLE_RANGE_2006);
         default:
-            bsp_error_handler(__FILE__, __LINE__, "motor type does not support angle attribute");
+            bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
             return 0;
     }
 }
@@ -252,7 +252,7 @@ int16_t get_speed_err(motor_t *motor, int16_t target) {
         case M2006:
             return target - motor->as.m2006.speed_rpm;
         default:
-            bsp_error_handler(__FILE__, __LINE__, "motor type does not support speed attribute");
+            bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support speed attribute");
             return 0;
     }
 }
@@ -268,7 +268,7 @@ uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
         (motor2 && (!match_id(&tx_id, motor2->tx_id) || !match_id(&can_id, motor2->can_id))) ||
         (motor3 && (!match_id(&tx_id, motor3->tx_id) || !match_id(&can_id, motor3->can_id))) ||
         (motor4 && (!match_id(&tx_id, motor4->tx_id) || !match_id(&can_id, motor4->can_id)))) {
-        bsp_error_handler(__FILE__, __LINE__, "motor can / tx id not matched");
+        bsp_error_handler(__FUNCTION__, __LINE__, "motor can / tx id not matched");
         return 0;
     }
 
@@ -285,7 +285,7 @@ uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
             can2_transmit(tx_id, sp1, sp2, sp3, sp4);
             break;
         default:
-            bsp_error_handler(__FILE__, __LINE__, "can id does not exist");
+            bsp_error_handler(__FUNCTION__, __LINE__, "can id does not exist");
             return 0;
     }
 

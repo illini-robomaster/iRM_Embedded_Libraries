@@ -16,11 +16,11 @@ static uint8_t mpu_tx, mpu_rx;
 
 uint8_t onboard_imu_init(void) {
     if (mpu6500_init() == 0) {
-        bsp_error_handler(__FILE__, __LINE__, "MPU6500 init failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "MPU6500 init failed.");
         return 0;
     }
     if (ist8310_init() == 0) {
-        bsp_error_handler(__FILE__, __LINE__, "IST8310 init failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "IST8310 init failed.");
         return 0;
     }
     return 1;
@@ -28,7 +28,7 @@ uint8_t onboard_imu_init(void) {
 
 void mpu6500_get_data(imu_t* imu) {
     if (imu == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Invalid imu object.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid imu object.");
         return;
     }
     uint8_t mpu_rx_buff[ONBOARD_IMU_BUFFER];
@@ -55,7 +55,7 @@ void mpu6500_get_data(imu_t* imu) {
 
 void ist8310_get_data(imu_t* imu) {
     if (imu == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Invalid imu object.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid imu object.");
         return;
     }
     uint8_t ist_buff[6];
@@ -67,7 +67,7 @@ void ist8310_get_data(imu_t* imu) {
 
 void print_mpu_data(imu_t* imu) {
     if (imu == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Invalid imu object.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid imu object.");
         return;
     }
     mpu6500_get_data(imu);
@@ -88,7 +88,7 @@ static uint8_t mpu6500_init(void) {
     mpu6500_write_reg(MPU6500_SIGNAL_PATH_RESET, 0x07);
     HAL_Delay(100);
     if (MPU6500_ID != mpu6500_read_reg(MPU6500_WHO_AM_I)) {
-        bsp_error_handler(__FILE__, __LINE__, "MPU6500 ID does not match.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "MPU6500 ID does not match.");
         return 0;
     }
     uint8_t MPU6500_Init_Data[7][2] = {
@@ -156,7 +156,7 @@ static uint8_t ist8310_init(void) {
     HAL_Delay(10);
     // Check IST id
     if(IST8310_DEVICE_ID_A != ist8310_read_reg(IST8310_WHO_AM_I)) {
-        bsp_error_handler(__FILE__, __LINE__, "IST8310 ID does not match.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "IST8310 ID does not match.");
         return 0;
     }
     // Reset ist8310
@@ -165,28 +165,28 @@ static uint8_t ist8310_init(void) {
     // Config as ready mode to access reg
     ist8310_write_reg(IST8310_R_CONFA, 0x00);
     if(ist8310_read_reg(IST8310_R_CONFA) != 0x00) {
-        bsp_error_handler(__FILE__, __LINE__, "IST ready mode failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "IST ready mode failed.");
         return 0;
     }
     HAL_Delay(10);
     // Normal state, no int
     ist8310_write_reg(IST8310_R_CONFB, 0x00);
     if(ist8310_read_reg(IST8310_R_CONFB) != 0x00) {
-        bsp_error_handler(__FILE__, __LINE__, "IST normal state init failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "IST normal state init failed.");
         return 0;
     }
     HAL_Delay(10);
     // Config low noise mode, x,y,z axis 16 time 1 avg,
     ist8310_write_reg(IST8310_AVGCNTL, 0x24); // 100100
     if(ist8310_read_reg(IST8310_AVGCNTL) != 0x24) {
-        bsp_error_handler(__FILE__, __LINE__, "IST low noise mode failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "IST low noise mode failed.");
         return 0;
     }
     HAL_Delay(10);
     // Set/Reset pulse duration setup, normal mode
     ist8310_write_reg(IST8310_PDCNTL, 0xC0);
     if(ist8310_read_reg(IST8310_PDCNTL) != 0xC0) {
-        bsp_error_handler(__FILE__, __LINE__, "IST pulse duration set failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "IST pulse duration set failed.");
         return 0;
     }
     HAL_Delay(10);
