@@ -6,8 +6,8 @@
  * @log     2018-04-17 nickelliang
  */
 
-#ifndef _TEST_BSP_DBUS_H_
-#define _TEST_BSP_DBUS_H_
+#ifndef _TEST_DBUS_H_
+#define _TEST_DBUS_H_
 
 #include "dbus.h"
 #include "bsp_print.h"

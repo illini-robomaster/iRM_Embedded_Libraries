@@ -24,6 +24,7 @@
 #include "bsp_gpio.h"
 #include "bsp_led.h"
 #include "bsp_uart.h"
+#include "bsp_imu.h"
 
 /**
  * Initialize peripherals before get into RTOS
@@ -39,6 +40,7 @@ extern inline void RM_Main_Init(void) {
     can2_init();
     gpio_interrupt_init();
     dbus_init();
+    onboard_imu_init();
 
     /* Indicate successfully initialized */
     led_red_on();
