@@ -13,8 +13,6 @@
 #define RESET_IST           HAL_GPIO_WritePin(GPIOE, IST_RST_Pin, GPIO_PIN_SET)
 
 static uint8_t mpu_tx, mpu_rx;
-static uint8_t mpu_tx_buff[ONBOARD_IMU_BUFFER];
-static uint8_t mpu_rx_buff[ONBOARD_IMU_BUFFER];
 
 uint8_t onboard_imu_init(void) {
     if (mpu6500_init() == 0) {
@@ -33,24 +31,28 @@ void mpu6500_get_data(imu_t* imu) {
         bsp_error_handler(__FILE__, __LINE__, "Invalid imu object.");
         return;
     }
+    uint8_t mpu_rx_buff[ONBOARD_IMU_BUFFER];
     /* Must read 14 regs all together */
     mpu6500_read_regs(MPU6500_ACCEL_XOUT_H, mpu_rx_buff, ONBOARD_IMU_BUFFER);
 
-    int16_t imu_acce_x_raw = (int16_t)(mpu_rx_buff[0]<<8 | mpu_rx_buff[1]);
-    int16_t imu_acce_y_raw = (int16_t)(mpu_rx_buff[2]<<8 | mpu_rx_buff[3]);
-    int16_t imu_acce_z_raw = (int16_t)(mpu_rx_buff[4]<<8 | mpu_rx_buff[5]);
-    int16_t imu_temp_raw   = (int16_t)(mpu_rx_buff[6]<<8 | mpu_rx_buff[7]);
-    int16_t imu_gyro_x_raw = (int16_t)(mpu_rx_buff[8]<<8 | mpu_rx_buff[9]);
-    int16_t imu_gyro_y_raw = (int16_t)(mpu_rx_buff[10]<<8 | mpu_rx_buff[11]);
-    int16_t imu_gyro_z_raw = (int16_t)(mpu_rx_buff[12]<<8 | mpu_rx_buff[13]);
+    float acce_factor = 4096.0;
+    int16_t imu_acce_x_raw = (int16_t)(mpu_rx_buff[0] << 8 | mpu_rx_buff[1]);
+    int16_t imu_acce_y_raw = (int16_t)(mpu_rx_buff[2] << 8 | mpu_rx_buff[3]);
+    int16_t imu_acce_z_raw = (int16_t)(mpu_rx_buff[4] << 8 | mpu_rx_buff[5]);
+    imu->acce.x = (float)(imu_acce_x_raw / acce_factor);
+    imu->acce.y = (float)(imu_acce_y_raw / acce_factor);
+    imu->acce.z = (float)(imu_acce_z_raw / acce_factor);
 
-    imu->acce.x = (float)(imu_acce_x_raw / ONBOARD_ACCE_FACTOR);
-    imu->acce.y = (float)(imu_acce_y_raw / ONBOARD_ACCE_FACTOR);
-    imu->acce.z = (float)(imu_acce_z_raw / ONBOARD_ACCE_FACTOR);
+    int16_t imu_temp_raw   = (int16_t)(mpu_rx_buff[6] << 8 | mpu_rx_buff[7]);
     imu->temp   = (float)(((imu_temp_raw - ONBOARD_TEMP_OFFSET) / ONBOARD_TEMP_FACTOR) + ONBOARD_TEMP_ROOM);  // Eq in register map p33
-    imu->gyro.x = (float)(imu_gyro_x_raw / ONBOARD_GYRO_FACTOR);
-    imu->gyro.y = (float)(imu_gyro_y_raw / ONBOARD_GYRO_FACTOR);
-    imu->gyro.z = (float)(imu_gyro_z_raw / ONBOARD_GYRO_FACTOR);
+
+    float gyro_factor = 16.4;
+    int16_t imu_gyro_x_raw = (int16_t)(mpu_rx_buff[8] << 8 | mpu_rx_buff[9]);
+    int16_t imu_gyro_y_raw = (int16_t)(mpu_rx_buff[10] << 8 | mpu_rx_buff[11]);
+    int16_t imu_gyro_z_raw = (int16_t)(mpu_rx_buff[12] << 8 | mpu_rx_buff[13]);
+    imu->gyro.x = (float)(imu_gyro_x_raw / gyro_factor);
+    imu->gyro.y = (float)(imu_gyro_y_raw / gyro_factor);
+    imu->gyro.z = (float)(imu_gyro_z_raw / gyro_factor);
 }
 
 void ist8310_get_data(imu_t* imu) {
@@ -72,16 +74,17 @@ void print_mpu_data(imu_t* imu) {
     }
     mpu6500_get_data(imu);
     print("[DECODED MPU] ");
-    print("Acce X %f \tY %f \tZ %f \t| ", imu->acce.x, imu->acce.y, imu->acce.z);
-    print("Gyro X %f \tY %f \tZ %f \t| ", imu->gyro.x, imu->gyro.y, imu->gyro.z);
+    print("Acce X %f \tY %f \t", imu->acce.x, imu->acce.y);
+    print("Z %f \t| ", imu->acce.z);
+    print("Gyro X %f \tY %f \t", imu->gyro.x, imu->gyro.y);
+    print("Z %f \t| ", imu->gyro.z);
     print("Temp %f\r\n", imu->temp);
 }
 
 /* Static function for MPU6500 */
 static uint8_t mpu6500_init(void) {
-    RESET_IST;
     // Reset the internal registers
-    mpu6500_write_reg(MPU6500_PWR_MGMT_1, ONBOARD_IMU_READ);
+    mpu6500_write_reg(MPU6500_PWR_MGMT_1, 0x80);
     HAL_Delay(100);
     // Reset gyro/accel/temp digital signal path
     mpu6500_write_reg(MPU6500_SIGNAL_PATH_RESET, 0x07);
@@ -100,7 +103,7 @@ static uint8_t mpu6500_init(void) {
         {MPU6500_USER_CTRL,      0x20},      // Enable the I2C Master I/F module, pins ES_DA and ES_SCL are isolated from pins SDA/SDI and SCL/SCLK.
     };
     uint8_t index = 0;
-    for(index = 0; index < 10; index++) {
+    for(index = 0; index < 7; index++) {
         mpu6500_write_reg(MPU6500_Init_Data[index][0], MPU6500_Init_Data[index][1]);
         HAL_Delay(1);
     }
@@ -109,7 +112,7 @@ static uint8_t mpu6500_init(void) {
 
 static uint8_t mpu6500_write_reg(uint8_t const reg, uint8_t const data) {
     ONBOARD_NSS_LOW;
-    mpu_tx = reg & ONBOARD_IMU_WRITE;
+    mpu_tx = reg & 0x7f;
     HAL_SPI_TransmitReceive(&ONBOARD_IMU_SPI, &mpu_tx, &mpu_rx, 1, ONBOARD_IMU_TIMEOUT);
     mpu_tx = data;
     HAL_SPI_TransmitReceive(&ONBOARD_IMU_SPI, &mpu_tx, &mpu_rx, 1, ONBOARD_IMU_TIMEOUT);
@@ -119,7 +122,7 @@ static uint8_t mpu6500_write_reg(uint8_t const reg, uint8_t const data) {
 
 static uint8_t mpu6500_read_reg(uint8_t const reg) {
     ONBOARD_NSS_LOW;
-    mpu_tx = reg | ONBOARD_IMU_READ;
+    mpu_tx = reg | 0x80;
     HAL_SPI_TransmitReceive(&ONBOARD_IMU_SPI, &mpu_tx, &mpu_rx, 1, ONBOARD_IMU_TIMEOUT);
     HAL_SPI_TransmitReceive(&ONBOARD_IMU_SPI, &mpu_tx, &mpu_rx, 1, ONBOARD_IMU_TIMEOUT);
     ONBOARD_NSS_HIGH;
@@ -127,8 +130,9 @@ static uint8_t mpu6500_read_reg(uint8_t const reg) {
 }
 
 static uint8_t mpu6500_read_regs(uint8_t const reg_addr, uint8_t* data, uint8_t len) {
+    uint8_t mpu_tx_buff[ONBOARD_IMU_BUFFER] = {0xFF};
     ONBOARD_NSS_LOW;
-    mpu_tx = reg_addr | ONBOARD_IMU_READ;
+    mpu_tx = reg_addr | 0x80;
     mpu_tx_buff[0] = mpu_tx;
     HAL_SPI_TransmitReceive(&ONBOARD_IMU_SPI, &mpu_tx, &mpu_rx, 1, ONBOARD_IMU_TIMEOUT);
     HAL_SPI_TransmitReceive(&ONBOARD_IMU_SPI, mpu_tx_buff, data, len, ONBOARD_IMU_TIMEOUT);
@@ -142,12 +146,12 @@ static uint8_t ist8310_init(void) {
     mpu6500_write_reg(MPU6500_USER_CTRL, 0x30);
     HAL_Delay(10);
     // I2C master clock 400kHz
-    mpu6500_write_reg(MPU6500_I2C_MST_CTRL, 0x0d);
+    mpu6500_write_reg(MPU6500_I2C_MST_CTRL, 0x0D);
     HAL_Delay(10);
     // Turn on slave 1 for ist write and slave 4 for ist read
     mpu6500_write_reg(MPU6500_I2C_SLV1_ADDR, IST8310_ADDRESS); // Write from slave 1
     HAL_Delay(10);
-    mpu6500_write_reg(MPU6500_I2C_SLV4_ADDR, ONBOARD_IMU_READ | IST8310_ADDRESS); // Read from slave 4
+    mpu6500_write_reg(MPU6500_I2C_SLV4_ADDR, 0x80 | IST8310_ADDRESS); // Read from slave 4
     HAL_Delay(10);
     // reset ist8310
     ist8310_write_reg(IST8310_R_CONFB, 0x01);
@@ -202,7 +206,7 @@ static uint8_t ist8310_init(void) {
 static uint8_t ist8310_read_reg(uint8_t addr) {
     mpu6500_write_reg(MPU6500_I2C_SLV4_REG, addr);
     HAL_Delay(10);
-    mpu6500_write_reg(MPU6500_I2C_SLV4_CTRL, ONBOARD_IMU_READ);
+    mpu6500_write_reg(MPU6500_I2C_SLV4_CTRL, 0x80);
     HAL_Delay(10);
     uint8_t data = mpu6500_read_reg(MPU6500_I2C_SLV4_DI);
     mpu6500_write_reg(MPU6500_I2C_SLV4_CTRL, 0x00);     // Turn off slave4 after read
@@ -218,7 +222,7 @@ static uint8_t ist8310_write_reg(uint8_t addr, uint8_t data) {
     mpu6500_write_reg(MPU6500_I2C_SLV1_DO, data);
     HAL_Delay(2);
     // Turn on slave 1 with one byte transmitting
-    mpu6500_write_reg(MPU6500_I2C_SLV1_CTRL, ONBOARD_IMU_READ | 0x01);
+    mpu6500_write_reg(MPU6500_I2C_SLV1_CTRL, 0x80 | 0x01);
     HAL_Delay(10);
     return 1;
 }
@@ -232,7 +236,7 @@ static void mpu_read_ist_config(uint8_t device_address, uint8_t reg_base_addr, u
     mpu6500_write_reg(MPU6500_I2C_SLV1_DO, IST8310_ODR_MODE);
     HAL_Delay(2);
     // Use slave 0 to read data automatically
-    mpu6500_write_reg(MPU6500_I2C_SLV0_ADDR, ONBOARD_IMU_READ | device_address);
+    mpu6500_write_reg(MPU6500_I2C_SLV0_ADDR, 0x80 | device_address);
     HAL_Delay(2);
     mpu6500_write_reg(MPU6500_I2C_SLV0_REG, reg_base_addr);
     HAL_Delay(2);
@@ -243,9 +247,9 @@ static void mpu_read_ist_config(uint8_t device_address, uint8_t reg_base_addr, u
     mpu6500_write_reg(MPU6500_I2C_MST_DELAY_CTRL, 0x01 | 0x02);
     HAL_Delay(2);
     // Enable slave 1 auto transmit
-    mpu6500_write_reg(MPU6500_I2C_SLV1_CTRL, ONBOARD_IMU_READ | 0x01);
+    mpu6500_write_reg(MPU6500_I2C_SLV1_CTRL, 0x80 | 0x01);
     HAL_Delay(6); // Wait 6ms (minimum waiting time for 16 times internal average setup)
     // Enable slave 0 with data_num bytes reading
-    mpu6500_write_reg(MPU6500_I2C_SLV0_CTRL, ONBOARD_IMU_READ | data_num);
+    mpu6500_write_reg(MPU6500_I2C_SLV0_CTRL, 0x80 | data_num);
     HAL_Delay(2);
 }

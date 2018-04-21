@@ -25,7 +25,7 @@
 #define TEST_DBUS       OFF
 #define TEST_BSP_CAN    OFF
 #define TEST_SERVO      OFF
-#define TEST_BSP_IMU    OFF
+#define TEST_BSP_IMU    ON
 #define TEST_IMU        OFF
 
 /* TODO: test case not finished yet */

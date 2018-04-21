@@ -14,7 +14,10 @@
 #include "bsp_config.h"
 #include "data_process.h"
 
-#define REFEREE_SOF 0xA5
+#define REFEREE_SOF         0xA5
+#define REFEREE_PORT        BSP_REFEREE_PORT
+#define REFEREE_FIFO_SIZE   BSP_REFEREE_MAX_LEN
+#define REFEREE_BUFF_SIZE   BSP_REFEREE_MAX_LEN
 
 typedef enum {
     CMD_GAME_ROBOT_INFO     = 0x0001,
@@ -158,12 +161,23 @@ typedef struct {
 /**
  * Initialize referee system dma
  *
+ * @param  source   A valid data process instance
  * @return 1 for success, 0 for error
  * @author Nickel_Liang
  * @date   2018-04-19
  * @note   Since referee system tx and rx will take a relatively long period of time, consider put init / pack / unpack into a thread.
  */
-uint8_t referee_init(void);
+uint8_t referee_init(data_process_t* source);
 
+/**
+ * Referee data dispatcher. Used by data process lib.
+ *
+ * @param  referee    A valid referee structure
+ * @param  source     A valid data process instance
+ * @return            1 for success, 0 for failed
+ * @author Nickel_Liang
+ * @date   2018-04-21
+ */
+uint8_t referee_dispatcher(referee_t* referee, data_process_t* source)
 
 #endif

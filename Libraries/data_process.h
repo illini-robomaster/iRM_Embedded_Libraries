@@ -31,7 +31,7 @@
  *  FrameTail   2B CRC16
  */
 
-typedef struct {
+typedef struct _data_process {
     /* Commonly used */
     UART_HandleTypeDef* huart;  // Which UART data is comming from
     fifo_s_t*   data_fifo;      // FIFO to store data into
@@ -41,7 +41,7 @@ typedef struct {
     uint16_t    read_index;     // Where we left last time
     /* Used in fifo_to_struct */
     void*       source_struct;  // Used by dispatcher. = target_struct
-    uint8_t     (*dispatcher)(void* target_struct, uint8_t* buffer);
+    uint8_t     (*dispatcher)(void* target_struct, struct _data_process* source);
     uint8_t     sof;            // Start of frame
     uint8_t*    frame_packet;   // Contain one frame of data. Same length as fifo
     uint16_t    data_len;       // Store the data length got from header
@@ -58,11 +58,11 @@ typedef struct {
  * @param  sof           SOF of UART
  * @param  dispatcher    Function pointer to appropriate dispatcher
  * @param  source_struct Struct of the source
- * @return               A data process instance
+ * @return               A data process instance, NULL if failed
  * @author Nickel_Liang
  * @date   2018-04-20
  */
-data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void *, uint8_t *), void* source_struct);
+data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void *, data_process_t *), void* source_struct);
 
 /**
  * Convert DMA double buffer to FIFO. This can improve data retrive efficiency

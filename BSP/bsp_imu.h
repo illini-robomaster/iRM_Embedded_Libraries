@@ -24,8 +24,6 @@
 #define ONBOARD_IMU_SPI     hspi5
 #define ONBOARD_IMU_TIMEOUT 55
 #define ONBOARD_IMU_BUFFER  14
-#define ONBOARD_IMU_WRITE   0x7f
-#define ONBOARD_IMU_READ    0x80
 #define ONBOARD_ACCE_FACTOR 4096.0f // Check datasheet, 8g = 4096
 #define ONBOARD_TEMP_ROOM   21      // Roomtemp
 #define ONBOARD_TEMP_OFFSET 0

@@ -8,7 +8,7 @@
 
 #include "data_process.h"
 
-data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void *, uint8_t *), void* source_struct) {
+data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void*, data_process_t*), void* source_struct) {
     if ((huart == NULL) || (mutex == NULL) || (buffer_size == 0) || (fifo_size == 0) || (dispatcher == NULL) || (source_struct == NULL)) {
         bsp_error_handler(__FILE__, __LINE__, "Invalid parameter.");
         return NULL;
@@ -137,7 +137,7 @@ uint8_t fifo_to_struct(data_process_t* source) {
         byte = fifo_s_peek(source->data_fifo, 0); // Peek head
         if (byte == source->sof)    // If head is start of frame
             if (process_frame(source) && process_header(source)) {
-                source->dispatcher(source->source_struct, source->frame_packet);
+                source->dispatcher(source->source_struct, source);
                 return 1;
             }
         else
