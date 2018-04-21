@@ -47,6 +47,15 @@ extern imu_onboard_t imuBoard;
 void print_imu_data(void);
 
 /**
+ * Print accelerometer, gyroscope, temp data
+ *
+ * @param  imu        A valid imu object
+ * @author Nickel_Liang
+ * @date   2018-04-21
+ */
+void print_mpu_data(imu_t* imu);
+
+/**
  * get current yaw angle for chassis
  * @brief
  * @return  current yaw angle for chassis in degree (without wrap around. E.g., you may get 370)

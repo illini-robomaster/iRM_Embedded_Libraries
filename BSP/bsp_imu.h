@@ -80,15 +80,6 @@ void mpu6500_get_data(imu_t* imu);
 void ist8310_get_data(imu_t* imu);
 
 /**
- * Print accelerometer, gyroscope, temp data
- *
- * @param  imu        A valid imu object
- * @author Nickel_Liang
- * @date   2018-04-21
- */
-void print_mpu_data(imu_t* imu);
-
-/**
  * Initialize MPU6500
  *
  * @return            1 for success, 0 for failed

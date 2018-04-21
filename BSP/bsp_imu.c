@@ -65,20 +65,6 @@ void ist8310_get_data(imu_t* imu) {
     imu->mag.z = (int16_t)(ist_buff[5]<<8 | ist_buff[4]);
 }
 
-void print_mpu_data(imu_t* imu) {
-    if (imu == NULL) {
-        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid imu object.");
-        return;
-    }
-    mpu6500_get_data(imu);
-    print("[DECODED MPU] ");
-    print("Acce X %f \tY %f \t", imu->acce.x, imu->acce.y);
-    print("Z %f \t| ", imu->acce.z);
-    print("Gyro X %f \tY %f \t", imu->gyro.x, imu->gyro.y);
-    print("Z %f \t| ", imu->gyro.z);
-    print("Temp %f\r\n", imu->temp);
-}
-
 /* Static function for MPU6500 */
 static uint8_t mpu6500_init(void) {
     // Reset the internal registers
