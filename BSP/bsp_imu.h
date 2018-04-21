@@ -16,6 +16,11 @@
 #include "spi.h"
 #include "main.h"
 
+/* Constants and Common Functions */
+#define RAD_2_DEG 57.29578
+#define DEG_2_RAD 0.017453
+#define MY_ABS(x) ((x>0) ? (x) : (-x))
+
 #define ONBOARD_IMU_SPI     hspi5
 #define ONBOARD_IMU_TIMEOUT 55
 #define ONBOARD_IMU_BUFFER  14

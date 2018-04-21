@@ -7,6 +7,7 @@
 #include "test_bsp_can.h"
 #include "test_servo.h"
 #include "test_bsp_imu.h"
+#include "test_imu.h"
 
 /* Test utility */
 #define PASS    1

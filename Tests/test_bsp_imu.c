@@ -8,11 +8,11 @@
 
 #include "test_bsp_imu.h"
 
-imu_t test_imu;
+imu_t test_my_bsp_imu;
 
 uint8_t test_bsp_imu(void) {
     for (size_t i = 0; i < IMU_TEST_COUNT; i++) {
-        print_mpu_data(&test_imu);
+        print_mpu_data(&test_my_bsp_imu);
     }
     return 1;
 }
