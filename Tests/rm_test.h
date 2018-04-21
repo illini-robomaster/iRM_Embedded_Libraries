@@ -25,6 +25,7 @@
 #define TEST_BSP_CAN    OFF
 #define TEST_SERVO      OFF
 #define TEST_BSP_IMU    OFF
+#define TEST_IMU        OFF
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -40,6 +41,8 @@ extern inline void run_all_tests() {
         test_servo();
     if (TEST_BSP_IMU == ON)
         TEST_OUTPUT("BSP IMU TEST", test_bsp_imu());
+    if (TEST_IMU == ON)
+        test_imu();
 }
 
 #endif
