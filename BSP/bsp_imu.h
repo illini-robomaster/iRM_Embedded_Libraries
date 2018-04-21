@@ -32,7 +32,7 @@ typedef struct {
         float x;
         float y;
         float z;
-    } acce;
+    } __packed acce;
     // In celcius
     float temp;
     // In degree
@@ -40,32 +40,14 @@ typedef struct {
         float x;
         float y;
         float z;
-    } gyro;
+    } __packed gyro;
     // Raw value of magnetomitor
     struct {
         uint16_t x;
         uint16_t y;
         uint16_t z;
-    } mag;
-    // struct {
-    //     float x; //pitch (to the left of DJI icon)
-    //     float y; //roll
-    //     float z; //yaw
-    //     float acc_x; //R to the left (roll)
-    //     float acc_y; //R to the lower (pitch)
-    //     float acc_z; //Z
-    //     float init_acc_x; //Initial angles based on accelerometer readings
-    //     float init_acc_y;
-    //     float init_acc_z;
-    // } corrected_angle_data;
-    //
-    // struct {
-    //     float pitch_bias;
-    //     float roll_bias;
-    //     float yaw_bias;
-    //     int sampling_count;
-    // } calibration;
-} imu_t;
+    } __packed mag;
+} __packed imu_t;
 
 /**
  * Initialize onboard imu
