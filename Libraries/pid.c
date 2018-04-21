@@ -3,6 +3,22 @@
 #include "bsp_error_handler.h"
 #include "rm_config.h"
 
+int16_t abs_limit(int16_t *data, int16_t lim) {
+    if (*data > lim)
+        *data = lim;
+    else if (*data < -lim)
+        *data = -lim;
+    return *data;
+}
+
+float fabs_limit(float *data, float lim) {
+    if (*data > lim)
+        *data = lim;
+    else if (*data < -lim)
+        *data = -lim;
+    return *data;
+}
+
 int16_t get_prev_n_err(pid_ctl_t *pid, uint8_t n) {
     return pid->err[(pid->idx + HISTORY_DATA_SIZE - n) % HISTORY_DATA_SIZE];
 }
@@ -11,11 +27,23 @@ float position_pid_calc(pid_ctl_t *pid) {
     int16_t err_now     = pid->err[pid->idx];
     int16_t err_last    = get_prev_n_err(pid, 1);
 
+    if (abs(err_now) < pid->int_rng)
+        pid->integrator += err_now;
+    if (pid->int_lim)
+        abs_limit(&pid->integrator, pid->int_lim);
+    
     float pout = pid->kp * err_now;
-    float iout = pid->ki * (pid->integrator += err_now);
+    float iout = pid->ki * pid->integrator;
     float dout = pid->kd * (err_now - err_last) / pid->dt;
 
-    return pout + iout + dout;
+    if (err_now - err_last > pid->max_derr)
+        dout = 0;
+
+    float final_out = pout + iout + dout;
+    if (pid->maxout)
+        fabs_limit(&final_out, pid->maxout);
+
+    return final_out;
 }
 
 void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
@@ -25,14 +53,18 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 }
 
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
-        float kp, float ki, float kd,
-        float low_lim, float high_lim, float deadband, float dt) {
+        int16_t low_lim, int16_t  high_lim, int16_t int_lim, int16_t int_rng, int16_t max_derr,
+        float kp, float ki, float kd, float maxout, float deadband, float dt) {
     pid->mode       = mode;
     pid->motor      = motor;
     pid->deadband   = deadband;
     pid->dt         = dt;
     pid->low_lim    = low_lim;
     pid->high_lim   = high_lim;
+    pid->int_lim    = int_lim;
+    pid->int_rng    = int_rng;
+    pid->max_derr   = max_derr;
+    pid->maxout     = maxout;
     pid->idx        = 0;
     pid->integrator = 0;
     pid_set_param(pid, kp, ki, kd);
