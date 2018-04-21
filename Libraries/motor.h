@@ -179,6 +179,10 @@ typedef struct {
     float           out;
 }   motor_t;
 
+/**************************************************************************
+ *                      Private Function Stars Here                       *
+ **************************************************************************/
+
 /**
  * Print out 3508 data
  *
@@ -186,7 +190,7 @@ typedef struct {
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_3508_data(motor_t *motor);
+static void print_3508_data(motor_t *motor);
 
 /**
  * Print out 6623 data
@@ -195,7 +199,7 @@ void print_3508_data(motor_t *motor);
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_6623_data(motor_t *motor);
+static void print_6623_data(motor_t *motor);
 
 /**
  * Print out 3510 data
@@ -204,7 +208,7 @@ void print_6623_data(motor_t *motor);
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_3510_data(motor_t *motor);
+static void print_3510_data(motor_t *motor);
 
 /**
  * Print out 2006 data
@@ -213,7 +217,84 @@ void print_3510_data(motor_t *motor);
  * @author Nickel_Liang
  * @date   2018-04-17
  */
-void print_2006_data(motor_t *motor);
+static void print_2006_data(motor_t *motor);
+
+/**
+ * @brief get 3508 motor from a raw data buffer read from CAN
+ * @param motor                 motor data
+ * @param buf[CAN_DATA_SIZE]    data buffer
+ * @return none
+ */
+static void get_3508_data(motor_t* motor, uint8_t buf[CAN_DATA_SIZE]);
+
+/**
+ * @brief get 3508 motor from a raw data buffer read from CAN
+ * @param motor                 motor data
+ * @param buf[CAN_DATA_SIZE]    data buffer
+ * @return none
+ */
+static void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]);
+
+/**
+ * @brief get 6623 motor from a raw data buffer read from CAN
+ * @param motor                 motor data
+ * @param buf[CAN_DATA_SIZE]    data buffer
+ * @return none
+ */
+static void get_3510_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]);
+
+/**
+ * @brief get 3510 motor from a raw data buffer read from CAN
+ * @param motor                 motor data
+ * @param buf[CAN_DATA_SIZE]    data buffer
+ * @return none
+ */
+static void get_2006_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]);
+
+/**
+ * @brief get 2006 motor from a raw data buffer read from CAN
+ * @param motor                 motor data
+ * @param buf[CAN_DATA_SIZE]    data buffer
+ * @return none
+ */
+
+/**
+ * @brief helper function for matching a sequnce of id
+ * @param old_id previously matched id (points to a value of 0 if no previous id)
+ * @param new_id new id to be compared
+ * @return 1 if either id matches or previous id does not exist, otherwise 0
+ */
+static uint8_t match_id(uint16_t *old_id, uint16_t new_id);
+
+/**
+ * @brief helper function for clipping value into [-range, range]
+ * @param val   value to be clipped
+ * @param range maximum absolute range
+ * @return the clipped value
+ */
+static int16_t clip(int16_t val, int16_t range);
+
+/**
+ * @brief limit current output to prevent from buring the motor
+ * @param val   current output value
+ * @param low   lower limit
+ * @param high  upper limit
+ * @return clipped current output 
+ */
+static int16_t current_limit(float val, int16_t low, int16_t high);
+
+/**
+ * @brief correct motor output direction given the specification of a motor type
+ * @note the corrected positive direction is defined to be CCW
+ * @param motor motor variable which contains the output to be corrected
+ * @return the corrected motor output value
+ */
+static int16_t correct_output(motor_t *motor);
+
+
+/**************************************************************************
+ *                       Public Function Stars Here                       *
+ **************************************************************************/
 
 /**
  * @brief initialize generic motor variable with specific sensor id and can id

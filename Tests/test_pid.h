@@ -6,12 +6,12 @@
 
 void test_pid();
 
-void test_pid_3508();
+void test_yaw();
 
-void test_pid_6623();
+void test_pitch();
 
-void test_pid_2006();
+void test_chassis();
 
-void test_pid_3510();
+void test_poke();
 
 #endif

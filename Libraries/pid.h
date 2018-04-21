@@ -7,16 +7,16 @@
 #ifndef _PID_H_
 #define _PID_H_
 
+#include "stm32f4xx_hal.h"
+#include <math.h>
+#include "motor.h"
+#include <stdlib.h>
+
 /**
  * @ingroup library
  * @defgroup pid PID
  * @{
  */
-
-#include "stm32f4xx_hal.h"
-#include <math.h>
-#include "motor.h"
-#include <stdlib.h>
 
 #define HISTORY_DATA_SIZE 4
 
@@ -42,33 +42,38 @@ typedef enum {
  * @var kp          proportional constant
  * @var ki          integrative constant
  * @var kd          differentiative constant
- * @var integrator  error integrator
- * @var deadband    convergence condition (e.g. we consider target value achieved
- *                  when |err| < deadband)
+ * @var maxout      maximum output
  * @var dt          time period of a pid calculation cycle in millisecond
  * @var mode        pid mode
  * @var motor       motor associated with this pid controller
  * @var err         a circular buffer for both latest and previous error value
  * @var idx         latest read index
+ * @var integrator  error integrator
  * @var low_lim     lower limit for target value
  * @var high_lim    upper limit for target value
+ * @var int_lim     integration limit
+ * @var int_rng     integration range (integrator won't change out side the range)
+ * @var max_derr    maximum error derivative (prevent discontinuity in set point sudden jump)
  */
 typedef struct {
     float   kp;
     float   ki;
     float   kd;
-    float   integrator;
-    float   deadband;
+    float   maxout;
     float   dt;
 
     pid_mode_t  mode;
     motor_t     *motor;
 
-    int16_t err[HISTORY_DATA_SIZE];
     uint8_t idx;
+    int16_t err[HISTORY_DATA_SIZE];
+    int16_t integrator;
 
     int16_t     low_lim;
     int16_t     high_lim;
+    int16_t     int_lim;
+    int16_t     int_rng;
+    int16_t     max_derr;
 }   pid_ctl_t;
 
 /**
@@ -76,17 +81,20 @@ typedef struct {
  * @param pid       pid controller pointer
  * @param mode      pid control mode
  * @param motor     associated motor instance
+ * @param low_lim   target lower limit
+ * @param high_lim  target upper limit
+ * @param int_lim   integration limit [set to 0 to disable]
+ * @param int_rng   range for enabling integration [set to 0 to disable]
+ * @param max_derr  maximum error derivative [set to 0 to disable]
  * @param kp        proportional constant
  * @param ki        intergrative constant
  * @param kd        differentiative constant
- * @param low_lim   target lower limit
- * @param high_lim  target upper limit
- * @param deadband  convergence condition
+ * @param maxout    maximum final out put [set to 0 to disable]
  * @param dt        delta t in millisecond
  */
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor, 
-        float kp, float ki, float kd,
-        float low_lim, float high_lim, float deadband, float dt);
+        int16_t low_lim, int16_t high_lim, int16_t int_lim, int16_t int_rng, int16_t max_derr,
+        float kp, float ki, float kd, float maxout, float dt);
 
 /**
  * @brief calculate pid value and set output to the motor

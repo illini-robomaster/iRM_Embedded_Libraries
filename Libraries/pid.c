@@ -27,7 +27,7 @@ float position_pid_calc(pid_ctl_t *pid) {
     int16_t err_now     = pid->err[pid->idx];
     int16_t err_last    = get_prev_n_err(pid, 1);
 
-    if (abs(err_now) < pid->int_rng)
+    if (pid->int_rng && abs(err_now) < pid->int_rng)
         pid->integrator += err_now;
     if (pid->int_lim)
         abs_limit(&pid->integrator, pid->int_lim);
@@ -54,10 +54,9 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
         int16_t low_lim, int16_t  high_lim, int16_t int_lim, int16_t int_rng, int16_t max_derr,
-        float kp, float ki, float kd, float maxout, float deadband, float dt) {
+        float kp, float ki, float kd, float maxout, float dt) {
     pid->mode       = mode;
     pid->motor      = motor;
-    pid->deadband   = deadband;
     pid->dt         = dt;
     pid->low_lim    = low_lim;
     pid->high_lim   = high_lim;
