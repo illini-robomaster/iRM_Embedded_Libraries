@@ -178,6 +178,6 @@ uint8_t referee_init(data_process_t* source);
  * @author Nickel_Liang
  * @date   2018-04-21
  */
-uint8_t referee_dispatcher(referee_t* referee, data_process_t* source)
+uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct);
 
 #endif

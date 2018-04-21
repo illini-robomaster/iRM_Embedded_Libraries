@@ -18,6 +18,7 @@
 #include "bsp_buzzer.h"
 #include "bsp_led.h"
 #include "bsp_laser.h"
+#include "task_referee.h"
 
 /* RTOS includes */
 #include "FreeRTOS.h"
@@ -72,7 +73,7 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
  * @date    2018-04-13
  */
 extern inline void RM_RTOS_THREADS_Init(void) {
-    return;
+    referee_task_create();
 }
 
 /**

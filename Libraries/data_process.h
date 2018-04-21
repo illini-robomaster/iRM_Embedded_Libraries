@@ -31,6 +31,13 @@
  *  FrameTail   2B CRC16
  */
 
+/* Declare data_process_t */
+typedef struct _data_process data_process_t;
+
+/* Define dispatcher_func_t */
+typedef uint8_t (*dispatcher_func_t)(void* target_struct, data_process_t* process_struct);
+
+/* Define data_process_t */
 typedef struct _data_process {
     /* Commonly used */
     UART_HandleTypeDef* huart;  // Which UART data is comming from
@@ -41,12 +48,11 @@ typedef struct _data_process {
     uint16_t    read_index;     // Where we left last time
     /* Used in fifo_to_struct */
     void*       source_struct;  // Used by dispatcher. = target_struct
-    uint8_t     (*dispatcher)(void* target_struct, struct _data_process* source);
+    dispatcher_func_t dispatcher_func;  // A dispatcjer function pointer
     uint8_t     sof;            // Start of frame
     uint8_t*    frame_packet;   // Contain one frame of data. Same length as fifo
     uint16_t    data_len;       // Store the data length got from header
 } data_process_t;
-/* I regreted. I really should use C++ to write our lib... */
 
 /**
  * Initialize a data process instance for a UART port
@@ -62,7 +68,17 @@ typedef struct _data_process {
  * @author Nickel_Liang
  * @date   2018-04-20
  */
-data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void *, data_process_t *), void* source_struct);
+data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void* source_struct);
+
+/**
+ * Perform a rx data process sequence
+ *
+ * @param  source     A valid data process instance
+ * @return            1 for success, 0 for failed
+ * @author Nickel_Liang
+ * @date   2018-04-21
+ */
+uint8_t data_process_rx(data_process_t* source);
 
 /**
  * Convert DMA double buffer to FIFO. This can improve data retrive efficiency
@@ -72,7 +88,7 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
  * @author Nickel_Liang
  * @date   2018-04-19
  */
-uint8_t buffer_to_fifo(data_process_t* source);
+static uint8_t buffer_to_fifo(data_process_t* source);
 
 /**
  * Convert a FIFO to appropriate data structure
@@ -82,7 +98,7 @@ uint8_t buffer_to_fifo(data_process_t* source);
  * @author Nickel_Liang
  * @date   2018-04-20
  */
-uint8_t fifo_to_struct(data_process_t* source);
+static uint8_t fifo_to_struct(data_process_t* source);
 
 /**
  * Process a data header and perform CRC8 check

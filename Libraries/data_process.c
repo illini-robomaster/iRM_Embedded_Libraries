@@ -8,8 +8,8 @@
 
 #include "data_process.h"
 
-data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void*, data_process_t*), void* source_struct) {
-    if ((huart == NULL) || (mutex == NULL) || (buffer_size == 0) || (fifo_size == 0) || (dispatcher == NULL) || (source_struct == NULL)) {
+data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void* source_struct) {
+    if ((huart == NULL) || (mutex == NULL) || (buffer_size == 0) || (fifo_size == 0) || (dispatcher_func == NULL) || (source_struct == NULL)) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Invalid parameter.");
         return NULL;
     }
@@ -24,7 +24,7 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
     source->buff_size       = buffer_size;
     source->read_index      = 0;
     source->source_struct   = source_struct;
-    source->dispatcher      = dispatcher;
+    source->dispatcher_func = dispatcher_func;
     source->sof             = sof;
     source->data_len        = 0;
 
@@ -56,7 +56,19 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
     return source;
 }
 
-uint8_t buffer_to_fifo(data_process_t* source) {
+uint8_t data_process_rx(data_process_t* source) {
+    if (!buffer_to_fifo(source)) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Buffer to FIFO error.");
+        return 0;
+    }
+    if (!fifo_to_struct(source)) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "FIFO to struct error.");
+        return 0;
+    }
+    return 1;
+}
+
+static uint8_t buffer_to_fifo(data_process_t* source) {
     if (source == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Invalid parameter.");
         return 0;
@@ -130,14 +142,14 @@ uint8_t buffer_to_fifo(data_process_t* source) {
     return 1;
 }
 
-uint8_t fifo_to_struct(data_process_t* source) {
+static uint8_t fifo_to_struct(data_process_t* source) {
     uint8_t byte = 0;
     uint8_t func_ret = 0;
     while (!fifo_is_empty(source->data_fifo)) {
         byte = fifo_s_peek(source->data_fifo, 0); // Peek head
         if (byte == source->sof)    // If head is start of frame
             if (process_frame(source) && process_header(source)) {
-                source->dispatcher(source->source_struct, source);
+                source->dispatcher_func(source->source_struct, source);
                 return 1;
             }
         else
