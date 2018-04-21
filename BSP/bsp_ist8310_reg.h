@@ -28,7 +28,7 @@ typedef enum {
     IST8310_R_CONFA            = 0x0A,
     IST8310_R_CONFB            = 0x0B,
     IST8310_ADDRESS            = 0x0E,
-    IST8310_DEVICE_ID_A        = 0x10,
+    IST8310_DEVICE_ID_A        = 0x00,  // Previously 0x10
     IST8310_AVGCNTL            = 0x41,
     IST8310_PDCNTL             = 0x42,
 } IST8310_REG;

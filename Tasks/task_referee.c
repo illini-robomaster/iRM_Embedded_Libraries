@@ -8,13 +8,13 @@
 //
 // #include "task_referee.h"
 //
-// static osMutexId referee_rx_mutex;
-// static osMutexId referee_tx_mutex;
-// static osEvent referee_event;
-// static data_process_t referee_process;
+// static osMutexId        referee_rx_mutex;
+// static osMutexId        referee_tx_mutex;
+// static osEvent          referee_event;
+// static data_process_t   referee_process;
 //
-// referee_t referee_info;
-// TaskHandle_t referee_task_handle;
+// referee_t       referee_info;
+// TaskHandle_t    referee_task_handle;
 //
 // uint8_t referee_task_init(void) {
 //     /* Create rx mutex */

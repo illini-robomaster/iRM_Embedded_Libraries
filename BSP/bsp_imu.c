@@ -35,24 +35,22 @@ void mpu6500_get_data(imu_t* imu) {
     /* Must read 14 regs all together */
     mpu6500_read_regs(MPU6500_ACCEL_XOUT_H, mpu_rx_buff, ONBOARD_IMU_BUFFER);
 
-    float acce_factor = 4096.0;
     int16_t imu_acce_x_raw = (int16_t)(mpu_rx_buff[0] << 8 | mpu_rx_buff[1]);
     int16_t imu_acce_y_raw = (int16_t)(mpu_rx_buff[2] << 8 | mpu_rx_buff[3]);
     int16_t imu_acce_z_raw = (int16_t)(mpu_rx_buff[4] << 8 | mpu_rx_buff[5]);
-    imu->acce.x = (float)(imu_acce_x_raw / acce_factor);
-    imu->acce.y = (float)(imu_acce_y_raw / acce_factor);
-    imu->acce.z = (float)(imu_acce_z_raw / acce_factor);
+    imu->acce.x = (float)(imu_acce_x_raw / ONBOARD_ACCE_FACTOR);
+    imu->acce.y = (float)(imu_acce_y_raw / ONBOARD_ACCE_FACTOR);
+    imu->acce.z = (float)(imu_acce_z_raw / ONBOARD_ACCE_FACTOR);
 
     int16_t imu_temp_raw   = (int16_t)(mpu_rx_buff[6] << 8 | mpu_rx_buff[7]);
     imu->temp   = (float)(((imu_temp_raw - ONBOARD_TEMP_OFFSET) / ONBOARD_TEMP_FACTOR) + ONBOARD_TEMP_ROOM);  // Eq in register map p33
 
-    float gyro_factor = 16.4;
     int16_t imu_gyro_x_raw = (int16_t)(mpu_rx_buff[8] << 8 | mpu_rx_buff[9]);
     int16_t imu_gyro_y_raw = (int16_t)(mpu_rx_buff[10] << 8 | mpu_rx_buff[11]);
     int16_t imu_gyro_z_raw = (int16_t)(mpu_rx_buff[12] << 8 | mpu_rx_buff[13]);
-    imu->gyro.x = (float)(imu_gyro_x_raw / gyro_factor);
-    imu->gyro.y = (float)(imu_gyro_y_raw / gyro_factor);
-    imu->gyro.z = (float)(imu_gyro_z_raw / gyro_factor);
+    imu->gyro.x = (float)(imu_gyro_x_raw / ONBOARD_GYRO_FACTOR);
+    imu->gyro.y = (float)(imu_gyro_y_raw / ONBOARD_GYRO_FACTOR);
+    imu->gyro.z = (float)(imu_gyro_z_raw / ONBOARD_GYRO_FACTOR);
 }
 
 void ist8310_get_data(imu_t* imu) {

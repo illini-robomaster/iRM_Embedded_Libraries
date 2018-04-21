@@ -117,7 +117,7 @@ typedef enum {
     MPU6500_ZA_OFFSET_H        = 0x7D,
     MPU6500_ZA_OFFSET_L        = 0x7E,
 
-    MPU6500_ID				   = 0x71,		// mpu6500 id = 0x71
+    MPU6500_ID				   = 0x70,    // mpu6500 id = 0x70
 
     MPU_IIC_ADDR			   = 0x68,
 } MPU6500_REG;

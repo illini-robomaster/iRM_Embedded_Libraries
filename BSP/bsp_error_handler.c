@@ -9,6 +9,7 @@
 #include "bsp_error_handler.h"
 
 void bsp_error_handler(char* file, int line, char* msg) {
-    printf("[ERROR at %s:%d] %s\r\n", file, line, msg);
+    print("[ERROR at %d]", line);
+    print("%s", msg);
     return;
 }
