@@ -2,7 +2,7 @@
 
 /* private function starts from here */
 
-void get_3508_data(motor_t* motor, uint8_t buf[CAN_DATA_SIZE]) {
+static void get_3508_data(motor_t* motor, uint8_t buf[CAN_DATA_SIZE]) {
     motor->as.m3508.angle            = \
         (int16_t)(buf[0] << 8 | buf[1]) * ANGLE_CRT_3508;
     motor->as.m3508.speed_rpm        = \
@@ -13,7 +13,7 @@ void get_3508_data(motor_t* motor, uint8_t buf[CAN_DATA_SIZE]) {
         (uint8_t)buf[6];
 }
 
-void print_3508_data(motor_t* motor) {
+static void print_3508_data(motor_t* motor) {
     print("== 3508 at CAN bus %u node %x ==\r\n", motor->can_id, motor->rx_id);
     print("Angle        %d\n", motor->as.m3508.angle);
     print("Current      %d\n", motor->as.m3508.current_get);
@@ -22,7 +22,7 @@ void print_3508_data(motor_t* motor) {
     print("================================\r\n");
 }
 
-void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
+static void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
     motor->as.m6623.angle         = \
         (int16_t)(buf[0] << 8 | buf[1]) * ANGLE_CRT_6623;
     motor->as.m6623.current_get   = \
@@ -31,7 +31,7 @@ void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
         (int16_t)(buf[4] << 8 | buf[5]) * CURRENT_CRT_6623;
 }
 
-void print_6623_data(motor_t* motor) {
+static void print_6623_data(motor_t* motor) {
     print("== 6623 at CAN bus %u node %x ==\n", motor->can_id, motor->rx_id);
     print("Angle        %d\n", motor->as.m6623.angle);
     print("Current      %d\n", motor->as.m6623.current_get);
@@ -39,21 +39,21 @@ void print_6623_data(motor_t* motor) {
     print("================================\n");
 }
 
-void get_3510_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
+static void get_3510_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
     motor->as.m3510.angle       = \
         (int16_t)(buf[0] << 8 | buf[1]) * ANGLE_CRT_3510;
     motor->as.m3510.current_get = \
         (int16_t)(buf[2] << 8 | buf[3]) * CURRENT_CRT_3510;
 }
 
-void print_3510_data(motor_t* motor) {
+static void print_3510_data(motor_t* motor) {
     print("== 3510 at CAN bus %u node %x ==\n", motor->can_id, motor->rx_id);
     print("Angle        %d\n", motor->as.m3510.angle);
     print("Current      %d\n", motor->as.m3510.current_get);
     print("================================\n");
 }
 
-void get_2006_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
+static void get_2006_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
     motor->as.m2006.angle           = \
         (int16_t)(buf[0] << 8 | buf[1]) * ANGLE_CRT_2006;
     motor->as.m2006.speed_rpm       = \
@@ -62,7 +62,7 @@ void get_2006_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
         (int16_t)(buf[4] << 8 | buf[5]) * CURRENT_CRT_2006;
 }
 
-void print_2006_data(motor_t* motor) {
+static void print_2006_data(motor_t* motor) {
     print("== 2006 at CAN bus %u node %x ==\n", motor->can_id, motor->rx_id);
     print("Angle        %d\n", motor->as.m2006.angle);
     print("Current      %d\n", motor->as.m2006.current_get);
@@ -70,7 +70,7 @@ void print_2006_data(motor_t* motor) {
     print("================================\n");
 }
 
-uint8_t match_id(uint16_t *old_id, uint16_t new_id) {
+static uint8_t match_id(uint16_t *old_id, uint16_t new_id) {
     if (!*old_id) {
         *old_id = new_id;
         return 1;
@@ -79,7 +79,7 @@ uint8_t match_id(uint16_t *old_id, uint16_t new_id) {
         return (*old_id == new_id);
 }
 
-int16_t clip(int16_t val, int16_t range) {
+static int16_t clip(int16_t val, int16_t range) {
     if (val >= range / 2)
         val -= range;
     else if (val <= -range / 2)
@@ -87,7 +87,7 @@ int16_t clip(int16_t val, int16_t range) {
     return val;
 }
 
-int16_t current_limit(float val, int16_t low, int16_t high) {
+static int16_t current_limit(float val, int16_t low, int16_t high) {
     if (val < low)
         return low;
     if (val > high)
@@ -95,7 +95,7 @@ int16_t current_limit(float val, int16_t low, int16_t high) {
     return (int16_t)val;
 }
 
-int16_t correct_output(motor_t *motor) {
+static int16_t correct_output(motor_t *motor) {
     switch (motor->type) {
         case M3508:
             return current_limit(motor->out * CURRENT_CRT_3508,
