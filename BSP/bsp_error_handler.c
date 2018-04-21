@@ -12,6 +12,6 @@ void bsp_error_handler(const char* func, int line, char* msg) {
     print("[ERROR at ");
     print("%s:", func);
     print("%d] ", line);
-    print("%s", msg);
+    print("%s\r\n", msg);
     return;
 }
