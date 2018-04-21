@@ -1,7 +1,25 @@
 #include "imu_onboard.h"
 
+imu_onboard_t imuBoard;
+
+void print_mpu_data(imu_t* imu) {
+    if (imu == NULL) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid imu object.");
+        return;
+    }
+    mpu6500_get_data(imu);
+    print("[DECODED MPU] ");
+    print("Acce X %f \tY %f \t", imu->acce.x, imu->acce.y);
+    print("Z %f \t| ", imu->acce.z);
+    print("Gyro X %f \tY %f \t", imu->gyro.x, imu->gyro.y);
+    print("Z %f \t| ", imu->gyro.z);
+    print("Temp %f\r\n", imu->temp);
+}
+
 void print_imu_data(void){
-    print("No implemented yet.\r\n");
+    print("Angle X %.2f \tY %.2f", imuBoard.angle[0], imuBoard.angle[1]);
+    print(" \tZ %.2f \t| ", imuBoard.angle[2]);
+    print("\r\n");
 }
 
 float get_chassis_yaw_angle(void){
@@ -33,9 +51,11 @@ void onboard_imu_lib_init(void){
 
 void onboard_imu_update(void){
     mpu6500_get_data(&(imuBoard.my_raw_imu));
-    // TODO: add dynamic calibration for zero bias
-    if(MY_ABS(imuBoard.my_raw_imu.gyro.x) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.y) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.z) < STATIC_LIM)
+    if(MY_ABS(imuBoard.my_raw_imu.gyro.x) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.y) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.z) < STATIC_LIM){
         ++imuBoard.static_measurement_count;
+    } else {
+        imuBoard.static_measurement_count = 0;
+    }
     if(imuBoard.static_measurement_count > STATIC_TURN){
         // Robot has been static for a while. We calibrate IMU accordingly.
         update_zero_bias();
@@ -50,7 +70,7 @@ void update_zero_bias(void){
     float* pgyro = (float*)(&imuBoard.my_raw_imu.gyro.x);
     for(int axis = 0; axis < 3; ++axis){
         imuBoard.angle_zero_bias[axis]
-                = (imuBoard.angle_zero_bias[axis] * imuBoard.total_measurement_count + (*(pgyro + axis))) / (++imuBoard.total_measurement_count);
+                = (imuBoard.angle_zero_bias[axis] * imuBoard.total_measurement_count + *(pgyro + axis)) / (++imuBoard.total_measurement_count);
     }
 }
 

@@ -24,8 +24,6 @@
 #define ONBOARD_IMU_SPI     hspi5
 #define ONBOARD_IMU_TIMEOUT 55
 #define ONBOARD_IMU_BUFFER  14
-#define ONBOARD_IMU_WRITE   0x7f
-#define ONBOARD_IMU_READ    0x80
 #define ONBOARD_ACCE_FACTOR 4096.0f // Check datasheet, 8g = 4096
 #define ONBOARD_TEMP_ROOM   21      // Roomtemp
 #define ONBOARD_TEMP_OFFSET 0
@@ -80,15 +78,6 @@ void mpu6500_get_data(imu_t* imu);
  * @date   2018-04-21
  */
 void ist8310_get_data(imu_t* imu);
-
-/**
- * Print accelerometer, gyroscope, temp data
- *
- * @param  imu        A valid imu object
- * @author Nickel_Liang
- * @date   2018-04-21
- */
-void print_mpu_data(imu_t* imu);
 
 /**
  * Initialize MPU6500

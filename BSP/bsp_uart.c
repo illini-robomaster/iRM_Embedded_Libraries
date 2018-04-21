@@ -15,7 +15,7 @@ uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32
     if (huart->RxState == HAL_UART_STATE_READY) {
         /* Check parameter validity */
         if ((pData == NULL) || (size == 0)) {
-            bsp_error_handler(__FILE__, __LINE__, "Invalid input.");
+            bsp_error_handler(__FUNCTION__, __LINE__, "Invalid input.");
             return 0;
         }
         /* Process Locked */
@@ -34,7 +34,7 @@ uint8_t uart_rx_dma_without_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32
         return 1;
     }
     else {
-        bsp_error_handler(__FILE__, __LINE__, "UART is busy.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "UART is busy.");
         return 0;
     }
 }
@@ -43,7 +43,7 @@ uint8_t uart_dma_multibuffer_it(DMA_HandleTypeDef *hdma, uint32_t SrcAddress, ui
     /* Memory-to-memory transfer not supported in double buffering mode */
     if (hdma->Init.Direction == DMA_MEMORY_TO_MEMORY) {
         hdma->ErrorCode = HAL_DMA_ERROR_NOT_SUPPORTED;
-        bsp_error_handler(__FILE__, __LINE__, "Memory to memory transfer not supported.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Memory to memory transfer not supported.");
         return 0;
     }
     /* Set the UART DMA transfer complete callback */
@@ -54,7 +54,7 @@ uint8_t uart_dma_multibuffer_it(DMA_HandleTypeDef *hdma, uint32_t SrcAddress, ui
     /* Check callback functions */
     if ((NULL == hdma->XferCpltCallback) || (NULL == hdma->XferM1CpltCallback)) {
         hdma->ErrorCode = HAL_DMA_ERROR_PARAM;
-        bsp_error_handler(__FILE__, __LINE__, "Invalid parameter.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid parameter.");
         return 0;
     }
     /* Process locked */
@@ -89,7 +89,7 @@ uint8_t uart_dma_multibuffer_it(DMA_HandleTypeDef *hdma, uint32_t SrcAddress, ui
         hdma->State = HAL_DMA_STATE_READY;
     }
     else {
-        bsp_error_handler(__FILE__, __LINE__, "HAL busy.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "HAL busy.");
         return 0;
     }
     /* Process unlocked */
@@ -126,12 +126,12 @@ uint8_t dma_current_memory_target(DMA_Stream_TypeDef *dma_stream) {
 
 static void dma_m1_rxcplt_callback(DMA_HandleTypeDef *hdma) {
     /* DMA buffer should never reach upper limit */
-    bsp_error_handler(__FILE__, __LINE__, "DMA buffer 1 full.");
+    bsp_error_handler(__FUNCTION__, __LINE__, "DMA buffer 1 full.");
 }
 
 static void dma_m0_rxcplt_callback(DMA_HandleTypeDef *hdma) {
     /* DMA buffer should never reach upper limit */
-    bsp_error_handler(__FILE__, __LINE__, "DMA buffer 0 full.");
+    bsp_error_handler(__FUNCTION__, __LINE__, "DMA buffer 0 full.");
 }
 
 /* ===== Weak Functions ===== */

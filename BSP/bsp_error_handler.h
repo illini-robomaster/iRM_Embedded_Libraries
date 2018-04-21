@@ -28,7 +28,7 @@
  * @author Nickel_Liang
  * @date   2018-04-15
  */
-extern void bsp_error_handler(char* file, int line, char* msg);
+extern void bsp_error_handler(const char* func, int line, char* msg);
 
 /** @} */
 

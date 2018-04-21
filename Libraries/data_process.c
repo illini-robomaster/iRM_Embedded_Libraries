@@ -8,15 +8,15 @@
 
 #include "data_process.h"
 
-data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void *, uint8_t *), void* source_struct) {
+data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, uint8_t(*dispatcher)(void*, data_process_t*), void* source_struct) {
     if ((huart == NULL) || (mutex == NULL) || (buffer_size == 0) || (fifo_size == 0) || (dispatcher == NULL) || (source_struct == NULL)) {
-        bsp_error_handler(__FILE__, __LINE__, "Invalid parameter.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid parameter.");
         return NULL;
     }
 
     data_process_t* source  = (data_process_t*)malloc(sizeof(data_process_t));   /* Initialize a data process instance */
     if (source == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Unable to allocate data process object.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate data process object.");
         return NULL;
     }
 
@@ -30,14 +30,14 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
 
     source->data_fifo       = fifo_s_create(fifo_size, mutex);
     if (source->data_fifo == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Unable to allocate FIFO for data process object.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate FIFO for data process object.");
         free(source);
         return NULL;
     }
 
     source->buff[0]         = (uint8_t*)malloc(2 * source->buff_size);
     if (source->buff[0] == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Unable to allocate DMA buffer for data process object.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate DMA buffer for data process object.");
         fifo_s_destory(source->data_fifo);
         free(source);
         return NULL;
@@ -46,7 +46,7 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
 
     source->frame_packet    = (uint8_t*)malloc(fifo_size);
     if (source->frame_packet == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Unable to allocate frame packet buffer for data process object.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate frame packet buffer for data process object.");
         free(source->buff[0]);
         fifo_s_destory(source->data_fifo);
         free(source);
@@ -58,7 +58,7 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
 
 uint8_t buffer_to_fifo(data_process_t* source) {
     if (source == NULL) {
-        bsp_error_handler(__FILE__, __LINE__, "Invalid parameter.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Invalid parameter.");
         return 0;
     }
 
@@ -82,7 +82,7 @@ uint8_t buffer_to_fifo(data_process_t* source) {
 
     /* Unnecessary check @todo delete if never triggered */
     if (write_index > source->buff_size * 2) {
-        bsp_error_handler(__FILE__, __LINE__, "Write index exceed limit. Logic error.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Write index exceed limit. Logic error.");
         return 0;
     }
 
@@ -95,11 +95,11 @@ uint8_t buffer_to_fifo(data_process_t* source) {
         /* Read index points to where we left last time, so read till the end of second buffer */
         write_len = source->buff_size * 2 - source->read_index;
         if (write_len < 0) {
-            bsp_error_handler(__FILE__, __LINE__, "Write length is negative.");
+            bsp_error_handler(__FUNCTION__, __LINE__, "Write length is negative.");
             return 0;
         }
         if (write_len != fifo_s_puts(source->data_fifo, &buff[source->read_index], write_len)) {
-            bsp_error_handler(__FILE__, __LINE__, "FIFO overflow, need to resize.");
+            bsp_error_handler(__FUNCTION__, __LINE__, "FIFO overflow, need to resize.");
             return 0;
         }
         source->read_index = 0;
@@ -123,7 +123,7 @@ uint8_t buffer_to_fifo(data_process_t* source) {
     /* General write condition */
     write_len = write_index - source->read_index;
     if (write_len != fifo_s_puts(source->data_fifo, &buff[source->read_index], write_len)) {
-        bsp_error_handler(__FILE__, __LINE__, "FIFO overflow, need to resize.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "FIFO overflow, need to resize.");
         return 0;
     }
     source->read_index = write_index;
@@ -137,7 +137,7 @@ uint8_t fifo_to_struct(data_process_t* source) {
         byte = fifo_s_peek(source->data_fifo, 0); // Peek head
         if (byte == source->sof)    // If head is start of frame
             if (process_frame(source) && process_header(source)) {
-                source->dispatcher(source->source_struct, source->frame_packet);
+                source->dispatcher(source->source_struct, source);
                 return 1;
             }
         else
@@ -148,16 +148,16 @@ uint8_t fifo_to_struct(data_process_t* source) {
 
 static uint8_t process_header(data_process_t* source) {
     if (fifo_s_gets(source->data_fifo, (uint8_t*)(source->frame_packet), DATA_PROCESS_HEADER_LEN) != DATA_PROCESS_HEADER_LEN) {
-        bsp_error_handler(__FILE__, __LINE__, "Failed to get enough FIFO data.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Failed to get enough FIFO data.");
         return 0;
     }
     source->data_len = (uint16_t)((source->frame_packet[2] << 8) | source->frame_packet[1]);
     if (source->data_len > DATA_PROCESS_MAX_DATA_LEN) {
-        bsp_error_handler(__FILE__, __LINE__, "Data length exceed maximum.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Data length exceed maximum.");
         return 0;
     }
     if (!verify_crc8_check_sum(source->frame_packet, DATA_PROCESS_HEADER_LEN)) {
-        bsp_error_handler(__FILE__, __LINE__, "CRC8 check failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "CRC8 check failed.");
         return 0;
     }
     return 1;
@@ -166,11 +166,11 @@ static uint8_t process_header(data_process_t* source) {
 static uint8_t process_frame(data_process_t* source) {
     uint16_t frame_length = DATA_PROCESS_CMD_LEN + source->data_len + DATA_PROCESS_CRC16_LEN;
     if (fifo_s_gets(source->data_fifo, (uint8_t*)(source->frame_packet + DATA_PROCESS_HEADER_LEN), frame_length) != frame_length) {
-        bsp_error_handler(__FILE__, __LINE__, "Failed to get enough FIFO data.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "Failed to get enough FIFO data.");
         return 0;
     }
     if (!verify_crc16_check_sum(source->frame_packet, DATA_PROCESS_HEADER_LEN + frame_length)) {
-        bsp_error_handler(__FILE__, __LINE__, "CRC16 check failed.");
+        bsp_error_handler(__FUNCTION__, __LINE__, "CRC16 check failed.");
         return 0;
     }
     return 1;

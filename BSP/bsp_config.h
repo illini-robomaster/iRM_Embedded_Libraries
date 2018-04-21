@@ -27,8 +27,8 @@
 #define BSP_REFEREE_PORT    huart3
 
 #define BSP_DBUS_MAX_LEN    50      // Adjust according to actual message length. Should be longer than expected message length.
-#define BSP_REFEREE_MAX_LEN 1024
-#define BSP_TX2_MAX_LEN     1024
+#define BSP_REFEREE_MAX_LEN 512
+#define BSP_TX2_MAX_LEN     512
 
 #define UART_TX_BLOCKING_TIMEOUT    100
 

@@ -57,7 +57,7 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
             /* @todo Add offline detection for tx2 */
         }
         else {
-            bsp_error_handler(__FILE__, __LINE__, "Undefined active UART device callbacked.");
+            bsp_error_handler(__FUNCTION__, __LINE__, "Undefined active UART device callbacked.");
         }
     }
 }
