@@ -136,7 +136,7 @@ uint16_t fifo_s_gets(fifo_s_t* pfifo, uint8_t* source, uint8_t len) {
     return retval;
 }
 
-uint8_t fifo_s_pre_read(fifo_s_t* pfifo, uint8_t offset) {
+uint8_t fifo_s_peek(fifo_s_t* pfifo, uint8_t offset) {
     uint32_t index;
     //! Check input parameters.
     ASSERT(NULL != pfifo);

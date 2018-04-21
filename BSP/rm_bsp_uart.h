@@ -45,7 +45,7 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
         }
         else if (huart == &BSP_REFEREE_PORT) {
             /* @todo Process REFEREE data here */
-
+            uart_referee_callback();
             /* @todo Add offline detection for referee */
             /* @todo @important Consider flag handling */
             /* reference: */
@@ -53,6 +53,7 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
         }
         else if (huart == &BSP_TX2_PORT) {
             /* @todo Process TX2 data here */
+            uart_tx2_callback();
             /* @todo Add offline detection for tx2 */
         }
         else {

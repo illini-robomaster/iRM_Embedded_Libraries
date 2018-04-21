@@ -27,7 +27,6 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
     source->dispatcher      = dispatcher;
     source->sof             = sof;
     source->data_len        = 0;
-    source->frame_index     = 0;
 
     source->data_fifo       = fifo_s_create(fifo_size, mutex);
     if (source->data_fifo == NULL) {
@@ -133,90 +132,46 @@ uint8_t buffer_to_fifo(data_process_t* source) {
 
 uint8_t fifo_to_struct(data_process_t* source) {
     uint8_t byte = 0;
-    uint16_t without_header_length = 0;
-    uint16_t frame_length = 0;
-    /* While FIFO is not empty */
+    uint8_t func_ret = 0;
     while (!fifo_is_empty(source->data_fifo)) {
-        /* Get one byte */
-        byte = fifo_s_get(source->data_fifo);
-        /* Go over the rx decode step */
-        switch (source->rx_step) {
-            case STEP_HEADER_SOF:
-                /* If we are at the first byte */
-                if (byte == source->sof) {
-                    source->frame_packet[source->frame_index] = byte;
-                    source->frame_index++;
-                    source->rx_step = STEP_DATA_LENGTH;
-                }
-                /* Idle spin till fifo empty. Cannot return. */
-                else {
-                    /* @todo Add debug option to check how many idle spin here */
-                    /* @todo every time enter here should be error condition */
-                    source->frame_index = 0;
-                }
-                break;
-            case STEP_DATA_LENGTH:
-                source->data_len = byte;
-                source->frame_packet[source->frame_index] = byte;
-                source->frame_index++;
-                /* DATA LENGTH is uint16_t, so read one more byte */
-                byte = fifo_s_get(source->data_fifo);
-                source->data_len |= (byte << 8);
-                source->frame_packet[source->frame_index] = byte;
-                source->frame_index++;
-                /* Check if data_len is valid */
-                if (source->data_len < DATA_PROCESS_MAX_DATA_LEN) {
-                    source->rx_step = STEP_FRAME_SEQ;
-                }
-                /* If data_len is not valid, go back to first step */
-                else {
-                    source->frame_index = 0;
-                    source->rx_step = STEP_HEADER_SOF;
-                }
-                break;
-            case STEP_FRAME_SEQ:
-                source->frame_packet[source->frame_index] = byte;
-                source->frame_index++;
-                source->rx_step = STEP_CRC8;
-                break;
-            case STEP_CRC8:
-                source->frame_packet[source->frame_index] = byte;
-                source->frame_index++;
-                /* If header CRC8 is correct, proceed to CRC16 check */
-                if (verify_crc8_check_sum(source->frame_packet, DATA_PROCESS_HEADER_LEN)) {
-                    source->rx_step = STEP_CRC16;
-                }
-                /* Otherwise go back to first step, idle spin */
-                else {
-                    source->frame_index = 0;
-                    source->rx_step = STEP_HEADER_SOF;
-                }
-                break;
-            case STEP_CRC16:
-                without_header_length = DATA_PROCESS_CMD_LEN + source->data_len + DATA_PROCESS_CRC16_LEN;
-                frame_length = DATA_PROCESS_HEADER_LEN + without_header_length;
-                /* @todo Logic check. Remove after make sure ok */
-                if (source->frame_index != DATA_PROCESS_HEADER_LEN) {
-                    bsp_error_handler(__FILE__, __LINE__, "FRAME INDEX ERROR.");
-                    return 0;
-                }
-                /* Get remaining data */
-                if (without_header_length != fifo_s_gets(source->data_fifo, (uint8_t*)(source->frame_packet + source->frame_index), without_header_length)) {
-                    bsp_error_handler(__FILE__, __LINE__, "Failed to get enough FIFO data.");
-                    return 0;
-                }
-                source->frame_index = 0;
-                source->rx_step = STEP_HEADER_SOF;
-                /* Perform CRC16 check, if valid go to dispatcher */
-                if (verify_crc16_check_sum(source->frame_packet, frame_length)) {
-                    source->dispatcher(source->source_struct, source->frame_packet);
-                }
-                break;
-            default:
-                source->frame_index = 0;
-                source->rx_step = STEP_HEADER_SOF;
-                break;
-        }
+        byte = fifo_s_peek(source->data_fifo, 0); // Peek head
+        if (byte == source->sof)    // If head is start of frame
+            if (process_frame(source) && process_header(source)) {
+                source->dispatcher(source->source_struct, source->frame_packet);
+                return 1;
+            }
+        else
+            fifo_s_get(source->data_fifo);  // Dispose junk value
+    }
+    return 0;
+}
+
+static uint8_t process_header(data_process_t* source) {
+    if (fifo_s_gets(source->data_fifo, (uint8_t*)(source->frame_packet), DATA_PROCESS_HEADER_LEN) != DATA_PROCESS_HEADER_LEN) {
+        bsp_error_handler(__FILE__, __LINE__, "Failed to get enough FIFO data.");
+        return 0;
+    }
+    source->data_len = (uint16_t)((source->frame_packet[2] << 8) | source->frame_packet[1]);
+    if (source->data_len > DATA_PROCESS_MAX_DATA_LEN) {
+        bsp_error_handler(__FILE__, __LINE__, "Data length exceed maximum.");
+        return 0;
+    }
+    if (!verify_crc8_check_sum(source->frame_packet, DATA_PROCESS_HEADER_LEN)) {
+        bsp_error_handler(__FILE__, __LINE__, "CRC8 check failed.");
+        return 0;
+    }
+    return 1;
+}
+
+static uint8_t process_frame(data_process_t* source) {
+    uint16_t frame_length = DATA_PROCESS_CMD_LEN + source->data_len + DATA_PROCESS_CRC16_LEN;
+    if (fifo_s_gets(source->data_fifo, (uint8_t*)(source->frame_packet + DATA_PROCESS_HEADER_LEN), frame_length) != frame_length) {
+        bsp_error_handler(__FILE__, __LINE__, "Failed to get enough FIFO data.");
+        return 0;
+    }
+    if (!verify_crc16_check_sum(source->frame_packet, DATA_PROCESS_HEADER_LEN + frame_length)) {
+        bsp_error_handler(__FILE__, __LINE__, "CRC16 check failed.");
+        return 0;
     }
     return 1;
 }

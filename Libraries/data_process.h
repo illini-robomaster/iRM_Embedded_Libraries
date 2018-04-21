@@ -31,14 +31,6 @@
  *  FrameTail   2B CRC16
  */
 
-typedef enum {
-    STEP_HEADER_SOF,
-    STEP_DATA_LENGTH,
-    STEP_FRAME_SEQ,
-    STEP_CRC8,
-    STEP_CRC16,
-} rx_step_t;
-
 typedef struct {
     /* Commonly used */
     UART_HandleTypeDef* huart;  // Which UART data is comming from
@@ -49,12 +41,10 @@ typedef struct {
     uint16_t    read_index;     // Where we left last time
     /* Used in fifo_to_struct */
     void*       source_struct;  // Used by dispatcher. = target_struct
-    rx_step_t   rx_step;        // Data process step enum
     uint8_t     (*dispatcher)(void* target_struct, uint8_t* buffer);
     uint8_t     sof;            // Start of frame
     uint8_t*    frame_packet;   // Contain one frame of data. Same length as fifo
     uint16_t    data_len;       // Store the data length got from header
-    uint16_t    frame_index;    // Index for frame packet
 } data_process_t;
 /* I regreted. I really should use C++ to write our lib... */
 
@@ -93,5 +83,25 @@ uint8_t buffer_to_fifo(data_process_t* source);
  * @date   2018-04-20
  */
 uint8_t fifo_to_struct(data_process_t* source);
+
+/**
+ * Process a data header and perform CRC8 check
+ *
+ * @param  source     A valid data process instance
+ * @return            1 for success, 0 for failed
+ * @author Nickel_Liang
+ * @date   2018-04-21
+ */
+static uint8_t process_header(data_process_t* source);
+
+/**
+ * Process a data frame and perfrom CRC16 check
+ *
+ * @param  source     A valid data process instance
+ * @return            1 for success, 0 for failed
+ * @author Nickel_Liang
+ * @date   2018-04-21
+ */
+static uint8_t process_frame(data_process_t* source);
 
 #endif

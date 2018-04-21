@@ -110,7 +110,7 @@ uint16_t fifo_s_gets(fifo_s_t* pfifo, uint8_t* source, uint8_t len);
  * @param  offset     Offset from current pointer
  * @return            Data at offset location
  */
-uint8_t fifo_s_pre_read(fifo_s_t* pfifo, uint8_t offset);
+uint8_t fifo_s_peek(fifo_s_t* pfifo, uint8_t offset);
 
 /**
  * Check if FIFO is empty
