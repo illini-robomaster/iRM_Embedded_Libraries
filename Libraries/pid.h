@@ -77,6 +77,37 @@ typedef struct {
 }   pid_ctl_t;
 
 /**
+ * @brief clip int16_t number into [-lim, lim]
+ * @param data pointer to the number to be clipped
+ * @param lim  absolute limit range
+ * @return clipped value
+ */
+static int16_t abs_limit(int16_t *data, int16_t lim);
+
+/**
+ * @brief clip floating point number into [-lim, lim]
+ * @param data pointer to the number to be clipped
+ * @param lim  absolute limit range
+ * @return clipped value
+ */
+static float fabs_limit(float *data, float lim);
+
+/**
+ * @brief get the nth latest error value (e.g. n = 0 means the latest error value)
+ * @param pid   pid data structure
+ * @param n     the nth latest
+ * @return      the nth latest error value
+ */
+static int16_t get_prev_n_err(pid_ctl_t *pid, uint8_t n);
+
+/**
+ * @brief calculate generic position pid
+ * @param pid pid data structure
+ * @return calculated current output
+ */
+static float position_pid_calc(pid_ctl_t *pid);
+
+/**
  * @brief initialize a pid controller instance
  * @param pid       pid controller pointer
  * @param mode      pid control mode
@@ -95,6 +126,31 @@ typedef struct {
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor, 
         int16_t low_lim, int16_t high_lim, int16_t int_lim, int16_t int_rng, int16_t max_derr,
         float kp, float ki, float kd, float maxout, float dt);
+
+/**
+ * @brief set the p, i, d parameter of a pid controller
+ * @param pid   pid controller
+ * @param kp    porptional gain
+ * @param ki    intergral gain
+ * @param kd    derivative gain
+ */
+void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd);
+
+/**
+ * @brief use angle data from sensor to control angle
+ * @param pid           pid controller
+ * @param target_angle  target angle
+ * @return calculated current output
+ */
+int16_t pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle);
+
+/**
+ * @brief use rotational speed data from sensor to control rotational speed
+ * @param pid           pid controller
+ * @param target_speed  target rotational speed
+ * @return calculated current output
+ */
+int16_t pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed);
 
 /**
  * @brief calculate pid value and set output to the motor
