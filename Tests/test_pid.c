@@ -40,10 +40,6 @@ void test_chassis() {
         set_motor_output(&m_fl, &m_fl, &m_fl, &m_fl);
     }
     while (1) {
-        get_motor_data(&m_fl);
-        get_motor_data(&m_fr);
-        get_motor_data(&m_rl);
-        get_motor_data(&m_rr);
         if (rc->key.bit.W) {
             m_fl.out = pid_calc(&pid1, speed);
             m_fr.out = pid_calc(&pid2, -speed);
@@ -115,7 +111,6 @@ void test_pitch() {
     while (1) {
         for (target_val = 5200; target_val < 6200; target_val += 100) {
             for (i = 0; i < 400; i++) {
-                get_motor_data(&motor);
                 motor.out = pid_calc(&pid, target_val);
                 set_motor_output(NULL, &motor, NULL, NULL);
                 HAL_Delay(5);
@@ -143,11 +138,23 @@ void test_yaw() {
     while (1) {
         for (target_val = 5200; target_val < 6800; target_val += 200) {
             for (i = 0; i < 400; i++) {
-                get_motor_data(&motor);
                 motor.out = pid_calc(&pid, target_val);
                 set_motor_output(&motor, NULL, NULL, NULL);
                 HAL_Delay(5);
             }
         }
+    }
+}
+
+void test_camera() {
+    motor_t motor;
+    pid_ctl_t pid;
+    size_t i;
+
+    motor_init(&motor, 0x200, CAN1_ID, M3510);
+    for (i = 0; i < 100; i++) {
+        get_motor_data(&motor);
+        motor.out = 1;
+        set_motor_output(&motor, &motor, &motor, &motor);
     }
 }

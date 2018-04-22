@@ -96,6 +96,7 @@ int16_t pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed) {
 }
 
 int16_t pid_calc(pid_ctl_t *pid, int16_t target) {
+    get_motor_data(pid->motor);
     switch (pid->mode) {
         case GIMBAL_AUTO_SHOOT:
         case GIMBAL_MAN_SHOOT:

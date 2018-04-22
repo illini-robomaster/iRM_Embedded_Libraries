@@ -8,6 +8,7 @@
 #include "test_servo.h"
 #include "test_bsp_imu.h"
 #include "test_imu.h"
+#include "test_mouse.h"
 
 /* Test utility */
 #define PASS    1
@@ -27,6 +28,7 @@
 #define TEST_SERVO      OFF
 #define TEST_BSP_IMU    OFF
 #define TEST_IMU        OFF
+#define TEST_MOUSE      OFF
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -44,6 +46,8 @@ extern inline void run_all_tests() {
         TEST_OUTPUT("BSP IMU TEST", test_bsp_imu());
     if (TEST_IMU == ON)
         test_imu();
+    if (TEST_MOUSE)
+        test_mouse();
 }
 
 #endif

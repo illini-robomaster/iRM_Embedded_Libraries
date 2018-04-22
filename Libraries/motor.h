@@ -277,11 +277,10 @@ static int16_t clip(int16_t val, int16_t range);
 /**
  * @brief limit current output to prevent from buring the motor
  * @param val   current output value
- * @param low   lower limit
- * @param high  upper limit
+ * @param lim   absolute current output limit
  * @return clipped current output 
  */
-static int16_t current_limit(float val, int16_t low, int16_t high);
+static int16_t current_limit(float val, int16_t lim);
 
 /**
  * @brief correct motor output direction given the specification of a motor type
