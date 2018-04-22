@@ -19,6 +19,10 @@ uint8_t referee_init(data_process_t* source) {
 
 uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) {
     /* @todo Need to consider racing condition here */
+#ifdef DEBUG
+    BSP_DEBUG;
+    print("Enter referee dispatcher.\r\n");
+#endif
     referee_t* referee     = target_struct;
     data_process_t* source = process_struct;
     uint16_t data_length   = source->data_len;
