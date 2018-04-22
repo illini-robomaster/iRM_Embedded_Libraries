@@ -43,6 +43,11 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
         return NULL;
     }
     source->buff[1]         = source->buff[0] + source->buff_size;
+#ifdef DEBUG
+    BSP_DEBUG;
+    print("\r\nsource->buff[0] 0x%08x ", source->buff[0]);
+    print("\r\nsource->buff[1] 0x%08x \r\n", source->buff[1]);
+#endif
 
     source->frame_packet    = (uint8_t*)malloc(fifo_size);
     if (source->frame_packet == NULL) {
@@ -54,6 +59,14 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
     }
 
     return source;
+}
+
+void print_buffer(data_process_t* source, uint8_t buffer_num) {
+    uint8_t* buff = source->buff[buffer_num];
+    for (uint16_t i = 0; i < 20; i++) {
+        print("0x%08x : 0x%02x\r\n", &buff[i], buff[i]);
+    }
+    print("\r\n");
 }
 
 uint8_t data_process_rx(data_process_t* source) {
@@ -139,10 +152,6 @@ static uint8_t buffer_to_fifo(data_process_t* source) {
         return 0;
     }
     source->read_index = write_index;
-#ifdef DEBUG
-    BSP_DEBUG;
-    print("Reached end of buffer to fifo.\r\n");
-#endif
     return 1;
 }
 
@@ -150,18 +159,21 @@ static uint8_t fifo_to_struct(data_process_t* source) {
     uint8_t byte = 0;
     uint8_t func_ret = 0;
     while (!fifo_is_empty(source->data_fifo)) {
-#ifdef DEBUG
-        BSP_DEBUG;
-        print("Inside fifo to struct while loop.\r\n");
-#endif
         byte = fifo_s_peek(source->data_fifo, 0); // Peek head
-        if (byte == source->sof)    // If head is start of frame
+#ifdef DEBUG
+        print("Byte: %02x\r\n", byte);
+        print("Used: %d\r\n", source->data_fifo->used);
+        print("Free: %d\r\n", source->data_fifo->free);
+#endif
+        if (byte == source->sof) {  // If head is start of frame
             if (process_frame(source) && process_header(source)) {
                 source->dispatcher_func(source->source_struct, source);
                 return 1;
             }
-        else
+        }
+        else {
             fifo_s_get(source->data_fifo);  // Dispose junk value
+        }
     }
 #ifdef DEBUG
     BSP_DEBUG;

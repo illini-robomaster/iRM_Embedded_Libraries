@@ -86,6 +86,8 @@ void referee_task(void const *argu) {
 void uart_referee_callback(void) {
     /* @todo Signal handling here */
     /* @todo second wrap for this function */
+    print_buffer(referee_process, 0);
+    print_buffer(referee_process, 1);
     osSignalSet(referee_task_handle, REFEREE_RX_SIGNAL);
     return;
 }

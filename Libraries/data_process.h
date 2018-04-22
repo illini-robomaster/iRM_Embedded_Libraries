@@ -120,4 +120,6 @@ static uint8_t process_header(data_process_t* source);
  */
 static uint8_t process_frame(data_process_t* source);
 
+void print_buffer(data_process_t* source, uint8_t buffer_num);
+
 #endif
