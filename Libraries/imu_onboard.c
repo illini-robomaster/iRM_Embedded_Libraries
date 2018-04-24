@@ -51,7 +51,8 @@ void onboard_imu_lib_init(void){
 
 void onboard_imu_update(void){
     mpu6500_get_data(&(imuBoard.my_raw_imu));
-    if(MY_ABS(imuBoard.my_raw_imu.gyro.x) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.y) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.z) < STATIC_LIM){
+    if(MY_ABS(imuBoard.my_raw_imu.gyro.x) < STATIC_LIM
+                && MY_ABS(imuBoard.my_raw_imu.gyro.y) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.z) < STATIC_LIM){
         ++imuBoard.static_measurement_count;
     } else {
         imuBoard.static_measurement_count = 0;
@@ -70,7 +71,8 @@ void update_zero_bias(void){
     float* pgyro = (float*)(&imuBoard.my_raw_imu.gyro.x);
     for(int axis = 0; axis < 3; ++axis){
         imuBoard.angle_zero_bias[axis]
-                = (imuBoard.angle_zero_bias[axis] * imuBoard.total_measurement_count + *(pgyro + axis)) / (++imuBoard.total_measurement_count);
+                = (imuBoard.angle_zero_bias[axis] * imuBoard.total_measurement_count
+                                + *(pgyro + axis)) / (++imuBoard.total_measurement_count);
     }
 }
 
@@ -89,7 +91,8 @@ float kalman_filter_update(imu_axis_t desired_axis){
     float temp_angle = imuBoard.angle[desired_axis] + rate * DT;
     //EQ 2 - A priori estimate covariance
     //p_{k}_{k-1} (estimate from past observations)
-    p_cache[0] = QANGLE - imuBoard.p_k[desired_axis][0][1] - imuBoard.p_k[desired_axis][1][0] + DT * imuBoard.p_k[desired_axis][1][1];
+    p_cache[0] = QANGLE - imuBoard.p_k[desired_axis][0][1] -
+                        imuBoard.p_k[desired_axis][1][0] + DT * imuBoard.p_k[desired_axis][1][1];
     p_cache[1] = -1 * imuBoard.p_k[desired_axis][1][1];
     p_cache[2] = -1 * imuBoard.p_k[desired_axis][1][1];
     p_cache[3] = QGYRO;
@@ -121,7 +124,8 @@ void update_acc_angle(void){
     // REWRITE this function if mechanical design change and RM board is relocated
     if(0) {
         float grav_scalar = sqrt(imuBoard.acc_angle[IMU_X] * imuBoard.acc_angle[IMU_X]
-                + imuBoard.acc_angle[IMU_Y] * imuBoard.acc_angle[IMU_Y] + imuBoard.acc_angle[IMU_Z] * imuBoard.acc_angle[IMU_Z]);
+                + imuBoard.acc_angle[IMU_Y] * imuBoard.acc_angle[IMU_Y]
+                + imuBoard.acc_angle[IMU_Z] * imuBoard.acc_angle[IMU_Z]);
         imuBoard.acc_angle[IMU_Z] = acos(imuBoard.my_raw_imu.acce.z / grav_scalar) * RAD_2_DEG;
     } else {
         imuBoard.acc_angle[IMU_Z] = 0;

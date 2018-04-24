@@ -18,4 +18,6 @@ void test_shoot();
 
 void test_poke();
 
+void new_test_poke(void);
+
 #endif

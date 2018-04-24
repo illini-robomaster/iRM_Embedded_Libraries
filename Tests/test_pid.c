@@ -1,5 +1,6 @@
 #include "test_pid.h"
 #include "motor.h"
+#include "poker.h"
 #include "pid.h"
 #include "bsp_print.h"
 #include "stdlib.h"
@@ -9,7 +10,8 @@
 #define MAX(x, y) x > y ? x : y
 
 void test_pid() {
-    test_poke();
+    new_test_poke();
+    // test_poke();
     // test_shoot();
     // test_chassis();
     // test_pitch();
@@ -175,7 +177,7 @@ void test_shoot() {
     pid_init(&pid_left, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 5, 0);
     pid_init(&pid_right, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 5, 0);
     mt_l.out = mt_r.out = mt_pitch.out = 1;
-    
+
     for (i = 0; i < 100; i++) {
         get_motor_data(&mt_pitch);
         get_motor_data(&mt_r);
@@ -210,11 +212,21 @@ void test_poke() {
 
     while (1) {
         target = -18500;
-        pid_rotation_reset(&pid);        
+        pid_rotation_reset(&pid);
         for (i = 0; i < 500; i++) {
             motor.out = pid_rotation_ctl_rotation(&pid, &target, 3000);
             set_motor_output(NULL, NULL, NULL, &motor);
             HAL_Delay(5);
         }
     }
+}
+
+void new_test_poke(void) {
+    poker_ctl_t my_poker_st;
+    motor_t poker_motor;
+
+    motor_init(&poker_motor, 0x208, CAN1_ID, M3508);
+    poker_init(&my_poker_st, 30, 0, &poker_motor);
+
+    single_shot(&my_poker_st);
 }

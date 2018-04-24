@@ -33,7 +33,7 @@ static float position_pid_calc(pid_ctl_t *pid) {
         abs_limit(&pid->integrator, pid->int_lim);
     if (pid->deadband && abs(err_now) < pid->deadband)
         err_now = 0;
-    
+
     float pout = pid->kp * err_now;
     float iout = pid->ki * pid->integrator;
     float dout = pid->kd * (err_now - err_last) / pid->dt;
@@ -103,7 +103,7 @@ void pid_rotation_reset(pid_ctl_t *pid) {
     pid->ldata = get_motor_angle(pid->motor);
 }
 
-int16_t pid_rotation_ctl_rotation(pid_ctl_t *pid, 
+int16_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
         int32_t *target, int16_t speed) {
     get_motor_data(pid->motor);
     int16_t new_ang = get_motor_angle(pid->motor);

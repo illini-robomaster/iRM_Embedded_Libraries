@@ -25,7 +25,6 @@ void test_servo() {
         }
         servo_writeMicroseconds(&servo, 1500);
     }
-
 }
 
 void test_snail() {
