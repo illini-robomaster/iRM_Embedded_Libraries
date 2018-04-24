@@ -20,6 +20,9 @@ void print_imu_data(void){
     print("Angle X %.2f \tY %.2f", imuBoard.angle[0], imuBoard.angle[1]);
     print(" \tZ %.2f \t| ", imuBoard.angle[2]);
     print("\r\n");
+    print("ZBias X %.2f \tY %.2f", imuBoard.angle_zero_bias[0], imuBoard.angle_zero_bias[1]);
+    print(" \tZ %.2f \t| ", imuBoard.angle_zero_bias[2]);
+    print("\r\n");
 }
 
 float get_chassis_yaw_angle(void){
@@ -45,6 +48,7 @@ void onboard_imu_lib_init(void){
     update_acc_angle();
     for(int AXIS = 0; AXIS < 3; ++AXIS) {
         imuBoard.init_acc_angle[AXIS] = imuBoard.acc_angle[AXIS];
+        imuBoard.angle[AXIS] = 0;
     }
     imuBoard.static_measurement_count = 0;
 }
@@ -101,7 +105,7 @@ float kalman_filter_update(imu_axis_t desired_axis){
     imuBoard.p_k[desired_axis][1][0] += p_cache[2] * DT;
     imuBoard.p_k[desired_axis][1][1] += p_cache[3] * DT;
     //EQ 3 - Optimal Kalman Gain
-    float angle_err = imuBoard.acc_angle[desired_axis] - temp_angle;
+    float angle_err = (imuBoard.acc_angle[desired_axis] - imuBoard.init_acc_angle[desired_axis]) - temp_angle;
     float E = RANGLE + imuBoard.p_k[desired_axis][0][0];
     float k_0 = imuBoard.p_k[desired_axis][0][0] / E;
     float k_1 = imuBoard.p_k[desired_axis][1][0] / E;

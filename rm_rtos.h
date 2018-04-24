@@ -19,6 +19,7 @@
 #include "bsp_led.h"
 #include "bsp_laser.h"
 #include "task_referee.h"
+#include "task_imu.h"
 
 /* RTOS includes */
 #include "FreeRTOS.h"
@@ -74,6 +75,7 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
  */
 extern inline void RM_RTOS_THREADS_Init(void) {
     referee_task_create();
+    imu_task_create();
 }
 
 /**
@@ -95,6 +97,7 @@ extern inline void RM_RTOS_QUEUES_Init(void) {
  */
 extern inline void RM_RTOS_Default_Task(void const * argument) {
     /* Add codes to initialize default thread here */
+
     print("Enter default task.\n");
     /* There must be a while loop here. */
     while(1) {
