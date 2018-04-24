@@ -14,4 +14,8 @@ void test_chassis();
 
 void test_poke();
 
+void test_shoot();
+
+void test_poke();
+
 #endif

@@ -31,12 +31,14 @@ static float position_pid_calc(pid_ctl_t *pid) {
         pid->integrator += err_now;
     if (pid->int_lim)
         abs_limit(&pid->integrator, pid->int_lim);
+    if (pid->deadband && abs(err_now) < pid->deadband)
+        err_now = 0;
     
     float pout = pid->kp * err_now;
     float iout = pid->ki * pid->integrator;
     float dout = pid->kd * (err_now - err_last) / pid->dt;
 
-    if (err_now - err_last > pid->max_derr)
+    if (abs(err_now - err_last) > pid->max_derr)
         dout = 0;
 
     float final_out = pout + iout + dout;
@@ -54,10 +56,11 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
         int16_t low_lim, int16_t  high_lim, int16_t int_lim, int16_t int_rng, int16_t max_derr,
-        float kp, float ki, float kd, float maxout, float dt) {
+        float kp, float ki, float kd, float maxout, float dt, float deadband) {
     pid->mode       = mode;
     pid->motor      = motor;
     pid->dt         = dt;
+    pid->deadband   = deadband;
     pid->low_lim    = low_lim;
     pid->high_lim   = high_lim;
     pid->int_lim    = int_lim;
@@ -95,15 +98,36 @@ int16_t pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed) {
     return position_pid_calc(pid);
 }
 
+void pid_rotation_reset(pid_ctl_t *pid) {
+    get_motor_data(pid->motor);
+    pid->ldata = get_motor_angle(pid->motor);
+}
+
+int16_t pid_rotation_ctl_rotation(pid_ctl_t *pid, 
+        int32_t *target, int16_t speed) {
+    get_motor_data(pid->motor);
+    int16_t new_ang = get_motor_angle(pid->motor);
+    *target -= clip_angle_err(pid->motor, new_ang - pid->ldata);
+    pid->ldata = new_ang;
+    if (abs(*target) < 300) {
+        pid->integrator = 0;
+        return pid_speed_ctl_speed(pid, 0);
+    }
+    else
+        return pid_speed_ctl_speed(pid,
+                (*target) / abs(*target) * speed);
+}
+
 int16_t pid_calc(pid_ctl_t *pid, int16_t target) {
     get_motor_data(pid->motor);
     switch (pid->mode) {
         case GIMBAL_AUTO_SHOOT:
         case GIMBAL_MAN_SHOOT:
-        case POKE:
             return pid_angle_ctl_angle(pid, target);
         case CHASSIS_ROTATE:
+        case FLYWHEEL:
             return pid_speed_ctl_speed(pid, target);
+        case POKE:
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "pid mode does not exist");
             return 0;

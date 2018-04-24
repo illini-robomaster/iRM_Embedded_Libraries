@@ -13,7 +13,7 @@ static void init_yaw(motor_t *motor, pid_ctl_t *pid) {
         motor->out = 1;
         set_motor_output(motor, NULL, NULL, NULL);
     }
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 70, 1600, 5);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 70, 1600, 5, 0);
 }
 
 static void init_pitch(motor_t *motor, pid_ctl_t *pid) {
@@ -25,7 +25,7 @@ static void init_pitch(motor_t *motor, pid_ctl_t *pid) {
         motor->out = 1;
         set_motor_output(NULL, motor, NULL, NULL);
     }
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 4800, 6200, 0, 400, 200, 7.7, 0.2, 130, 3000, 5);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 4800, 6200, 3000, 400, 100, 12, 0.2, 90, 3000, 5, 0);
 }
 
 static void clip_to_range(int16_t *val, int16_t low, int16_t high) {
@@ -48,8 +48,6 @@ void test_mouse() {
     while (1) {
         yaw_ang -= rc->mouse.x;
         pitch_ang -= rc->mouse.y;
-        clip_to_range(&yaw_ang, 5200, 6800);
-        clip_to_range(&pitch_ang, 4800, 6200);
         m_yaw.out = pid_calc(&pid_yaw, yaw_ang);
         m_pitch.out = pid_calc(&pid_pitch, pitch_ang);
         set_motor_output(&m_yaw, &m_pitch, NULL, NULL);

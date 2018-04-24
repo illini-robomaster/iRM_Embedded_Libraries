@@ -32,7 +32,8 @@ typedef enum {
     GIMBAL_AUTO_SHOOT,
     GIMBAL_MAN_SHOOT,
     POKE,
-    CHASSIS_ROTATE
+    CHASSIS_ROTATE,
+    FLYWHEEL,
 }   pid_mode_t;
 
 /**
@@ -61,6 +62,7 @@ typedef struct {
     float   kd;
     float   maxout;
     float   dt;
+    float   deadband;
 
     pid_mode_t  mode;
     motor_t     *motor;
@@ -74,6 +76,7 @@ typedef struct {
     int16_t     int_lim;
     int16_t     int_rng;
     int16_t     max_derr;
+    int32_t     ldata;
 }   pid_ctl_t;
 
 /**
@@ -125,7 +128,7 @@ static float position_pid_calc(pid_ctl_t *pid);
  */
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor, 
         int16_t low_lim, int16_t high_lim, int16_t int_lim, int16_t int_rng, int16_t max_derr,
-        float kp, float ki, float kd, float maxout, float dt);
+        float kp, float ki, float kd, float maxout, float dt, float deadband);
 
 /**
  * @brief set the p, i, d parameter of a pid controller
@@ -159,6 +162,11 @@ int16_t pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed);
  * @return calculated motor output
  */
 int16_t pid_calc(pid_ctl_t *pid, int16_t target);
+
+void pid_rotation_reset(pid_ctl_t *pid);
+
+int16_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
+        int32_t *target, int16_t speed);
 
 /** @} */
 
