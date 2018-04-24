@@ -3,7 +3,7 @@
 #include "bsp_error_handler.h"
 #include "rm_config.h"
 
-static int16_t abs_limit(int16_t *data, int16_t lim) {
+static int32_t abs_limit(int32_t *data, int32_t lim) {
     if (*data > lim)
         *data = lim;
     else if (*data < -lim)
@@ -55,7 +55,7 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 }
 
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
-        int16_t low_lim, int16_t  high_lim, int16_t int_lim, int16_t int_rng, int16_t max_derr,
+        int16_t low_lim, int16_t  high_lim, int32_t int_lim, int16_t int_rng, int16_t max_derr,
         float kp, float ki, float kd, float maxout, float dt, float deadband) {
     pid->mode       = mode;
     pid->motor      = motor;

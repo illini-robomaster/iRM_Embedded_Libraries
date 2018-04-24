@@ -205,7 +205,7 @@ void test_poke() {
     motor_init(&mt_poke, 0x208, CAN1_ID, M3508);
     motor_init(&mt_l, 0x205, CAN1_ID, M3508);
     motor_init(&mt_r, 0x206, CAN1_ID, M3508);
-    pid_init(&pid_poke, POKE, &mt_poke, -2000, 0, 1000, 0, 0, 18, 0.1, 0, 3000, 5, 0);
+    pid_init(&pid_poke, POKE, &mt_poke, -2000, 0, 80000, 0, 0, 18, 0.15, 0, 10000, 5, 0);
     pid_init(&pid_l, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
     pid_init(&pid_r, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
     mt_poke.out = 1;
