@@ -16,7 +16,7 @@ void single_shot(poker_ctl_t *my_poker){
 
     get_motor_data(my_poker->motor);
     int16_t last_angle = get_motor_angle(my_poker->motor);
-
+    print("Single Shot init\r\n");
     while((poked_flag == 0) && (remaining_dist > 0)){
         int16_t new_ang = get_motor_angle(my_poker->motor);
         remaining_dist -= clip_angle_err(my_poker->motor, new_ang - last_angle);
@@ -27,7 +27,7 @@ void single_shot(poker_ctl_t *my_poker){
         float pout = my_poker->kp * err;
         integrator += my_poker->ki * err;
 
-        print("Int: %d", integrator);
+        print("Int: %f", integrator);
 
         if(integrator > RESIST_THRES){
             poked_flag = 1;
@@ -39,7 +39,7 @@ void single_shot(poker_ctl_t *my_poker){
             //set_motor_output(NULL, NULL, NULL, my_poker->motor);
         }
 
-        print("Poker Output: %d", my_poker->motor->out);
+        print("Poker Output: %f", my_poker->motor->out);
         last_angle = get_motor_angle(my_poker->motor);
         HAL_Delay(5);
     }
@@ -47,7 +47,7 @@ void single_shot(poker_ctl_t *my_poker){
     int16_t err = get_speed_err(my_poker->motor, 0);
     while(abs(err) > 250){
         my_poker->motor->out = pid_speed_ctl_speed(&brake_pid, 0);
-        print("Poker Output: %d", my_poker->motor->out);
+        print("Poker Output: %f", my_poker->motor->out);
         //set_motor_output(NULL, NULL, NULL, my_poker->motor);
         HAL_Delay(5);
         err = get_speed_err(my_poker->motor, 0);

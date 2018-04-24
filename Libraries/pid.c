@@ -126,8 +126,8 @@ int16_t pid_calc(pid_ctl_t *pid, int16_t target) {
             return pid_angle_ctl_angle(pid, target);
         case CHASSIS_ROTATE:
         case FLYWHEEL:
-            return pid_speed_ctl_speed(pid, target);
         case POKE:
+            return pid_speed_ctl_speed(pid, target);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "pid mode does not exist");
             return 0;

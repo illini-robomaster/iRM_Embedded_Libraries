@@ -46,8 +46,8 @@
 #define ANGLE_MAX_3508      8191    // 360  degree
 #define ANGLE_RANGE_3508    8192
 #define ANGLE_CRT_3508      1       // angle direction normal
-#define CURRENT_MIN_3508    -8192   // CW   20A
-#define CURRENT_MAX_3508    8192    // CCW  20A
+#define CURRENT_MIN_3508    -12288  // CW   20A
+#define CURRENT_MAX_3508    12288   // CCW  20A
 #define CURRENT_CRT_3508    1       // current value normal
 #define SPEED_CRT_3508      1       // speed direction noraml
 
@@ -93,6 +93,7 @@ typedef enum {
  */
 typedef struct {
     int16_t     angle;
+    int16_t     langle;
     int16_t     current_get;
     int16_t     speed_rpm;
     uint8_t     temperature;

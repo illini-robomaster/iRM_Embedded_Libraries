@@ -10,8 +10,8 @@
 #define MAX(x, y) x > y ? x : y
 
 void test_pid() {
-    new_test_poke();
-    // test_poke();
+    // new_test_poke();
+    test_poke();
     // test_shoot();
     // test_chassis();
     // test_pitch();
@@ -198,26 +198,31 @@ void test_shoot() {
 
 void test_poke() {
     size_t i;
-    motor_t motor;
-    pid_ctl_t pid;
-    int32_t target;
+    motor_t mt_poke, mt_l, mt_r;
+    pid_ctl_t pid_poke, pid_l, pid_r;
+    int32_t target_speed = 1000;
 
-    motor_init(&motor, 0x208, CAN1_ID, M3508);
-    pid_init(&pid, POKE, &motor, -3000, 0, 1000, 0, 0, 44, 0, 50, 10000, 5, 400);
-    motor.out = 1;
+    motor_init(&mt_poke, 0x208, CAN1_ID, M3508);
+    motor_init(&mt_l, 0x205, CAN1_ID, M3508);
+    motor_init(&mt_r, 0x206, CAN1_ID, M3508);
+    pid_init(&pid_poke, POKE, &mt_poke, -2000, 0, 1000, 0, 0, 18, 0.1, 0, 3000, 5, 0);
+    pid_init(&pid_l, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
+    pid_init(&pid_r, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
+    mt_poke.out = 1;
+    mt_l.out = 1;
+    mt_r.out = 1;
     for (i = 0; i < 100; i++) {
-        get_motor_data(&motor);
-        set_motor_output(NULL, NULL, NULL, &motor);
+        get_motor_data(&mt_poke);
+        get_motor_data(&mt_l);
+        get_motor_data(&mt_r);
+        set_motor_output(&mt_l, &mt_r, NULL, &mt_poke);
     }
 
     while (1) {
-        target = -18500;
-        pid_rotation_reset(&pid);
-        for (i = 0; i < 500; i++) {
-            motor.out = pid_rotation_ctl_rotation(&pid, &target, 3000);
-            set_motor_output(NULL, NULL, NULL, &motor);
-            HAL_Delay(5);
-        }
+        mt_l.out = pid_calc(&pid_l, -target_speed);
+        mt_r.out = pid_calc(&pid_r, target_speed);
+        mt_poke.out = pid_calc(&pid_poke, -300);
+        set_motor_output(&mt_l, &mt_r, NULL, &mt_poke);
     }
 }
 
