@@ -15,11 +15,11 @@
 #define RR_MOTOR_CANID 0x204
 
 /* empirical parameters */
-#define kp 10
-#define ki 0.9
-#define kd 0
-#define int_lim 200
-#define calc_interval 5
+#define chs_kp 10
+#define chs_ki 0.9
+#define chs_kd 0
+#define chs_int_lim 200
+#define chs_calc_interval 5
 
 typedef struct __chassis {
     pid_ctl_t *pid_fl;

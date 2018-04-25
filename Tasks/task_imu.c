@@ -25,17 +25,17 @@ uint8_t imu_task_init(void){
 void imu_task(void const *argu){
     imu_task_init();
     int idle_period = DT * 1000;
-    print("IDLE PERIOD: %d", idle_period);
+    print("IDLE PERIOD: %d\r\n", idle_period);
     uint32_t imu_wake_time = osKernelSysTick();
     while (1) {
         //print("IMU task loop sends greets :D .\r\n");
         uint32_t tickStart = HAL_GetTick();
         onboard_imu_update();
-        print_imu_data();
+        //print_imu_data();
         osStatus ret_stat = osDelayUntil(&imu_wake_time, idle_period);
         if(ret_stat != osOK){
             print("DELAY WAS NOT EXECTUTED!!!!!!!!!!");
         }
-        print("TIME ELAPSED: %d\r\nSANITY", HAL_GetTick() - tickStart);
+        //print("TIME ELAPSED: %d\r\nSANITY", HAL_GetTick() - tickStart);
     }
 }

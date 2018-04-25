@@ -21,7 +21,7 @@
     print("[TEST] %s %s\n", name, (result) ? "PASS" : "FAIL");
 
 /* Test config */
-#define TEST_PID        ON
+#define TEST_PID        OFF
 #define TEST_MOTOR      OFF
 #define TEST_DBUS       OFF
 #define TEST_BSP_CAN    OFF

@@ -117,13 +117,13 @@ static int16_t correct_output(motor_t *motor) {
 
 /* public function starts from here */
 
-void motor_init(motor_t *motor, 
+void motor_init(motor_t *motor,
         uint16_t rx_id, uint8_t can_id, motor_type_t type) {
     motor->type     = type;
     motor->can_id   = can_id;
     motor->rx_id    = rx_id;
     motor->out      = 0;
-    if (rx_id >= CAN_RX1_START && 
+    if (rx_id >= CAN_RX1_START &&
             rx_id < CAN_RX1_START + CAN_GROUP_SIZE)
         motor->tx_id = CAN_TX1_ID;
     else if (rx_id >= CAN_RX2_START &&
@@ -276,7 +276,7 @@ uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
     if (motor2) { sp2 = correct_output(motor2); }
     if (motor3) { sp3 = correct_output(motor3); }
     if (motor4) { sp4 = correct_output(motor4); }
-    
+
     switch (can_id) {
         case CAN1_ID:
             can1_transmit(tx_id, sp1, sp2, sp3, sp4);
@@ -291,4 +291,3 @@ uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
 
     return 1;
 }
-

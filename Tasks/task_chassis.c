@@ -1,18 +1,16 @@
 #include "task_chassis.h"
 
-static osEvent chassis_event;
+//static osEvent chassis_event;
 osThreadId chassis_task_handle;
 
 void chassis_task_create(void){
-    osThreadDef(chassis_task_name, chassis_task, osPriorityNormal, 0, 256);
+    print("Function called\r\n");
+    osThreadDef(chassis_task_name, chassis_task, osPriorityAboveNormal, 0, 512);
     chassis_task_handle = osThreadCreate(osThread(chassis_task_name), NULL);
-#ifdef DEBUG
-    BSP_DEBUG;
     if (chassis_task_handle == NULL)
         print("chassis task create failed.\r\n");
     else
         print("chassis task created.\r\n");
-#endif
 }
 
 uint8_t chassis_task_init(chassis_t *my_chassis){
@@ -22,11 +20,17 @@ uint8_t chassis_task_init(chassis_t *my_chassis){
 }
 
 void chassis_task(void const *argu){
+    print("CHASSIS TASK STARTED\r\n");
     chassis_t my_chassis;
+    print("SANITY 1\r\n");
     chassis_task_init(&my_chassis);
+    print("SANITY 2\r\n");
     dbus_t* rc = dbus_get_struct();
+    print("SANITY 3\r\n");
     uint32_t chassis_wake_time = osKernelSysTick();
+    print("SANITY 4\r\n");
     while (1) {
+        print("CHASSIS LOOP SENDS GREETS\r\n");
         uint32_t tickStart = HAL_GetTick();
         if (rc->key.bit.W) {
             calc_chassis_output(&my_chassis, 1, 0, 0.5);
@@ -56,7 +60,7 @@ void chassis_task(void const *argu){
             calc_chassis_output(&my_chassis, 0, 0, 0);
         }
         run_chassis(&my_chassis);
-        osStatus ret_stat = osDelayUntil(&chassis_wake_time, calc_interval);
+        osStatus ret_stat = osDelayUntil(&chassis_wake_time, chs_calc_interval);
         if(ret_stat != osOK){
             print("DELAY WAS NOT EXECTUTED!!!!!!!!!!");
         }

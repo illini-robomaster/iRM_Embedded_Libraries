@@ -1,19 +1,26 @@
 #include "chassis.h"
 #include <math.h>
+#include <stdlib.h>
 
 void chassis_init(chassis_t *my_chassis){
-    motor_t m_fl, m_fr, m_rl, m_rr;
-    pid_ctl_t pid_fl, pid_fr, pid_rl, pid_rr;
+    motor_t *m_fl, *m_fr, *m_rl, *m_rr;
+    pid_ctl_t *pid_fl, *pid_fr, *pid_rl, *pid_rr;
+    m_fl = m_fr = m_rl = m_rr = NULL;
+    pid_fl = pid_fr = pid_rl = pid_rr = NULL;
 
-    motor_init(&m_fl, FL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
-    motor_init(&m_fr, FR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
-    motor_init(&m_rl, RL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
-    motor_init(&m_rr, RR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    motor_init(m_fl, FL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    motor_init(m_fr, FR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    motor_init(m_rl, RL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    motor_init(m_rr, RR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
 
-    pid_init(&pid_fl, CHASSIS_ROTATE, &m_fl, -MAX_SPEED, MAX_SPEED, int_lim, 0, 0, kp, ki, kd, 0, calc_interval, 0);
-    pid_init(&pid_fr, CHASSIS_ROTATE, &m_fr, -MAX_SPEED, MAX_SPEED, int_lim, 0, 0, kp, ki, kd, 0, calc_interval, 0);
-    pid_init(&pid_rl, CHASSIS_ROTATE, &m_rl, -MAX_SPEED, MAX_SPEED, int_lim, 0, 0, kp, ki, kd, 0, calc_interval, 0);
-    pid_init(&pid_rr, CHASSIS_ROTATE, &m_rr, -MAX_SPEED, MAX_SPEED, int_lim, 0, 0, kp, ki, kd, 0, calc_interval, 0);
+    pid_init(pid_fl, CHASSIS_ROTATE, m_fl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
+    pid_init(pid_fr, CHASSIS_ROTATE, m_fr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
+    pid_init(pid_rl, CHASSIS_ROTATE, m_rl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
+    pid_init(pid_rr, CHASSIS_ROTATE, m_rr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
 
     my_chassis->pid_fl = &pid_fl;
     my_chassis->pid_fr = &pid_fr;
@@ -21,11 +28,14 @@ void chassis_init(chassis_t *my_chassis){
     my_chassis->pid_rr = &pid_rr;
 
     // init CAN
-    for (uint8_t i = 0; i < 100; i++) {
+    int iter = 0;
+    while (iter < 100) {
         get_motor_data(my_chassis->pid_fl->motor);
-        m_fl.out = 1;
+        my_chassis->pid_fl->motor->out = 1;
         set_motor_output(my_chassis->pid_fl->motor, my_chassis->pid_fl->motor,
             my_chassis->pid_fl->motor, my_chassis->pid_fl->motor);
+        HAL_Delay(10);
+        ++iter;
     }
 }
 
