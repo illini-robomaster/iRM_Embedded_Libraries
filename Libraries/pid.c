@@ -19,13 +19,13 @@ static float fabs_limit(float *data, float lim) {
     return *data;
 }
 
-static int16_t get_prev_n_err(pid_ctl_t *pid, uint8_t n) {
+static int32_t get_prev_n_err(pid_ctl_t *pid, uint8_t n) {
     return pid->err[(pid->idx + HISTORY_DATA_SIZE - n) % HISTORY_DATA_SIZE];
 }
 
 static float position_pid_calc(pid_ctl_t *pid) {
-    int16_t err_now     = pid->err[pid->idx];
-    int16_t err_last    = get_prev_n_err(pid, 1);
+    int32_t err_now     = pid->err[pid->idx];
+    int32_t err_last    = get_prev_n_err(pid, 1);
 
     if (!pid->int_rng || abs(err_now) < pid->int_rng)
         pid->integrator += err_now;
@@ -55,7 +55,7 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 }
 
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
-        int16_t low_lim, int16_t  high_lim, int32_t int_lim, int16_t int_rng, int16_t max_derr,
+        int32_t low_lim, int32_t  high_lim, int32_t int_lim, int32_t int_rng, int32_t max_derr,
         float kp, float ki, float kd, float maxout, float dt, float deadband) {
     pid->mode       = mode;
     pid->motor      = motor;
@@ -72,7 +72,7 @@ void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
     pid_set_param(pid, kp, ki, kd);
 }
 
-int16_t pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle) {
+int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle) {
     /* force target angle to be in range */
     if (clip_angle_err(pid->motor, target_angle - pid->low_lim) < 0)
         target_angle = pid->low_lim;
@@ -85,7 +85,7 @@ int16_t pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle) {
     return position_pid_calc(pid);
 }
 
-int16_t pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed) {
+int32_t pid_speed_ctl_speed(pid_ctl_t *pid, int32_t target_speed) {
     /* force target speed to be in range */
     if (target_speed - pid->low_lim < 0)
         target_speed = pid->low_lim;
@@ -103,10 +103,10 @@ void pid_rotation_reset(pid_ctl_t *pid) {
     pid->ldata = get_motor_angle(pid->motor);
 }
 
-int16_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
-        int32_t *target, int16_t speed) {
+int32_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
+        int32_t *target, int32_t speed) {
     get_motor_data(pid->motor);
-    int16_t new_ang = get_motor_angle(pid->motor);
+    int32_t new_ang = get_motor_angle(pid->motor);
     *target -= clip_angle_err(pid->motor, new_ang - pid->ldata);
     pid->ldata = new_ang;
     if (abs(*target) < 300) {
@@ -118,7 +118,7 @@ int16_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
                 (*target) / abs(*target) * speed);
 }
 
-int16_t pid_calc(pid_ctl_t *pid, int16_t target) {
+int32_t pid_calc(pid_ctl_t *pid, int32_t target) {
     get_motor_data(pid->motor);
     switch (pid->mode) {
         case GIMBAL_AUTO_SHOOT:

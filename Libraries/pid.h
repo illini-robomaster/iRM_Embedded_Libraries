@@ -68,19 +68,19 @@ typedef struct {
     motor_t     *motor;
 
     uint8_t idx;
-    int16_t err[HISTORY_DATA_SIZE];
+    int32_t err[HISTORY_DATA_SIZE];
     int32_t integrator;
 
-    int16_t     low_lim;
-    int16_t     high_lim;
-    int16_t     int_lim;
-    int16_t     int_rng;
-    int16_t     max_derr;
+    int32_t     low_lim;
+    int32_t     high_lim;
+    int32_t     int_lim;
+    int32_t     int_rng;
+    int32_t     max_derr;
     int32_t     ldata;
 }   pid_ctl_t;
 
 /**
- * @brief clip int16_t number into [-lim, lim]
+ * @brief clip int32_t number into [-lim, lim]
  * @param data pointer to the number to be clipped
  * @param lim  absolute limit range
  * @return clipped value
@@ -101,7 +101,7 @@ static float fabs_limit(float *data, float lim);
  * @param n     the nth latest
  * @return      the nth latest error value
  */
-static int16_t get_prev_n_err(pid_ctl_t *pid, uint8_t n);
+static int32_t get_prev_n_err(pid_ctl_t *pid, uint8_t n);
 
 /**
  * @brief calculate generic position pid
@@ -127,7 +127,7 @@ static float position_pid_calc(pid_ctl_t *pid);
  * @param dt        delta t in millisecond
  */
 void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor, 
-        int16_t low_lim, int16_t high_lim, int32_t int_lim, int16_t int_rng, int16_t max_derr,
+        int32_t low_lim, int32_t high_lim, int32_t int_lim, int32_t int_rng, int32_t max_derr,
         float kp, float ki, float kd, float maxout, float dt, float deadband);
 
 /**
@@ -145,7 +145,7 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd);
  * @param target_angle  target angle
  * @return calculated current output
  */
-int16_t pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle);
+int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle);
 
 /**
  * @brief use rotational speed data from sensor to control rotational speed
@@ -153,7 +153,7 @@ int16_t pid_angle_ctl_angle(pid_ctl_t *pid, int16_t target_angle);
  * @param target_speed  target rotational speed
  * @return calculated current output
  */
-int16_t pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed);
+int32_t pid_speed_ctl_speed(pid_ctl_t *pid, int32_t target_speed);
 
 /**
  * @brief calculate pid value and set output to the motor
@@ -161,12 +161,12 @@ int16_t pid_speed_ctl_speed(pid_ctl_t *pid, int16_t target_speed);
  * @param target    generic target value
  * @return calculated motor output
  */
-int16_t pid_calc(pid_ctl_t *pid, int16_t target);
+int32_t pid_calc(pid_ctl_t *pid, int32_t target);
 
 void pid_rotation_reset(pid_ctl_t *pid);
 
-int16_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
-        int32_t *target, int16_t speed);
+int32_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
+        int32_t *target, int32_t speed);
 
 /** @} */
 

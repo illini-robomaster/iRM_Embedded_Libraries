@@ -11,9 +11,9 @@
 
 void test_pid() {
     // new_test_poke();
-    test_poke();
+    // test_poke();
     // test_shoot();
-    // test_chassis();
+    test_chassis();
     // test_pitch();
     // test_yaw();
 }
@@ -22,11 +22,11 @@ void test_chassis() {
     motor_t m_fl, m_fr, m_rl, m_rr;
     pid_ctl_t pid1, pid2, pid3, pid4;
     dbus_t* rc = dbus_get_struct();
-    int16_t speed = 1500;
+    int32_t speed = 2700;
     float kp = 10;
     float ki = 0.9;
     float kd = 0;
-    int16_t int_lim = 200;
+    int32_t int_lim = 200;
     size_t i;
 
     motor_init(&m_fl, 0x201, CAN1_ID, M3508);
@@ -87,6 +87,7 @@ void test_chassis() {
             m_rr.out = pid_calc(&pid4, 0);
         }
         set_motor_output(&m_fl, &m_fr, &m_rl, &m_rr);
+        HAL_Delay(5);
     }
 }
 
@@ -186,7 +187,7 @@ void test_shoot() {
         set_motor_output(NULL, &mt_pitch, NULL, NULL);
     }
 
-    int16_t target_speed = 2000;
+    int32_t target_speed = 2000;
     while (1) {
         mt_pitch.out = pid_calc(&pid_pitch, 5500);
         mt_l.out = pid_calc(&pid_left, -target_speed);

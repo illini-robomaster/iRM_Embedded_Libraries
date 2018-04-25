@@ -34,9 +34,9 @@ static void init_shoot(motor_t *m_fy_left, motor_t *m_fy_right, motor_t *m_poke,
     motor_init(m_poke, 0x208, CAN1_ID, M3508);
     motor_init(m_fy_left, 0x205, CAN1_ID, M3508);
     motor_init(m_fy_right, 0x206, CAN1_ID, M3508);
-    pid_init(pid_poke, POKE, m_poke, -2000, 0, 80000, 0, 0, 18, 0.15, 0, 10000, 5, 0);
+    pid_init(pid_poke, POKE, m_poke, -2000, 0, 80000, 0, 0, 14, 2, 0, 10000, 5, 0);
     pid_init(pid_fy_left, FLYWHEEL, m_fy_left, -4000, 0, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
-    pid_init(pid_fy_right, FLYWHEEL, m_fy_right, 0, 4000, 0, 0, 0, 0, 0, 0, 3000, 5, 0);
+    pid_init(pid_fy_right, FLYWHEEL, m_fy_right, 0, 4000, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
     m_fy_left->out = m_fy_right->out = 1;
 
     for (i = 0; i < 100; i++) {
@@ -57,12 +57,12 @@ void test_mouse() {
     init_shoot(&m_fy_left, &m_fy_right, &m_poke,
             &pid_fy_left, &pid_fy_right, &pid_poke);
 
-    int16_t yaw_ang = 6000, pitch_ang = 5500;
+    int32_t yaw_ang = 6000, pitch_ang = 5500;
     int32_t flywheel_speed = 1000;
     int32_t poke_speed = 300;
     while (1) {
-        yaw_ang -= rc->mouse.x;
-        pitch_ang -= rc->mouse.y;
+        yaw_ang -= rc->mouse.x * 0.2;
+        pitch_ang -= rc->mouse.y * 0.2;
         m_yaw.out = pid_calc(&pid_yaw, yaw_ang);
         m_pitch.out = pid_calc(&pid_pitch, pitch_ang);
         m_poke.out = m_fy_left.out = m_fy_right.out = 0;
@@ -75,5 +75,6 @@ void test_mouse() {
 
         set_motor_output(&m_yaw, &m_pitch, NULL, NULL);
         set_motor_output(&m_fy_left, &m_fy_right, NULL, &m_poke);
+        HAL_Delay(5);
     }
 }
