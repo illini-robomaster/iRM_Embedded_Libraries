@@ -11,7 +11,7 @@
 #define RANGLE      0.1     // measurement noise covariance cov(gyro, angle)
 #define STATIC_LIM  4       // if (all) gyro values are smaller than this lim, we assume it's static
 #define STATIC_TURN 20      // we only start to update zero bias if the robots are static in 10 measurements
-#define IMUSAMPLES  200     // how many gyro samples to grab
+#define IMUSAMPLES  300     // how many gyro samples to grab
 
 typedef enum{
     ROLL  = 0,

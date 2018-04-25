@@ -30,6 +30,7 @@ float get_chassis_yaw_angle(void){
 }
 
 void onboard_imu_lib_init(void){
+    print("Initing and calibrating onboard imu\r\n");
     for(int i = 0; i < 3; ++i){
         imuBoard.angle[i] = 0;
         for(int j = 0; j < 2; ++j){
@@ -55,6 +56,7 @@ void onboard_imu_lib_init(void){
 
 void onboard_imu_update(void){
     mpu6500_get_data(&(imuBoard.my_raw_imu));
+    update_acc_angle();
     if(MY_ABS(imuBoard.my_raw_imu.gyro.x) < STATIC_LIM
                 && MY_ABS(imuBoard.my_raw_imu.gyro.y) < STATIC_LIM && MY_ABS(imuBoard.my_raw_imu.gyro.z) < STATIC_LIM){
         ++imuBoard.static_measurement_count;
@@ -64,11 +66,12 @@ void onboard_imu_update(void){
     if(imuBoard.static_measurement_count > STATIC_TURN){
         // Robot has been static for a while. We calibrate IMU accordingly.
         update_zero_bias();
+    } else {
+        // if the robot is static, we don't need to update angle
+        kalman_filter_update(IMU_X);
+        kalman_filter_update(IMU_Y);
+        discrete_integral(IMU_Z);
     }
-    update_acc_angle();
-    kalman_filter_update(IMU_X);
-    kalman_filter_update(IMU_Y);
-    discrete_integral(IMU_Z);
 }
 
 void update_zero_bias(void){

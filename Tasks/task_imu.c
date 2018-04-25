@@ -5,7 +5,7 @@ static osEvent imu_event;
 osThreadId imu_task_handle;
 
 void imu_task_create(void){
-    osThreadDef(imu_task_name, imu_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(imu_task_name, imu_task, osPriorityAboveNormal, 0, 128);
     imu_task_handle = osThreadCreate(osThread(imu_task_name), NULL);
 #ifdef DEBUG
     BSP_DEBUG;
@@ -23,6 +23,7 @@ uint8_t imu_task_init(void){
 }
 
 void imu_task(void const *argu){
+    imu_task_init();
     int idle_period = DT * 1000;
     print("IDLE PERIOD: %d", idle_period);
     uint32_t imu_wake_time = osKernelSysTick();
@@ -31,6 +32,10 @@ void imu_task(void const *argu){
         uint32_t tickStart = HAL_GetTick();
         onboard_imu_update();
         print_imu_data();
-        osDelayUntil(&imu_wake_time, idle_period);
+        osStatus ret_stat = osDelayUntil(&imu_wake_time, idle_period);
+        if(ret_stat != osOK){
+            print("DELAY WAS NOT EXECTUTED!!!!!!!!!!");
+        }
+        print("TIME ELAPSED: %d\r\nSANITY", HAL_GetTick() - tickStart);
     }
 }
