@@ -1,5 +1,5 @@
-#ifndef _TASK_H_
-#define _TASK_H_
+#ifndef _IMU_TASK_H_
+#define _IMU_TASK_H_
 
 #include "cmsis_os.h"
 
