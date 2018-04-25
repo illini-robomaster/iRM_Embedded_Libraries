@@ -1,4 +1,49 @@
 #include "motor.h"
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <stdlib.h>
 
 /* private function starts from here */
 
@@ -117,8 +162,10 @@ static int16_t correct_output(motor_t *motor) {
 
 /* public function starts from here */
 
-void motor_init(motor_t *motor,
+motor_t *motor_init(motor_t *motor,
         uint16_t rx_id, uint8_t can_id, motor_type_t type) {
+    if (!motor)
+        motor = malloc(sizeof(motor_t));
     motor->type     = type;
     motor->can_id   = can_id;
     motor->rx_id    = rx_id;
@@ -134,6 +181,7 @@ void motor_init(motor_t *motor,
         motor->tx_id = CAN_TX3_ID;
     else
         bsp_error_handler(__FUNCTION__, __LINE__, "rx id out of range");
+    return motor;
 }
 
 uint8_t get_motor_data(motor_t *motor) {

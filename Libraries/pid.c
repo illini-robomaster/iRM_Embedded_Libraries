@@ -54,9 +54,11 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
     pid->kd = kd;
 }
 
-void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
+pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
         int32_t low_lim, int32_t  high_lim, int32_t int_lim, int32_t int_rng, int32_t max_derr,
         float kp, float ki, float kd, float maxout, float dt, float deadband) {
+    if (!pid)
+        pid = malloc(sizeof(pid_ctl_t));
     pid->mode       = mode;
     pid->motor      = motor;
     pid->dt         = dt;
@@ -70,6 +72,7 @@ void pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
     pid->idx        = 0;
     pid->integrator = 0;
     pid_set_param(pid, kp, ki, kd);
+    return pid;
 }
 
 int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle) {

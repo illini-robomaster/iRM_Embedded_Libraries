@@ -8,24 +8,24 @@ void chassis_init(chassis_t *my_chassis){
     m_fl = m_fr = m_rl = m_rr = NULL;
     pid_fl = pid_fr = pid_rl = pid_rr = NULL;
 
-    motor_init(m_fl, FL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
-    motor_init(m_fr, FR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
-    motor_init(m_rl, RL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
-    motor_init(m_rr, RR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    m_fl = motor_init(NULL, FL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    m_fr = motor_init(NULL, FR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    m_rl = motor_init(NULL, RL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
+    m_rr = motor_init(NULL, RR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
 
-    pid_init(pid_fl, CHASSIS_ROTATE, m_fl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+    pid_fl = pid_init(NULL, CHASSIS_ROTATE, m_fl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
                 0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
-    pid_init(pid_fr, CHASSIS_ROTATE, m_fr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+    pid_fr = pid_init(NULL, CHASSIS_ROTATE, m_fr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
                 0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
-    pid_init(pid_rl, CHASSIS_ROTATE, m_rl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+    pid_rl = pid_init(NULL, CHASSIS_ROTATE, m_rl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
                 0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
-    pid_init(pid_rr, CHASSIS_ROTATE, m_rr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
+    pid_rr = pid_init(NULL, CHASSIS_ROTATE, m_rr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
                 0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
 
-    my_chassis->pid_fl = &pid_fl;
-    my_chassis->pid_fr = &pid_fr;
-    my_chassis->pid_rl = &pid_rl;
-    my_chassis->pid_rr = &pid_rr;
+    my_chassis->pid_fl = pid_fl;
+    my_chassis->pid_fr = pid_fr;
+    my_chassis->pid_rl = pid_rl;
+    my_chassis->pid_rr = pid_rr;
 
     // init CAN
     int iter = 0;

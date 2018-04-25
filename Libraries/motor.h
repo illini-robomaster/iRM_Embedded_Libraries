@@ -15,6 +15,7 @@
  */
 
 #include <inttypes.h>
+#include <stdlib.h>
 #include "bsp_can.h"
 #include "bsp_error_handler.h"
 #include "bsp_print.h"
@@ -302,8 +303,9 @@ static int16_t correct_output(motor_t *motor);
  * @param rx_id     hardware sensor id as in CAN address
  * @param can_id    CAN id chosen from [CAN1_ID, CAN2_ID]
  * @param type      type of the motor
+ * @return initialized motor pointer
  */
-void motor_init(motor_t *motor,
+motor_t *motor_init(motor_t *motor,
         uint16_t rx_id, uint8_t can_id, motor_type_t type);
 
 /**
