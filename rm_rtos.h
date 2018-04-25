@@ -75,9 +75,9 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
  * @date    2018-04-13
  */
 extern inline void RM_RTOS_THREADS_Init(void) {
-    //referee_task_create();
-    //imu_task_create();
-    chassis_task_create();
+    referee_task_create();
+    imu_task_create();
+    //chassis_task_create();
 }
 
 /**
