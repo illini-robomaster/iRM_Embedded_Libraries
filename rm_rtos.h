@@ -79,7 +79,7 @@ extern inline void RM_RTOS_THREADS_Init(void) {
     referee_task_create();
     imu_task_create();
     //gimbal_task_create();
-    //chassis_task_create();
+    chassis_task_create();
 }
 
 /**
@@ -103,8 +103,8 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
     /* Add codes to initialize default thread here */
 
     print("Enter default task.\n");
-    osTimerStart(gimbal_timer_id,gimbal_period);
-    osTimerStart(chassis_timer_id, chassis_period);
+    //osTimerStart(gimbal_timer_id,gimbal_period);
+    //osTimerStart(chassis_timer_id, chassis_period);
     /* There must be a while loop here. */
     while(1) {
         osDelay(1);
