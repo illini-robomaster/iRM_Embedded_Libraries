@@ -5,7 +5,7 @@
 
 #include "dbus.h"
 #include "chassis.h"
-
+#define chassis_period 10
 /* Global variable */
 extern osThreadId   chassis_task_handle;
 
