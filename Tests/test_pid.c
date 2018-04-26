@@ -38,11 +38,6 @@ void test_chassis() {
     pid_init(&pid3, CHASSIS_ROTATE, &m_rl, -3000, 3000, int_lim, 0, 0, kp, ki, kd, 0, 5, 0);
     pid_init(&pid4, CHASSIS_ROTATE, &m_rr, -3000, 3000, int_lim, 0, 0, kp, ki, kd, 0, 5, 0);
 
-    for (i = 0; i < 100; i++) {
-        get_motor_data(&m_fl);
-        m_fl.out = 1;
-        set_motor_output(&m_fl, &m_fl, &m_fl, &m_fl);
-    }
     while (1) {
         if (rc->key.bit.W) {
             m_fl.out = pid_calc(&pid1, speed);
@@ -111,12 +106,6 @@ void test_pitch() {
 #else
     pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 4800, 6200, 0, 400, 200, 7.7, 0.2, 130, 3000, 5, 0);
 #endif
-    //we must send some nonzero data to initialize CAN
-    for (i = 0; i < 100; i++) {
-        get_motor_data(&motor);
-        motor.out = 1;
-        set_motor_output(NULL, &motor, NULL, NULL);
-    }
     int target_val_1 = 6800;
     int target_val_2 = 5200;
     int target_val;
@@ -137,12 +126,6 @@ void test_yaw() {
     size_t i;
 
     motor_init(&motor, 0x209, CAN1_ID, M6623);
-    //we must send some nonzero data to initialize CAN
-    for (i = 0; i < 100; i++) {
-        get_motor_data(&motor);
-        motor.out = 1;
-        set_motor_output(&motor, NULL, NULL, NULL);
-    }
     pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 70, 1600, 5, 0);
     int target_val_1 = 6000;
     int target_val_2 = 5600;
@@ -164,11 +147,6 @@ void test_camera() {
     size_t i;
 
     motor_init(&motor, 0x200, CAN1_ID, M3510);
-    for (i = 0; i < 100; i++) {
-        get_motor_data(&motor);
-        motor.out = 1;
-        set_motor_output(&motor, &motor, &motor, &motor);
-    }
 }
 
 void test_shoot() {
@@ -186,14 +164,6 @@ void test_shoot() {
     pid_init(&pid_left, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 5, 0);
     pid_init(&pid_right, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 5, 0);
     mt_l.out = mt_r.out = mt_pitch.out = 1;
-
-    for (i = 0; i < 100; i++) {
-        get_motor_data(&mt_pitch);
-        get_motor_data(&mt_r);
-        get_motor_data(&mt_l);
-        set_motor_output(&mt_l, &mt_r, NULL, NULL);
-        set_motor_output(NULL, &mt_pitch, NULL, NULL);
-    }
 
     int32_t target_speed = 2000;
     while (1) {
@@ -220,12 +190,6 @@ void test_poke() {
     mt_poke.out = 1;
     mt_l.out = 1;
     mt_r.out = 1;
-    for (i = 0; i < 100; i++) {
-        get_motor_data(&mt_poke);
-        get_motor_data(&mt_l);
-        get_motor_data(&mt_r);
-        set_motor_output(&mt_l, &mt_r, NULL, &mt_poke);
-    }
 
     while (1) {
         mt_l.out = pid_calc(&pid_l, -target_speed);

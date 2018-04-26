@@ -34,6 +34,7 @@ typedef enum {
     POKE,
     CHASSIS_ROTATE,
     FLYWHEEL,
+    HAPTOR,
 }   pid_mode_t;
 
 /**
