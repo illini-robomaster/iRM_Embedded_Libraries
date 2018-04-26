@@ -36,10 +36,6 @@
 #define CAN_BUS_1           hcan1
 #define CAN_BUS_2           hcan2
 
-#define CAN_TX1_ID          0x200
-#define CAN_TX2_ID          0x1FF
-#define CAN_TX3_ID          0x2FF
-
 /**
  * CAN1 init wrapper
  *

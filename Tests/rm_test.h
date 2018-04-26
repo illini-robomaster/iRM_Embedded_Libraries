@@ -46,7 +46,7 @@ extern inline void run_all_tests() {
         TEST_OUTPUT("BSP IMU TEST", test_bsp_imu());
     if (TEST_IMU == ON)
         test_imu();
-    if (TEST_MOUSE)
+    if (TEST_MOUSE == ON)
         test_mouse();
 }
 

@@ -5,7 +5,7 @@ osThreadId chassis_task_handle;
 
 void chassis_task_create(void){
     print("Function called\r\n");
-    osThreadDef(chassis_task_name, chassis_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(chassis_task_name, chassis_task, osPriorityAboveNormal, 0, 128);
     chassis_task_handle = osThreadCreate(osThread(chassis_task_name), NULL);
     if (chassis_task_handle == NULL)
         print("chassis task create failed.\r\n");
@@ -51,10 +51,10 @@ void chassis_task(void const *argu){
             my_chassis.pid_rr->motor->out = pid_calc(my_chassis.pid_rr, -MAX_SPEED);
         }
         else if (rc->key.bit.Q) {
-            calc_chassis_output(&my_chassis, 0, -Q_PI, -1);
+            calc_chassis_output(&my_chassis, 0, -Q_PI, -0.4);
         }
         else if (rc->key.bit.E) {
-            calc_chassis_output(&my_chassis, 0, Q_PI, 1);
+            calc_chassis_output(&my_chassis, 0, Q_PI, 0.4);
         }
         else {
             calc_chassis_output(&my_chassis, 0, 0, 0);

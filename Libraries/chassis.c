@@ -42,9 +42,15 @@ void chassis_init(chassis_t *my_chassis){
 void calc_chassis_output(chassis_t *my_chassis, float normalized_desired_speed,
         float desired_angle, float normalized_change_rate){
     float v_fl = MAX_SPEED * (normalized_desired_speed * sin(desired_angle + Q_PI) + normalized_change_rate);
-    float v_fr = -MAX_SPEED * (normalized_desired_speed * cos(desired_angle + Q_PI) - normalized_change_rate);
+    float v_fr = MAX_SPEED * (normalized_desired_speed * cos(desired_angle + Q_PI) - normalized_change_rate);
     float v_rl = MAX_SPEED * (normalized_desired_speed * cos(desired_angle + Q_PI) + normalized_change_rate);
-    float v_rr = -MAX_SPEED * (normalized_desired_speed * sin(desired_angle + Q_PI) - normalized_change_rate);
+    float v_rr = MAX_SPEED * (normalized_desired_speed * sin(desired_angle + Q_PI) - normalized_change_rate);
+
+    // reverse these two numbers because they are on the right sides,
+    // which means, they spin in a different directions than left sides
+    // when they move.
+    v_fr = -v_fr;
+    v_rr = -v_rr;
 
     my_chassis->pid_fl->motor->out = pid_calc(my_chassis->pid_fl, v_fl);
     my_chassis->pid_fr->motor->out = pid_calc(my_chassis->pid_fr, v_fr);
