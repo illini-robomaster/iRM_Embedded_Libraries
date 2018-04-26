@@ -77,9 +77,9 @@ pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
 
 int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle) {
     /* force target angle to be in range */
-    if (clip_angle_err(pid->motor, target_angle - pid->low_lim) < 0)
+    if (pid->low_lim && clip_angle_err(pid->motor, target_angle - pid->low_lim) < 0)
         target_angle = pid->low_lim;
-    else if (clip_angle_err(pid->motor, target_angle - pid->high_lim) > 0)
+    else if (pid->high_lim && clip_angle_err(pid->motor, target_angle - pid->high_lim) > 0)
         target_angle = pid->high_lim;
     /* set angle error into the circular buffer */
     pid->idx = (++pid->idx) % HISTORY_DATA_SIZE;
@@ -99,26 +99,6 @@ int32_t pid_speed_ctl_speed(pid_ctl_t *pid, int32_t target_speed) {
     pid->err[pid->idx] = get_speed_err(pid->motor, target_speed);
     /* calculate generic position pid */
     return position_pid_calc(pid);
-}
-
-void pid_rotation_reset(pid_ctl_t *pid) {
-    get_motor_data(pid->motor);
-    pid->ldata = get_motor_angle(pid->motor);
-}
-
-int32_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
-        int32_t *target, int32_t speed) {
-    get_motor_data(pid->motor);
-    int32_t new_ang = get_motor_angle(pid->motor);
-    *target -= clip_angle_err(pid->motor, new_ang - pid->ldata);
-    pid->ldata = new_ang;
-    if (abs(*target) < 300) {
-        pid->integrator = 0;
-        return pid_speed_ctl_speed(pid, 0);
-    }
-    else
-        return pid_speed_ctl_speed(pid,
-                (*target) / abs(*target) * speed);
 }
 
 int32_t pid_calc(pid_ctl_t *pid, int32_t target) {

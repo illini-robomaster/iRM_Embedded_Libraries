@@ -116,8 +116,8 @@ static float position_pid_calc(pid_ctl_t *pid);
  * @param pid       pid controller pointer
  * @param mode      pid control mode
  * @param motor     associated motor instance
- * @param low_lim   target lower limit
- * @param high_lim  target upper limit
+ * @param low_lim   target lower limit [set to 0 to disable]
+ * @param high_lim  target upper limit [set to 0 to disable]
  * @param int_lim   integration limit [set to 0 to disable]
  * @param int_rng   range for enabling integration [set to 0 to disable]
  * @param max_derr  maximum error derivative [set to 0 to disable]
@@ -144,7 +144,7 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd);
 /**
  * @brief use angle data from sensor to control angle
  * @param pid           pid controller
- * @param target_angle  target angle
+ * @param target_angle  target angle (will be clipped to [low_lim, high_lim])
  * @return calculated current output
  */
 int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle);
@@ -152,7 +152,7 @@ int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle);
 /**
  * @brief use rotational speed data from sensor to control rotational speed
  * @param pid           pid controller
- * @param target_speed  target rotational speed
+ * @param target_speed  target rotational speed (will be clipped to [low_lim, high_lim])
  * @return calculated current output
  */
 int32_t pid_speed_ctl_speed(pid_ctl_t *pid, int32_t target_speed);
@@ -160,15 +160,10 @@ int32_t pid_speed_ctl_speed(pid_ctl_t *pid, int32_t target_speed);
 /**
  * @brief calculate pid value and set output to the motor
  * @param pid       pid instance
- * @param target    generic target value
+ * @param target    generic target value (will be clipped to [low_lim high_lim])
  * @return calculated motor output
  */
 int32_t pid_calc(pid_ctl_t *pid, int32_t target);
-
-void pid_rotation_reset(pid_ctl_t *pid);
-
-int32_t pid_rotation_ctl_rotation(pid_ctl_t *pid,
-        int32_t *target, int32_t speed);
 
 /** @} */
 

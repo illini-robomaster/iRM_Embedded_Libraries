@@ -125,7 +125,7 @@ motor_t *motor_init(motor_t *motor,
     motor->type     = type;
     motor->can_id   = can_id;
     motor->rx_id    = rx_id;
-    motor->out      = 0;
+    motor->out      = 1;
     if (rx_id >= CAN_RX1_START &&
             rx_id < CAN_RX1_START + CAN_GROUP_SIZE)
         motor->tx_id = CAN_TX1_ID;
@@ -137,6 +137,9 @@ motor_t *motor_init(motor_t *motor,
         motor->tx_id = CAN_TX3_ID;
     else
         bsp_error_handler(__FUNCTION__, __LINE__, "rx id out of range");
+    /* transmit non-zero data to can bus to avoid initial motor burst */
+    for (size_t i = 0; i < 30; i++)
+        set_motor_output(motor, motor, motor, motor);
     return motor;
 }
 
