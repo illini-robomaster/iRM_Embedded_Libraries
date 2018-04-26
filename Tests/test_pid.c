@@ -13,8 +13,8 @@ void test_pid() {
     // new_test_poke();
     // test_poke();
     // test_shoot();
-    test_chassis();
-    // test_pitch();
+    // test_chassis();
+    test_pitch();
     // test_yaw();
 }
 
@@ -96,13 +96,21 @@ void test_pitch() {
     pid_ctl_t pid;
     size_t i;
 
+#ifdef ENGINEERING
+    motor_init(&motor, 0x205, CAN1_ID, M3510);
+#else
     motor_init(&motor, 0x20A, CAN1_ID, M6623);
+#endif
     /*
      * p: 7.7
      * i: 0.2
      * d: 130
      */
+#ifdef ENGINEERING
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 1000, 5000, 0, 400, 200, 5, 0, 0, 3000, 5, 0);
+#else
     pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 4800, 6200, 0, 400, 200, 7.7, 0.2, 130, 3000, 5, 0);
+#endif
     //we must send some nonzero data to initialize CAN
     for (i = 0; i < 100; i++) {
         get_motor_data(&motor);
@@ -113,11 +121,11 @@ void test_pitch() {
     int target_val_2 = 5200;
     int target_val;
     while (1) {
-        for (target_val = 5200; target_val < 6200; target_val += 100) {
+        for (target_val = 1000; target_val < 5000; target_val += 200) {
             for (i = 0; i < 400; i++) {
                 motor.out = pid_calc(&pid, target_val);
-                set_motor_output(NULL, &motor, NULL, NULL);
-                HAL_Delay(5);
+                set_motor_output(&motor, NULL, NULL, NULL);
+                HAL_Delay(1);
             }
         }
     }

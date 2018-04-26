@@ -4,8 +4,8 @@
 #include "pid.h"
 #include "motor.h"
 
-#define MAX_SPEED 1000
-#define Q_PI 0.7853982 //pi / 4
+#define MAX_SPEED 3000
+#define Q_PI 0.7853982 // \pi / 4
 
 #define CHASSIS_MOTOR_TYPE M3508
 

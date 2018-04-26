@@ -68,14 +68,18 @@ void test_motor_3510(uint8_t rotate) {
     motor_t motor;
     size_t i;
 
+#ifdef ENGINEERING //engineering pitch
+    motor_init(&motor, 0x205, CAN1_ID, M3510);
+#else
     motor_init(&motor, 0x207, CAN1_ID, M3510);
+#endif
     motor.out = 4000;
 
     if (rotate)
         for (i = 0; i < 1000; i++)
             set_motor_output(NULL, NULL, &motor, NULL);
 
-    for (i = 0; i < 1000; i++) {
+    for (i = 0; i < 10000; i++) {
         get_motor_data(&motor);
         print_motor_data(&motor);
         HAL_Delay(20);

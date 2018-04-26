@@ -20,6 +20,8 @@
 #include "bsp_error_handler.h"
 #include "bsp_print.h"
 
+
+
 #define CAN1_ID 1
 #define CAN2_ID 2
 
@@ -41,7 +43,7 @@
 #define ANGLE_CRT_3510      1       // angle direction normal
 #define CURRENT_MIN_3510    -29000  // CCW  ~1.3A
 #define CURRENT_MAX_3510    29000   // CW   ~1.3A Looking towards LED
-#define CURRENT_CRT_3510    1      // current direction reversed
+#define CURRENT_CRT_3510    1       // current direction normal
 
 #define ANGLE_MIN_3508      0       // 0    degree
 #define ANGLE_MAX_3508      8191    // 360  degree
@@ -280,7 +282,7 @@ static int16_t clip(int16_t val, int16_t range);
  * @brief limit current output to prevent from buring the motor
  * @param val   current output value
  * @param lim   absolute current output limit
- * @return clipped current output 
+ * @return clipped current output
  */
 static int16_t current_limit(float val, int16_t lim);
 
