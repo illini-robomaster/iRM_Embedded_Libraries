@@ -62,6 +62,12 @@ static void can_init(CAN_HandleTypeDef* hcan) {
     if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK) {
         bsp_error_handler(__FUNCTION__, __LINE__, "CAN init failed.");
     }
+    /* transmit non-zero data to all can id to avoid motor burst */
+    for (size_t i = 0; i < 100; i++) {
+        can_transmit(hcan, CAN_TX1_ID, 1, 1, 1, 1);
+        can_transmit(hcan, CAN_TX2_ID, 1, 1, 1, 1);
+        can_transmit(hcan, CAN_TX3_ID, 1, 1, 1, 1);
+    }
 }
 
 static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {

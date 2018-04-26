@@ -20,14 +20,8 @@
 #include "bsp_error_handler.h"
 #include "bsp_print.h"
 
-
-
 #define CAN1_ID 1
 #define CAN2_ID 2
-
-#define CAN_TX1_ID  0x200
-#define CAN_TX2_ID  0x1FF
-#define CAN_TX3_ID  0x2FF
 
 #define CAN_RX1_START 0x201
 #define CAN_RX2_START 0x205
