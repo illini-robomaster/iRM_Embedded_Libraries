@@ -21,6 +21,7 @@
 #include "task_referee.h"
 #include "task_imu.h"
 #include "task_chassis.h"
+#include "task_gimbal.h"
 
 /* RTOS includes */
 #include "FreeRTOS.h"
@@ -77,6 +78,7 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
 extern inline void RM_RTOS_THREADS_Init(void) {
     referee_task_create();
     imu_task_create();
+    //gimbal_task_create();
     //chassis_task_create();
 }
 
@@ -101,6 +103,7 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
     /* Add codes to initialize default thread here */
 
     print("Enter default task.\n");
+    osTimerStart(gimbal_timer_id,gimbal_period);
     /* There must be a while loop here. */
     while(1) {
         osDelay(1);
@@ -113,7 +116,7 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
  * @author Nickel_Liang
  * @date   2018-04-16
  */
-extern inline void RM_RTOS_Ready() {
+extern inline void RM_RTOSRM_Main_Init_Ready() {
     /* Indicate RTOS booted. Ready to battle. */
     buzzer_sing_song(startup, 1);
     led_green_on();
