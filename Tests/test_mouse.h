@@ -3,4 +3,8 @@
 
 void test_mouse();
 
+void init_pitch();
+
+void init_yaw();
+
 #endif

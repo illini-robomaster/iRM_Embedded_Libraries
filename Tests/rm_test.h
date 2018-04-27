@@ -9,6 +9,8 @@
 #include "test_bsp_imu.h"
 #include "test_imu.h"
 #include "test_mouse.h"
+#include "test_chassis.h"
+#include "test_haptor.h"
 
 /* Test utility */
 #define PASS    1
@@ -29,6 +31,8 @@
 #define TEST_BSP_IMU    OFF
 #define TEST_IMU        OFF
 #define TEST_MOUSE      OFF
+#define TEST_HAPTOR     OFF
+#define TEST_CHASSIS    OFF
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -48,6 +52,10 @@ extern inline void run_all_tests() {
         test_imu();
     if (TEST_MOUSE == ON)
         test_mouse();
+    if (TEST_CHASSIS == ON)
+        test_chassis();
+    if (TEST_HAPTOR == ON)
+        test_haptor();
 }
 
 #endif

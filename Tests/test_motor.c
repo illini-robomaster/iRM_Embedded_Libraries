@@ -4,9 +4,9 @@
 
 void test_motor() {
     // test_motor_3508(0);
-    // test_motor_6623(1);
+    test_motor_6623(0);
     // test_motor_2006(0);
-    test_motor_3510(0);
+    // test_motor_3510(0);
 }
 
 void test_motor_3508(uint8_t rotate) {
@@ -32,7 +32,7 @@ void test_motor_6623(uint8_t rotate) {
     motor_t motor;
     size_t i;
 
-    motor_init(&motor, 0x209, CAN1_ID, M6623);
+    motor_init(&motor, 0x20A, CAN1_ID, M6623);
     motor.out = 400;
 
     if (rotate)
@@ -50,7 +50,7 @@ void test_motor_2006(uint8_t rotate) {
     motor_t motor;
     size_t i;
 
-    motor_init(&motor, 0x202, CAN1_ID, M2006);
+    motor_init(&motor, 0x206, CAN1_ID, M2006);
     motor.out = 400;
 
     if (rotate)

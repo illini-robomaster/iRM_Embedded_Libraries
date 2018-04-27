@@ -10,8 +10,6 @@ void test_yaw();
 
 void test_pitch();
 
-void test_chassis();
-
 void test_poke();
 
 void test_shoot();
