@@ -3,8 +3,8 @@
 
 #include "pid.h"
 #include "motor.h"
+#include "dbus.h"
 
-#define MAX_SPEED 3000
 #define Q_PI 0.7853982 // \pi / 4
 
 #define CHASSIS_MOTOR_TYPE M3508
@@ -21,17 +21,24 @@
 #define chs_int_lim 200
 #define chs_calc_interval 5
 
-typedef struct __chassis {
-    pid_ctl_t *pid_fl;
-    pid_ctl_t *pid_fr;
-    pid_ctl_t *pid_rl;
-    pid_ctl_t *pid_rr;
-} chassis_t;
+#define TURNING_SPEED 500
+#define MAX_SPEED     2000
+#define YAW_DEADBAND  2
+
+typedef enum{
+    CHASSIS_FL = 0,
+    CHASSIS_FR = 1,
+    CHASSIS_RL = 2,
+    CHASSIS_RR = 3
+} chassis_motor_t;
+
+typedef pid_ctl_t* chassis_t;
 
 void chassis_init(chassis_t *my_chassis);
 
-void calc_chassis_output(chassis_t *my_chassis, float normalized_desired_speed,
-        float desired_angle, float normalized_change_rate);
+void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
+
+void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle);
 
 void run_chassis(chassis_t *my_chassis);
 

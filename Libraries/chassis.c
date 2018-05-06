@@ -22,43 +22,70 @@ void chassis_init(chassis_t *my_chassis){
     pid_rr = pid_init(NULL, CHASSIS_ROTATE, m_rr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
                 0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
 
-    my_chassis->pid_fl = pid_fl;
-    my_chassis->pid_fr = pid_fr;
-    my_chassis->pid_rl = pid_rl;
-    my_chassis->pid_rr = pid_rr;
+    my_chassis[CHASSIS_FL] = pid_fl;
+    my_chassis[CHASSIS_FR] = pid_fr;
+    my_chassis[CHASSIS_RL] = pid_rl;
+    my_chassis[CHASSIS_RR] = pid_rr;
 
     // init CAN
     int iter = 0;
     while (iter < 100) {
-        get_motor_data(my_chassis->pid_fl->motor);
-        my_chassis->pid_fl->motor->out = 1;
-        set_motor_output(my_chassis->pid_fl->motor, my_chassis->pid_fl->motor,
-            my_chassis->pid_fl->motor, my_chassis->pid_fl->motor);
+        get_motor_data(my_chassis[CHASSIS_FL]->motor);
+        my_chassis[CHASSIS_FL]->motor->out = 1;
+        set_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FL]->motor,
+            my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FL]->motor);
         HAL_Delay(10);
         ++iter;
     }
 }
 
-void calc_chassis_output(chassis_t *my_chassis, float normalized_desired_speed,
-        float desired_angle, float normalized_change_rate){
-    float v_fl = MAX_SPEED * (normalized_desired_speed * sin(desired_angle + Q_PI) + normalized_change_rate);
-    float v_fr = MAX_SPEED * (normalized_desired_speed * cos(desired_angle + Q_PI) - normalized_change_rate);
-    float v_rl = MAX_SPEED * (normalized_desired_speed * cos(desired_angle + Q_PI) + normalized_change_rate);
-    float v_rr = MAX_SPEED * (normalized_desired_speed * sin(desired_angle + Q_PI) - normalized_change_rate);
+void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
+    // clockwise
+    yaw_angle = yaw_angle + Q_PI;
+    float v_y = 0;
+    float v_x = 0;
+    if (rc->key.bit.W) {
+        v_y += 1;
+    }
+    else if (rc->key.bit.S) {
+        v_y -= 1;
+    }
+    else if (rc->key.bit.A) {
+        v_x -= 1;
+    }
+    else if (rc->key.bit.D) {
+        v_x += 1;
+    }
+    // rotation; change of basis matrix.
+    float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
+    float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
+    my_chassis[CHASSIS_FL]->motor->out = out_x;
+    my_chassis[CHASSIS_RR]->motor->out = -out_x; // velocity is the same. It's just these two motors are installed in opposite direction.
+    my_chassis[CHASSIS_RL]->motor->out = out_y;
+    my_chassis[CHASSIS_FR]->motor->out = -out_y;
+}
 
-    // reverse these two numbers because they are on the right sides,
-    // which means, they spin in a different directions than left sides
-    // when they move.
-    v_fr = -v_fr;
-    v_rr = -v_rr;
-
-    my_chassis->pid_fl->motor->out = pid_calc(my_chassis->pid_fl, v_fl);
-    my_chassis->pid_fr->motor->out = pid_calc(my_chassis->pid_fr, v_fr);
-    my_chassis->pid_rl->motor->out = pid_calc(my_chassis->pid_rl, v_rl);
-    my_chassis->pid_rr->motor->out = pid_calc(my_chassis->pid_rr, v_rr);
+void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle) {
+    if (abs(yaw_angle) < YAW_DEADBAND)
+        return;
+    if (yaw_angle > 0) {
+        // turn clockwise
+        my_chassis[CHASSIS_FL]->motor->out += TURNING_SPEED;
+        my_chassis[CHASSIS_RR]->motor->out += -TURNING_SPEED; // velocity is the same. It's just these two motors are installed in opposite direction.
+        my_chassis[CHASSIS_RL]->motor->out += TURNING_SPEED;
+        my_chassis[CHASSIS_FR]->motor->out += -TURNING_SPEED;
+    } else {
+        my_chassis[CHASSIS_FL]->motor->out += -TURNING_SPEED;
+        my_chassis[CHASSIS_RR]->motor->out += TURNING_SPEED;
+        my_chassis[CHASSIS_RL]->motor->out += -TURNING_SPEED;
+        my_chassis[CHASSIS_FR]->motor->out += TURNING_SPEED;
+    }
 }
 
 void run_chassis(chassis_t *my_chassis){
-    set_motor_output(my_chassis->pid_fl->motor, my_chassis->pid_fr->motor,
-                my_chassis->pid_rl->motor, my_chassis->pid_rr->motor);
+    for (int i = 0; i < 4; ++i) {
+        pid_calc(my_chassis[i], my_chassis[i]->motor->out);
+    }
+    set_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
+                my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);
 }

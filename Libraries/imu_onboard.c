@@ -25,7 +25,7 @@ void print_imu_data(void){
     print("\r\n");
 }
 
-float get_chassis_yaw_angle(void){
+float get_chassis_yaw_angle(void) {
     return 0;
 }
 
