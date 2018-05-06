@@ -26,17 +26,6 @@ void chassis_init(chassis_t *my_chassis){
     my_chassis[CHASSIS_FR] = pid_fr;
     my_chassis[CHASSIS_RL] = pid_rl;
     my_chassis[CHASSIS_RR] = pid_rr;
-
-    // init CAN
-    int iter = 0;
-    while (iter < 100) {
-        get_motor_data(my_chassis[CHASSIS_FL]->motor);
-        my_chassis[CHASSIS_FL]->motor->out = 1;
-        set_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FL]->motor,
-            my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FL]->motor);
-        HAL_Delay(10);
-        ++iter;
-    }
 }
 
 void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
@@ -66,7 +55,7 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
 }
 
 void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle) {
-    if (abs(yaw_angle) < YAW_DEADBAND)
+    if (fabsf(yaw_angle) < YAW_DEADBAND)
         return;
     if (yaw_angle > 0) {
         // turn clockwise
