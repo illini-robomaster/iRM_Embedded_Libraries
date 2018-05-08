@@ -62,14 +62,14 @@ void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle) {
     if (yaw_angle > 0) {
         // turn clockwise
         my_chassis[CHASSIS_FL]->motor->out += TURNING_SPEED;
-        my_chassis[CHASSIS_RR]->motor->out += -TURNING_SPEED; // velocity is the same. It's just these two motors are installed in opposite direction.
+        my_chassis[CHASSIS_RR]->motor->out += TURNING_SPEED; // velocity is the same. It's just these two motors are installed in opposite direction.
         my_chassis[CHASSIS_RL]->motor->out += TURNING_SPEED;
-        my_chassis[CHASSIS_FR]->motor->out += -TURNING_SPEED;
+        my_chassis[CHASSIS_FR]->motor->out += TURNING_SPEED;
     } else {
         my_chassis[CHASSIS_FL]->motor->out += -TURNING_SPEED;
-        my_chassis[CHASSIS_RR]->motor->out += TURNING_SPEED;
+        my_chassis[CHASSIS_RR]->motor->out += -TURNING_SPEED;
         my_chassis[CHASSIS_RL]->motor->out += -TURNING_SPEED;
-        my_chassis[CHASSIS_FR]->motor->out += TURNING_SPEED;
+        my_chassis[CHASSIS_FR]->motor->out += -TURNING_SPEED;
     }
 }
 

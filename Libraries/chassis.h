@@ -23,7 +23,7 @@
 
 #define TURNING_SPEED 500
 #define MAX_SPEED     2000
-#define YAW_DEADBAND  2
+#define YAW_DEADBAND  0.03
 
 typedef enum{
     CHASSIS_FL = 0,
@@ -36,6 +36,13 @@ typedef pid_ctl_t* chassis_t;
 
 void chassis_init(chassis_t *my_chassis);
 
+/**
+ * [calc_keyboard_move description]
+ * @brief
+ * @param my_chassis [description]
+ * @param rc         [description]
+ * @param yaw_angle  Clockwise
+ */
 void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
 
 void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle);
