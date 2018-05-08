@@ -1,6 +1,5 @@
 #include "test_pid.h"
 #include "motor.h"
-#include "poker.h"
 #include "pid.h"
 #include "bsp_print.h"
 #include "stdlib.h"
@@ -127,14 +126,4 @@ void test_poke() {
         mt_poke.out = pid_calc(&pid_poke, -300);
         set_motor_output(&mt_l, &mt_r, NULL, &mt_poke);
     }
-}
-
-void new_test_poke(void) {
-    poker_ctl_t my_poker_st;
-    motor_t poker_motor;
-
-    motor_init(&poker_motor, 0x208, CAN1_ID, M3508);
-    poker_init(&my_poker_st, 30, 0, &poker_motor);
-
-    single_shot(&my_poker_st);
 }
