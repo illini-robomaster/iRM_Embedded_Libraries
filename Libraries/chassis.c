@@ -33,18 +33,20 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
     yaw_angle = yaw_angle + Q_PI;
     float v_y = 0;
     float v_x = 0;
-    if (rc->key.bit.W) {
+    if (rc->key.bit.W)
         v_y += 1;
-    }
-    else if (rc->key.bit.S) {
+    if (rc->key.bit.S)
         v_y -= 1;
-    }
-    else if (rc->key.bit.A) {
+    if (rc->key.bit.A)
         v_x -= 1;
-    }
-    else if (rc->key.bit.D) {
+    if (rc->key.bit.D)
         v_x += 1;
+    float norm = 1;
+    if(v_x != 0 || v_y != 0) {
+        norm = sqrt(v_x * v_x + v_y * v_y);
     }
+    v_x /= norm;
+    v_y /= norm;
     // rotation; change of basis matrix.
     float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
     float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
@@ -73,7 +75,7 @@ void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle) {
 
 void run_chassis(chassis_t *my_chassis){
     for (int i = 0; i < 4; ++i) {
-        pid_calc(my_chassis[i], my_chassis[i]->motor->out);
+        my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->out);
     }
     set_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
                 my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);

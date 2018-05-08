@@ -25,9 +25,9 @@ void chassis_task(void const *argu){
     chassis_task_init(my_chassis);
     dbus_t* rc = dbus_get_struct();
     while (1) {
-        float yaw_angle = 0; // not implemented yet
+        float yaw_angle = 0.5235988; // not implemented yet
         calc_keyboard_move(my_chassis, rc, yaw_angle);
-        calc_gimbal_compensate(my_chassis, yaw_angle);
+        //calc_gimbal_compensate(my_chassis, yaw_angle);
         run_chassis(my_chassis);
         osDelay(5);
     }
