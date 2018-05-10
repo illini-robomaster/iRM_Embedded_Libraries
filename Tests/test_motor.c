@@ -3,10 +3,22 @@
 #include "bsp_print.h"
 
 void test_motor() {
+    motor_feedback();
     // test_motor_3508(0);
-    test_motor_6623(0);
+    // test_motor_6623(0);
     // test_motor_2006(0);
     // test_motor_3510(0);
+}
+
+void motor_feedback(void) {
+    motor_t *motor;
+    motor_init(motor, 0x209, CAN1_ID, M6623);
+
+    while (1) {
+        get_motor_data(motor);
+        print_motor_data(motor);
+        HAL_Delay(20);
+    }
 }
 
 void test_motor_3508(uint8_t rotate) {

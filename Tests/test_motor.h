@@ -6,6 +6,8 @@
 
 void test_motor();
 
+void motor_feedback(void);
+
 void test_motor_3508(uint8_t rotate);
 
 void test_motor_6623(uint8_t rotate);

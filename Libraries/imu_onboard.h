@@ -4,7 +4,6 @@
 #include "bsp_imu.h"
 #include <math.h>
 
-
 #define DT          0.02    // measurement time interval. RTOS should give exact time to me.
 #define QANGLE      0.00002 // angle noise variance
 #define QGYRO       0.0065  // gyro noise variance
@@ -54,13 +53,6 @@ void print_imu_data(void);
  * @date   2018-04-21
  */
 void print_mpu_data(imu_t* imu);
-
-/**
- * get current yaw angle for chassis
- * @brief
- * @return  current yaw angle for chassis in degree (without wrap around. E.g., you may get 370)
- */
-float get_chassis_yaw_angle(void);
 
 /**
  * Initialize onboard imu. Call this before (regularly) updating values or weird things happen!

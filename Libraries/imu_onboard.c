@@ -25,10 +25,6 @@ void print_imu_data(void){
     print("\r\n");
 }
 
-float get_chassis_yaw_angle(void) {
-    return 0;
-}
-
 void onboard_imu_lib_init(void){
     print("Initing and calibrating onboard imu\r\n");
     for(int i = 0; i < 3; ++i){

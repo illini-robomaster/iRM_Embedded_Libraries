@@ -63,7 +63,7 @@ static void test_engineering_mouse() {
     dbus_t *rc = dbus_get_struct();
     motor_t     m_yaw, m_pitch;
     pid_ctl_t   pid_yaw, pid_pitch;
-    
+
     init_yaw(&m_yaw, &pid_yaw);
     init_pitch(&m_pitch, &pid_pitch);
 
@@ -88,7 +88,7 @@ static void test_hero_mouse() {
     dbus_t *rc = dbus_get_struct();
     motor_t     m_pitch, m_fy_left, m_fy_right, m_poke;
     pid_ctl_t   pid_pitch, pid_fy_left, pid_fy_right, pid_poke;
-    
+
     init_pitch(&m_pitch, &pid_pitch);
     init_shoot(&m_fy_left, &m_fy_right, &m_poke,
             &pid_fy_left, &pid_fy_right, &pid_poke);
@@ -132,7 +132,7 @@ static void test_infantry_mouse() {
     dbus_t *rc = dbus_get_struct();
     motor_t     m_pitch, m_fy_left, m_fy_right, m_poke;
     pid_ctl_t   pid_pitch, pid_fy_left, pid_fy_right, pid_poke;
-    
+
     init_pitch(&m_pitch, &pid_pitch);
     init_shoot(&m_fy_left, &m_fy_right, &m_poke,
             &pid_fy_left, &pid_fy_right, &pid_poke);

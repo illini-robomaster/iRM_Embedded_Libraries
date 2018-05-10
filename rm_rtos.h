@@ -20,8 +20,7 @@
 #include "bsp_laser.h"
 #include "task_referee.h"
 #include "task_imu.h"
-#include "task_chassis.h"
-#include "task_gimbal.h"
+#include "task_motion.h"
 
 /* RTOS includes */
 #include "FreeRTOS.h"
@@ -78,8 +77,7 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
 extern inline void RM_RTOS_THREADS_Init(void) {
     referee_task_create();
     imu_task_create();
-    //gimbal_task_create();
-    chassis_task_create();
+    motion_task_create();
 }
 
 /**
