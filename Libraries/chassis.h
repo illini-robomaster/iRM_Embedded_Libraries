@@ -21,7 +21,7 @@
 #define chs_int_lim 200
 #define chs_calc_interval 5
 
-#define TURNING_SPEED 500
+#define TURNING_SPEED 100
 #define MAX_SPEED     2000
 #define YAW_DEADBAND  0.03
 
@@ -34,19 +34,36 @@ typedef enum{
 
 typedef pid_ctl_t* chassis_t;
 
+/**
+ * Initialize chassis motor pids
+ * @brief
+ * @param my_chassis ptr to the desired chassis object to be initialized
+ */
 void chassis_init(chassis_t *my_chassis);
 
 /**
- * [calc_keyboard_move description]
+ * calculate chassis move based on keyboard input
  * @brief
- * @param my_chassis [description]
- * @param rc         [description]
- * @param yaw_angle  Clockwise
+ * @param my_chassis An (array) of motors pid that represent chassis
+ * @param rc         dbus struct; for getting remote controller data
+ * @param yaw_angle  Counterclockwise is positive. In radian. How far is gimbal deviate from chassis
  */
 void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
 
+/**
+ * Makes chassis roate based on yaw motor feedback
+ * @TODO: use P controller instead
+ * @brief
+ * @param my_chassis my chassis object. An array of pid that represents chassis
+ * @param yaw_angle  yaw angle from yaw motor feedback
+ */
 void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle);
 
+/**
+ * Run chassis motors. SHOULD ONLY BE CALLED AFTER PID CALC
+ * @brief
+ * @param my_chassis my chassis object. An array of pid that represents chassis
+ */
 void run_chassis(chassis_t *my_chassis);
 
 #endif

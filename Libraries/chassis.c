@@ -29,8 +29,8 @@ void chassis_init(chassis_t *my_chassis){
 }
 
 void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
-    // clockwise
-    yaw_angle = yaw_angle + Q_PI;
+    // counterclockwise: positive
+    yaw_angle = -yaw_angle + Q_PI;
     float v_y = 0;
     float v_x = 0;
     if (rc->key.bit.W)

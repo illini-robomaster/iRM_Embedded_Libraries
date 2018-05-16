@@ -25,7 +25,7 @@ typedef enum{
 } imu_axis_t;
 
 /* angles are all in degrees */
-
+/* Counterclockwise direction: positive */
 typedef struct {
     float angle[3];                 // real computed values. Should be good for direct access
     float angle_zero_bias[3];       // regularly updated zero bias data
