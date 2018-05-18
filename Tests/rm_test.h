@@ -11,6 +11,7 @@
 #include "test_mouse.h"
 #include "test_chassis.h"
 #include "test_haptor.h"
+#include "test_tx2.h"
 
 /* Test utility */
 #define PASS    1
@@ -33,6 +34,7 @@
 #define TEST_MOUSE      OFF
 #define TEST_HAPTOR     OFF
 #define TEST_CHASSIS    OFF
+#define TEST_TX2        ON
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -56,6 +58,8 @@ extern inline void run_all_tests() {
         test_chassis();
     if (TEST_HAPTOR == ON)
         test_haptor();
+    if (TEST_TX2 == ON)
+        test_tx2();
 }
 
 #endif

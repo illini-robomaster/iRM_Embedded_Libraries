@@ -19,12 +19,12 @@
  */
 
 /* ===== bsp_uart Config ===== */
-#define UART_FREE_PORT      huart2  // This port require solder pins onto the board
+#define UART_FREE_PORT      huart3  // This port require solder pins onto the board
 
 #define BSP_DBUS_PORT       huart1
 #define BSP_PRINT_PORT      huart6
 #define BSP_TX2_PORT        UART_FREE_PORT
-#define BSP_REFEREE_PORT    huart3
+#define BSP_REFEREE_PORT    huart2
 
 #define BSP_DBUS_MAX_LEN    50      // Adjust according to actual message length. Should be longer than expected message length.
 #define BSP_REFEREE_MAX_LEN 1024
