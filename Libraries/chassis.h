@@ -51,6 +51,14 @@ void chassis_init(chassis_t *my_chassis);
 void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
 
 /**
+ * @brief calculate chassis move based on remote controller
+ * @param my_chassis an (array) of motors pid that represent chassis
+ * @param rc         dbus struct; for getting remote controller data
+ * @param yaw_angle  angle of gimabl deviated from chassis, in radian. (counter colockwise is positive)
+ */
+void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
+
+/**
  * Makes chassis roate based on yaw motor feedback
  * @TODO: use P controller instead
  * @brief

@@ -42,8 +42,10 @@ void motion_task(void const *argu) {
         int16_t yaw_astray = get_motor_angle(my_gimbal->yaw->motor) - my_gimbal->yaw_middle; // how far
         float yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // chassis part; should be generic
-        calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
-        calc_gimbal_compensate(my_chassis, yaw_astray_in_rad);
+        // TODO: replace the following three 0s with yaw_astray_in_rad
+        calc_keyboard_move(my_chassis, rc, 0);
+        calc_remote_move(my_chassis, rc, 0);
+        calc_gimbal_compensate(my_chassis, 0);
         run_chassis(my_chassis);
         // gimbal part; customization happens at IMU
         int16_t observed_absolute_gimbal_yaw = yaw_astray + imuBoard.angle[YAW] * DEG_2_MOTOR;

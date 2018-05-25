@@ -2,6 +2,15 @@
 #include <math.h>
 #include <stdlib.h>
 
+static void normalize2D(float *vx, float *vy) {
+    float norm = 1;
+    if(*vx != 0 || *vy != 0) {
+        norm = sqrt(*vx * *vx + *vy * *vy);
+    }
+    *vx /= norm;
+    *vy /= norm;
+}
+
 void chassis_init(chassis_t *my_chassis){
     motor_t *m_fl, *m_fr, *m_rl, *m_rr;
     pid_ctl_t *pid_fl, *pid_fr, *pid_rl, *pid_rr;
@@ -41,12 +50,21 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
         v_x -= 1;
     if (rc->key.bit.D)
         v_x += 1;
-    float norm = 1;
-    if(v_x != 0 || v_y != 0) {
-        norm = sqrt(v_x * v_x + v_y * v_y);
-    }
-    v_x /= norm;
-    v_y /= norm;
+    normalize2D(&v_x, &v_y);
+    // rotation; change of basis matrix.
+    float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
+    float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
+    my_chassis[CHASSIS_FL]->motor->out = out_x;
+    my_chassis[CHASSIS_RR]->motor->out = -out_x; // velocity is the same. It's just these two motors are installed in opposite direction.
+    my_chassis[CHASSIS_RL]->motor->out = out_y;
+    my_chassis[CHASSIS_FR]->motor->out = -out_y;
+}
+
+void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
+    yaw_angle = -yaw_angle + Q_PI;
+    float v_y = rc->ch1 / (-660.0);
+    float v_x = rc->ch0 / 660.0;
+    normalize2D(&v_x, &v_y);
     // rotation; change of basis matrix.
     float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
     float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
