@@ -13,14 +13,18 @@
 #define _RM_RTOS_H_
 
 /* Includes */
+// #include "rm_test.h"
 #include "rm_config.h"
 #include "bsp_print.h"
 #include "bsp_buzzer.h"
 #include "bsp_led.h"
 #include "bsp_laser.h"
+#include "bsp_sdio.h"
 #include "task_referee.h"
 #include "task_imu.h"
 // #include "task_motion.h"
+
+#include "test_sdio.h"
 
 /* RTOS includes */
 #include "FreeRTOS.h"
@@ -75,8 +79,8 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
  * @date    2018-04-13
  */
 extern inline void RM_RTOS_THREADS_Init(void) {
-    referee_task_create();
-    imu_task_create();
+    // referee_task_create();
+    // imu_task_create();
     // motion_task_create();
 }
 
@@ -87,6 +91,7 @@ extern inline void RM_RTOS_THREADS_Init(void) {
  * @date    2018-04-13
  */
 extern inline void RM_RTOS_QUEUES_Init(void) {
+    sdio_queue_init();
     return;
 }
 
@@ -103,6 +108,8 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
     print("Enter default task.\n");
     //osTimerStart(gimbal_timer_id,gimbal_period);
     //osTimerStart(chassis_timer_id, chassis_period);
+    // run_all_tests();
+    test_sdio();
     /* There must be a while loop here. */
     while(1) {
         osDelay(1);

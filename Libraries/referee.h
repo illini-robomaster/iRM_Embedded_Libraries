@@ -148,14 +148,14 @@ typedef struct {
 /* ============================== */
 
 typedef struct {
-    game_robot_info_t   game_robot_info;    //0x0001
-    damage_data_t       damage_data;        //0x0002
-    shoot_data_t        shoot_data;         //0x0003
-    power_heat_data_t   power_heat_data;    //0x0004
-    rfid_data_t         rfid_data;          //0x0005
-    game_result_t       game_result;        //0x0006
-    buff_data_t         buff_data;          //0x0007
-    custom_data_t       custom_data;        //0x0100
+    game_robot_info_t   game_robot_info;    // 0x0001
+    damage_data_t       damage_data;        // 0x0002
+    shoot_data_t        shoot_data;         // 0x0003
+    power_heat_data_t   power_heat_data;    // 0x0004
+    rfid_data_t         rfid_data;          // 0x0005
+    game_result_t       game_result;        // 0x0006
+    buff_data_t         buff_data;          // 0x0007
+    custom_data_t       custom_data;        // 0x0100
 } referee_t;
 
 /**
@@ -179,5 +179,13 @@ uint8_t referee_init(data_process_t* source);
  * @date   2018-04-21
  */
 uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct);
+
+/**
+ * Wrapper function for referee rx callback
+ *
+ * @author Nickel_Liang
+ * @date   2018-05-23
+ */
+__weak void referee_callback(void);
 
 #endif

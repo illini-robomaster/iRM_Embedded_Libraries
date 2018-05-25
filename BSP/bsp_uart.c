@@ -157,6 +157,18 @@ __weak void uart_tx2_callback(void) {
  */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     /* @todo Consider add signal handling here */
+    if (huart == &BSP_DBUS_PORT) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "DBUS RX callbacked.");
+    }
+    else if (huart == &BSP_REFEREE_PORT) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Referee RX callbacked.");
+    }
+    else if (huart == &BSP_TX2_PORT) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "TX2 RX callbacked.");
+    }
+    else {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Undefined active UART device RX callbacked.");
+    }
 }
 
 /**
@@ -168,4 +180,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
  */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
     /* @todo Consider add signal handling here */
+    if (huart == &BSP_REFEREE_PORT) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Referee TX callbacked.");
+    }
+    else if (huart == &BSP_TX2_PORT) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "TX2 TX callbacked.");
+    }
+    else {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Undefined active UART device TX callbacked.");
+    }
 }

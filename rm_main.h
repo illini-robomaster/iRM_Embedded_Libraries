@@ -25,6 +25,7 @@
 #include "bsp_led.h"
 #include "bsp_uart.h"
 #include "bsp_imu.h"
+#include "bsp_sdio.h"
 
 /**
  * Initialize peripherals before get into RTOS
@@ -41,6 +42,7 @@ extern inline void RM_Main_Init(void) {
     gpio_interrupt_init();
     dbus_init();
     onboard_imu_init();
+    sdio_init();
 
     /* Indicate successfully initialized */
     led_red_on();
@@ -49,9 +51,9 @@ extern inline void RM_Main_Init(void) {
     /* Wait for ESC to initialize */
     /* @todo change to more delicate CAN bus condition check function */
     HAL_Delay(STARTUP_DELAY);
-    #ifdef TEST
+#ifdef TEST
     run_all_tests();
-    #endif
+#endif
     return;
 }
 

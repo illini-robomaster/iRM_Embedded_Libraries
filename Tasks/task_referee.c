@@ -9,7 +9,7 @@
 #include "task_referee.h"
 
 static osMutexId        referee_rx_mutex;
-static osMutexId        referee_tx_mutex;
+// static osMutexId        referee_tx_mutex;
 static osEvent          referee_event;
 static data_process_t*  referee_process;
 
@@ -34,8 +34,8 @@ uint8_t referee_task_init(void) {
     referee_rx_mutex = osMutexCreate(osMutex(referee_rx_mutex));
     /* Create tx mutex */
     /* @note unused for now */
-    osMutexDef(referee_tx_mutex);
-    referee_tx_mutex = osMutexCreate(osMutex(referee_tx_mutex));
+    // osMutexDef(referee_tx_mutex);
+    // referee_tx_mutex = osMutexCreate(osMutex(referee_tx_mutex));
     /* Initialize data process instance */
     referee_process = data_process_init(&REFEREE_PORT, referee_rx_mutex, REFEREE_FIFO_SIZE, REFEREE_BUFF_SIZE, REFEREE_SOF, referee_dispatcher, &referee_info);
     if (NULL == referee_process) {
@@ -58,9 +58,15 @@ void referee_task(void const *argu) {
     print("Referee task initialized.\r\n");
 #endif
     while (1) {
+#ifdef DEBUG
+        BSP_DEBUG;
         print("In referee task loop.\r\n");
+#endif
         referee_event = osSignalWait(REFEREE_RX_SIGNAL | REFEREE_TX_SIGNAL, osWaitForever);
+#ifdef DEBUG
+        BSP_DEBUG;
         print("After wait forever.\r\n");
+#endif
         if (referee_event.status == osEventSignal) {
             if (referee_event.value.signals & REFEREE_RX_SIGNAL) {
 #ifdef DEBUG
@@ -78,16 +84,11 @@ void referee_task(void const *argu) {
 }
 
 /**
- * Callback function declared in bsp_uart. This is a weak function.
+ * Callback function declared in referee.c. This is a weak function.
  *
  * @author Nickel_Liang
- * @date   2018-04-18
+ * @date   2018-05-23
  */
-void uart_referee_callback(void) {
-    /* @todo Signal handling here */
-    /* @todo second wrap for this function */
-    print_buffer(referee_process, 0);
-    print_buffer(referee_process, 1);
+void referee_callback() {
     osSignalSet(referee_task_handle, REFEREE_RX_SIGNAL);
-    return;
 }

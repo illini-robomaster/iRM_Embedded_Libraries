@@ -56,8 +56,22 @@ uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) 
             /* @todo Tx signal processing here */
             break;
         default:
-            bsp_error_handler(__FUNCTION__, __LINE__, "How did SOF, CRC8 and CRC16 failed all together?!");
+            bsp_error_handler(__FUNCTION__, __LINE__, "Unknown CMDID.");
             return 0;
     }
     return 1;
+}
+
+__weak void referee_callback(void) {
+    /* Implement this function in dbus library */
+}
+
+/**
+ * Callback function declared in bsp_uart. This is a weak function.
+ *
+ * @author Nickel_Liang
+ * @date   2018-04-18
+ */
+void uart_referee_callback(void) {
+    referee_callback();
 }
