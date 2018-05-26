@@ -166,7 +166,7 @@ static uint8_t fifo_to_struct(data_process_t *source) {
         print("Free: %d\r\n", source->data_fifo->free);
 #endif
         if (byte == source->sof) {  // If head is start of frame
-            if (process_frame(source) && process_header(source)) {
+            if (process_header(source) && process_frame(source)) {
                 source->dispatcher_func(source->source_struct, source);
                 return 1;
             }
