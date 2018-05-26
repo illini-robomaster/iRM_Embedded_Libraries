@@ -181,11 +181,31 @@ uint8_t referee_init(data_process_t* source);
 uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct);
 
 /**
+ * Referee data packer. Used by data process lib.
+ *
+ * @param  target_struct  A valid referee structure
+ * @param  process_struct A valid data process instance
+ * @param  cmdid          Command ID of the msg
+ * @return                1 for success, 0 for failed
+ * @author Nickel_Liang
+ * @date   2018-05-26
+ */
+uint8_t referee_packer(void *target_struct, data_process_t *process_struct, uint16_t cmdid);
+
+/**
  * Wrapper function for referee rx callback
  *
  * @author Nickel_Liang
  * @date   2018-05-23
  */
-void referee_callback(void);
+void referee_incomming(void);
+
+/**
+ * Referee forward signal set wrapper.
+ *
+ * @author Nickel_Liang
+ * @date   2018-05-26
+ */
+void referee_outgoing(void);
 
 #endif

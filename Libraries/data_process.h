@@ -37,21 +37,28 @@ typedef struct _data_process data_process_t;
 /* Define dispatcher_func_t */
 typedef uint8_t (*dispatcher_func_t)(void* target_struct, data_process_t* process_struct);
 
+/* Define packer_func_t */
+typedef uint8_t (*packer_func_t)(void* target_struct, data_process_t* process_struct, uint16_t cmdid);
+
 /* Define data_process_t */
 typedef struct _data_process {
     /* Commonly used */
-    UART_HandleTypeDef* huart;  // Which UART data is comming from
-    fifo_s_t*   data_fifo;      // FIFO to store data into
+    UART_HandleTypeDef *huart;  // Which UART data is comming from
+    /* Used for incomming rx msg */
+    fifo_s_t    *data_fifo;     // FIFO to store data into
     /* Used in buffer_to_fifo */
-    uint8_t*    buff[2];        // Pointer to double buffer
+    uint8_t     *buff[2];       // Pointer to double buffer
     uint16_t    buff_size;      // Size of single buffer
     uint16_t    read_index;     // Where we left last time
     /* Used in fifo_to_struct */
-    void*       source_struct;  // Used by dispatcher. = target_struct
+    void        *source_struct; // Used by dispatcher. = target_struct
     dispatcher_func_t dispatcher_func;  // A dispatcjer function pointer
     uint8_t     sof;            // Start of frame
-    uint8_t*    frame_packet;   // Contain one frame of data. Same length as fifo
+    uint8_t     *frame_packet;  // Contain one frame of data. Same length as fifo
     uint16_t    data_len;       // Store the data length got from header
+    /* Used for outgoing tx msg */
+    fifo_s_t    *transmit_fifo; // FIFO to store outgoing msg
+    packer_func_t packer_func;  // A packer function pointer
 } data_process_t;
 
 /**
@@ -64,11 +71,13 @@ typedef struct _data_process {
  * @param  sof           SOF of UART
  * @param  dispatcher    Function pointer to appropriate dispatcher
  * @param  source_struct Struct of the source
+ * @param  tx_mutex      Mutex to be used by tx FIFO
+ * @param  packer_func   Function pointer to corresponding packer
  * @return               A data process instance, NULL if failed
  * @author Nickel_Liang
  * @date   2018-04-20
  */
-data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void* source_struct);
+data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void *source_struct, osMutexId tx_mutex, packer_func_t packer_func);
 
 /**
  * Perform a rx data process sequence
@@ -79,6 +88,16 @@ data_process_t* data_process_init(UART_HandleTypeDef* huart, osMutexId mutex, ui
  * @date   2018-04-21
  */
 uint8_t data_process_rx(data_process_t* source);
+
+/**
+ * Perform a tx data process sequence
+ *
+ * @param  source     A valid data process instance
+ * @return            1 for success, 0 for failed
+ * @author Nickel_Liang
+ * @date   2018-05-26
+ */
+uint8_t data_process_tx(data_process_t* source);
 
 /**
  * Convert DMA double buffer to FIFO. This can improve data retrive efficiency
@@ -99,6 +118,19 @@ static uint8_t buffer_to_fifo(data_process_t* source);
  * @date   2018-04-20
  */
 static uint8_t fifo_to_struct(data_process_t* source);
+
+/**
+ * Convert a data stream to FIFO
+ *
+ * @param  cmdid      Message CMDID
+ * @param  data       Data stream
+ * @param  length     length of data
+ * @param  source     A valid data process structure
+ * @return            1 for success, 0 for failed
+ * @author Nickel_Liang
+ * @date   2018-05-26
+ */
+uint8_t data_to_fifo(uint16_t cmdid, uint8_t *data, uint16_t length, data_process_t *source);
 
 /**
  * Process a data header and perform CRC8 check

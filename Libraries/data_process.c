@@ -8,8 +8,8 @@
 
 #include "data_process.h"
 
-data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void *source_struct) {
-    if ((huart == NULL) || (mutex == NULL) || (buffer_size == 0) || (fifo_size == 0) || (dispatcher_func == NULL) || (source_struct == NULL)) {
+data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void *source_struct, osMutexId tx_mutex, packer_func_t packer_func) {
+    if ((huart == NULL) || (mutex == NULL) || (buffer_size == 0) || (fifo_size == 0) || (dispatcher_func == NULL) || (source_struct == NULL) || (tx_mutex == NULL) || (packer_func == NULL)) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Invalid parameter.");
         return NULL;
     }
@@ -27,6 +27,7 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
     source->dispatcher_func = dispatcher_func;
     source->sof             = sof;
     source->data_len        = 0;
+    source->packer_func     = packer_func;
 
     source->data_fifo       = fifo_s_create(fifo_size, mutex);
     if (source->data_fifo == NULL) {
@@ -35,24 +36,34 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
         return NULL;
     }
 
-//     source->buff[0]         = (uint8_t*)malloc(2 * source->buff_size);
-//     if (source->buff[0] == NULL) {
-//         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate DMA buffer for data process object.");
-//         fifo_s_destory(source->data_fifo);
-//         free(source);
-//         return NULL;
-//     }
-//     source->buff[1]         = source->buff[0] + source->buff_size;
-// #ifdef DEBUG
-//     BSP_DEBUG;
-//     print("\r\nsource->buff[0] 0x%08x ", source->buff[0]);
-//     print("\r\nsource->buff[1] 0x%08x \r\n", source->buff[1]);
-// #endif
+    source->buff[0]         = (uint8_t*)malloc(2 * source->buff_size);
+    if (source->buff[0] == NULL) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate DMA buffer for data process object.");
+        fifo_s_destory(source->data_fifo);
+        free(source);
+        return NULL;
+    }
+    source->buff[1]         = source->buff[0] + source->buff_size;
+#ifdef DEBUG
+    BSP_DEBUG;
+    print("source->buff[0] 0x%08x ", source->buff[0]);
+    print("source->buff[1] 0x%08x \r\n", source->buff[1]);
+#endif
 
     source->frame_packet    = (uint8_t*)malloc(fifo_size);
     if (source->frame_packet == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate frame packet buffer for data process object.");
-        // free(source->buff[0]);
+        free(source->buff[0]);
+        fifo_s_destory(source->data_fifo);
+        free(source);
+        return NULL;
+    }
+
+    source->transmit_fifo   = fifo_s_create(fifo_size, tx_mutex);
+    if (source->transmit_fifo == NULL) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate transmit FIFO for data process object.");
+        free(source->frame_packet);
+        free(source->buff[0]);
         fifo_s_destory(source->data_fifo);
         free(source);
         return NULL;
@@ -78,6 +89,21 @@ uint8_t data_process_rx(data_process_t *source) {
         bsp_error_handler(__FUNCTION__, __LINE__, "FIFO to struct error.");
         return 0;
     }
+    return 1;
+}
+
+uint8_t data_process_tx(data_process_t *source) {
+    uint32_t count = fifo_used_count(source->transmit_fifo);
+    uint8_t buffer[count];
+
+    if (count != 0) {
+        if (fifo_s_gets(source->transmit_fifo, buffer, count) != count) {
+            bsp_error_handler(__FUNCTION__, __LINE__, "Failed to get enough FIFO data.");
+            return 0;
+        }
+        uart_tx_blocking(source->huart, buffer, count); // @todo Try DMA TX
+    }
+
     return 1;
 }
 
@@ -180,6 +206,33 @@ static uint8_t fifo_to_struct(data_process_t *source) {
     print("End of loop.\r\n");
 #endif
     return 0;
+}
+
+uint8_t data_to_fifo(uint16_t cmdid, uint8_t *data, uint16_t length, data_process_t *source) {
+    uint16_t frame_length = DATA_PROCESS_HEADER_LEN + DATA_PROCESS_CMD_LEN + length + DATA_PROCESS_CRC16_LEN;
+    uint8_t buffer[frame_length];
+    uint8_t sof             = source->sof;
+    uint16_t data_length    = length;
+    uint8_t seq             = 0;
+
+    /* Construct data header */
+    buffer[0]   = sof;
+    memcpy(&buffer[1], (uint8_t*)&data_length, sizeof(uint16_t));
+    buffer[3]   = seq;
+    append_crc8_check_sum(buffer, DATA_PROCESS_HEADER_LEN);
+
+    /* Construct data frame */
+    memcpy(&buffer[DATA_PROCESS_HEADER_LEN], (uint8_t*)&cmdid, DATA_PROCESS_CMD_LEN);
+    memcpy(&buffer[DATA_PROCESS_HEADER_LEN + DATA_PROCESS_CMD_LEN], data, data_length);
+    append_crc16_check_sum(buffer, frame_length);
+
+    /* Put data into fifo */
+    if (fifo_s_puts(source->transmit_fifo, buffer, frame_length) != frame_length) {
+        bsp_error_handler(__FUNCTION__, __LINE__, "Failed to put data into FIFO.");
+        return 0;
+    }
+
+    return 1;
 }
 
 static uint8_t process_header(data_process_t *source) {

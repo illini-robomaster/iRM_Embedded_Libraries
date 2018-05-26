@@ -14,7 +14,7 @@ uint8_t referee_init(data_process_t* source) {
     /* Enable DMA for RX */
     uart_enable_rx_dma(source->huart);
     /* Enable multibuffer DMA */
-    return uart_dma_multibuffer_it(source->huart->hdmarx, source->huart->Instance->DR, (uint32_t)*(source->buff[0]), (uint32_t)*(source->buff[1]), source->buff_size);
+    return uart_dma_multibuffer_it(source->huart->hdmarx, source->huart->Instance->DR, (uint32_t)(source->buff[0]), (uint32_t)(source->buff[1]), source->buff_size);
 }
 
 uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) {
@@ -52,9 +52,6 @@ uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) 
         case CMD_BUFF_DATA:
             memcpy(&(referee->buff_data), data_addr, data_length);
             break;
-        case CMD_CUSTOM_DATA:
-            /* @todo Tx signal processing here */
-            break;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "Unknown CMDID.");
             return 0;
@@ -62,8 +59,38 @@ uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) 
     return 1;
 }
 
-__weak void referee_callback(void) {
-    /* Implement this function in dbus library */
+uint8_t referee_packer(void *target_struct, data_process_t *process_struct, uint16_t cmdid) {
+#ifdef DEBUG
+    BSP_DEBUG;
+    printf("Enter referee packer.\r\n");
+#endif
+    referee_t *referee      = target_struct;
+    data_process_t *source  = process_struct;
+    uint8_t *data_stream    = NULL;
+    uint16_t data_length    = 0;
+
+    switch (cmdid) {
+        case CMD_CUSTOM_DATA:
+            data_stream = (uint8_t*)&referee->custom_data;
+            data_length = (uint16_t)sizeof(custom_data_t);
+            break;
+        default:
+            bsp_error_handler(__FUNCTION__, __LINE__, "Unknown CMDID.");
+            return 0;
+    }
+
+    data_to_fifo(cmdid, data_stream, data_length, source); // Put data into tx fifo
+    referee_outgoing(); // Set TX signal
+
+    return 1;
+}
+
+__weak void referee_incomming(void) {
+    /* Implement this function in task layer */
+}
+
+__weak void referee_outgoing(void) {
+    /* Implement this function in task layer */
 }
 
 /**
@@ -73,5 +100,5 @@ __weak void referee_callback(void) {
  * @date   2018-04-18
  */
 void uart_referee_callback(void) {
-    referee_callback();
+    referee_incomming();
 }

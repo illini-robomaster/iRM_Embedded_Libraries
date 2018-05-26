@@ -16,7 +16,7 @@
 
 #define TX2_SOF         0xA0
 #define TX2_PORT        BSP_TX2_PORT
-#define TX2_FIFO_SIZE   (BSP_TX2_MAX_LEN / 2)
+#define TX2_FIFO_SIZE   BSP_TX2_MAX_LEN
 #define TX2_BUFF_SIZE   BSP_TX2_MAX_LEN
 
 typedef enum {
@@ -60,13 +60,26 @@ uint8_t tx2_init(data_process_t* source);
 /**
  * TX2 data dispatcher. Used by data process lib.
  *
- * @param  referee    A valid tx2 structure
- * @param  source     A valid data process instance
- * @return            1 for success, 0 for failed
+ * @param  target_struct  A valid tx2 structure
+ * @param  process_struct A valid data process instance
+ * @return                1 for success, 0 for failed
  * @author Nickel_Liang
  * @date   2018-04-21
  */
 uint8_t tx2_dispatcher(void* target_struct, data_process_t* process_struct);
+
+/**
+ * TX2 data packer. Used by data process lib.
+ *
+ * @param  target_struct  A valid tx2 structure
+ * @param  process_struct A valid data process instance
+ * @param  cmdid          Command ID of the msg
+ * @return                1 for success, 0 for failed
+ * @usage  tx2_packer(&tx2_info, tx2_process, CMD_AIM_REQUEST);
+ * @author Nickel_Liang
+ * @date   2018-05-26
+ */
+uint8_t tx2_packer(void *target_struct, data_process_t *process_struct, uint16_t cmdid);
 
 /**
  * TX2 callback wrapper.
@@ -74,6 +87,14 @@ uint8_t tx2_dispatcher(void* target_struct, data_process_t* process_struct);
  * @author Nickel_Liang
  * @date   2018-05-23
  */
-void tx2_callback(void);
+void tx2_incomming(void);
+
+/**
+ * TX2 forward signal set wrapper.
+ *
+ * @author Nickel_Liang
+ * @date   2018-05-26
+ */
+void tx2_outgoing(void);
 
 #endif
