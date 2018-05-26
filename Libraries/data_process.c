@@ -35,24 +35,24 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
         return NULL;
     }
 
-    source->buff[0]         = (uint8_t*)malloc(2 * source->buff_size);
-    if (source->buff[0] == NULL) {
-        bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate DMA buffer for data process object.");
-        fifo_s_destory(source->data_fifo);
-        free(source);
-        return NULL;
-    }
-    source->buff[1]         = source->buff[0] + source->buff_size;
-#ifdef DEBUG
-    BSP_DEBUG;
-    print("\r\nsource->buff[0] 0x%08x ", source->buff[0]);
-    print("\r\nsource->buff[1] 0x%08x \r\n", source->buff[1]);
-#endif
+//     source->buff[0]         = (uint8_t*)malloc(2 * source->buff_size);
+//     if (source->buff[0] == NULL) {
+//         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate DMA buffer for data process object.");
+//         fifo_s_destory(source->data_fifo);
+//         free(source);
+//         return NULL;
+//     }
+//     source->buff[1]         = source->buff[0] + source->buff_size;
+// #ifdef DEBUG
+//     BSP_DEBUG;
+//     print("\r\nsource->buff[0] 0x%08x ", source->buff[0]);
+//     print("\r\nsource->buff[1] 0x%08x \r\n", source->buff[1]);
+// #endif
 
     source->frame_packet    = (uint8_t*)malloc(fifo_size);
     if (source->frame_packet == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate frame packet buffer for data process object.");
-        free(source->buff[0]);
+        // free(source->buff[0]);
         fifo_s_destory(source->data_fifo);
         free(source);
         return NULL;

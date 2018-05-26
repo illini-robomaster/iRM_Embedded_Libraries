@@ -8,7 +8,7 @@
 
 #include "tx2.h"
 
-// uint8_t tx2_rx_buffer[2][BSP_TX2_MAX_LEN];  // Double buffer
+uint8_t tx2_rx_buffer[2][BSP_TX2_MAX_LEN];  // Double buffer
 
 // uint8_t tx2_init(void) {
 //     /* Initialize TX2 to IDLE interrupt */
@@ -24,6 +24,13 @@ uint8_t tx2_init(data_process_t* source) {
     uart_port_init(source->huart);
     /* Enable DMA for RX */
     uart_enable_rx_dma(source->huart);
+    source->buff[0] = tx2_rx_buffer[0];
+    source->buff[1] = tx2_rx_buffer[1];
+#ifdef DEBUG
+    BSP_DEBUG;
+    print("\r\nsource->buff[0] 0x%08x ", source->buff[0]);
+    print("\r\nsource->buff[1] 0x%08x \r\n", source->buff[1]);
+#endif
     /* Enable multibuffer DMA */
     return uart_dma_multibuffer_it(source->huart->hdmarx, source->huart->Instance->DR, (uint32_t)*(source->buff[0]), (uint32_t)*(source->buff[1]), source->buff_size);
 }

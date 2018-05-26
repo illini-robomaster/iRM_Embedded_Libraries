@@ -186,6 +186,6 @@ uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct);
  * @author Nickel_Liang
  * @date   2018-05-23
  */
-__weak void referee_callback(void);
+void referee_callback(void);
 
 #endif
