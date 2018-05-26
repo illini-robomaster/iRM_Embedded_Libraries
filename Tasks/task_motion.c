@@ -45,6 +45,7 @@ void motion_task(void const *argu) {
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
         calc_remote_move(my_chassis, rc, 0);
+        calc_remote_rotate(my_chassis, rc);
 #else
         calc_keyboard_move(my_chassis, rc, 0);
 #endif

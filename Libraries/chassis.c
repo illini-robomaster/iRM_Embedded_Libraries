@@ -53,12 +53,12 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
         v_x += 1;
     normalize_to_range(&v_x, &v_y);
     // rotation; change of basis matrix.
-    float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
-    float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
-    my_chassis[CHASSIS_FL]->motor->out = out_x;
-    my_chassis[CHASSIS_RR]->motor->out = -out_x; // velocity is the same. It's just these two motors are installed in opposite direction.
-    my_chassis[CHASSIS_RL]->motor->out = out_y;
-    my_chassis[CHASSIS_FR]->motor->out = -out_y;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
+    my_chassis[CHASSIS_FL]->motor->target = target_x;
+    my_chassis[CHASSIS_RR]->motor->target = -target_x; // velocity is the same. It's just these two motors are installed in opposite direction.
+    my_chassis[CHASSIS_RL]->motor->target = target_y;
+    my_chassis[CHASSIS_FR]->motor->target = -target_y;
 }
 
 void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
@@ -67,34 +67,43 @@ void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
     float v_x = rc->ch0 * 1.0 / 660;
     normalize_to_range(&v_x, &v_y);
     // rotation; change of basis matrix.
-    float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
-    float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
-    my_chassis[CHASSIS_FL]->motor->out = out_x;
-    my_chassis[CHASSIS_RR]->motor->out = -out_x; // velocity is the same. It's just these two motors are installed in opposite direction.
-    my_chassis[CHASSIS_RL]->motor->out = out_y;
-    my_chassis[CHASSIS_FR]->motor->out = -out_y;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
+    my_chassis[CHASSIS_FL]->motor->target = target_x;
+    my_chassis[CHASSIS_RR]->motor->target = -target_x; // velocity is the same. It's just these two motors are installed in opposite direction.
+    my_chassis[CHASSIS_RL]->motor->target = target_y;
+    my_chassis[CHASSIS_FR]->motor->target = -target_y;
+}
+
+void calc_remote_rotate(chassis_t *my_chassis, dbus_t *rc) {
+    float speed = rc->ch2 * 1.0 / 660 * MAX_TURN_SPEED;
+
+    add_rotation(my_chassis, speed);
+}
+
+void add_rotation(chassis_t *my_chassis, float speed) {
+    /* apply safety boundary for turning speed */
+    speed = speed <= TURNING_SPEED ? speed : TURNING_SPEED;
+
+    my_chassis[CHASSIS_FL]->motor->target += speed;
+    my_chassis[CHASSIS_RR]->motor->target += speed;
+    my_chassis[CHASSIS_RL]->motor->target += speed;
+    my_chassis[CHASSIS_FR]->motor->target += speed;
 }
 
 void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle) {
     if (fabsf(yaw_angle) < YAW_DEADBAND)
         return;
-    if (yaw_angle > 0) {
-        // turn clockwise
-        my_chassis[CHASSIS_FL]->motor->out += TURNING_SPEED;
-        my_chassis[CHASSIS_RR]->motor->out += TURNING_SPEED; // velocity is the same. It's just these two motors are installed in opposite direction.
-        my_chassis[CHASSIS_RL]->motor->out += TURNING_SPEED;
-        my_chassis[CHASSIS_FR]->motor->out += TURNING_SPEED;
-    } else {
-        my_chassis[CHASSIS_FL]->motor->out += -TURNING_SPEED;
-        my_chassis[CHASSIS_RR]->motor->out += -TURNING_SPEED;
-        my_chassis[CHASSIS_RL]->motor->out += -TURNING_SPEED;
-        my_chassis[CHASSIS_FR]->motor->out += -TURNING_SPEED;
-    }
+
+    if (yaw_angle > 0)
+        add_rotation(my_chassis, TURNING_SPEED);    // CW
+    else
+        add_rotation(my_chassis, -TURNING_SPEED);   // CCW
 }
 
 void run_chassis(chassis_t *my_chassis){
     for (int i = 0; i < 4; ++i) {
-        my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->out);
+        my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->target);
     }
     set_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
                 my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);

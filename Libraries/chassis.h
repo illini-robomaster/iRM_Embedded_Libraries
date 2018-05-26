@@ -21,9 +21,11 @@
 #define chs_int_lim 200
 #define chs_calc_interval 5
 
-#define TURNING_SPEED 100
-#define MAX_SPEED     2000
-#define YAW_DEADBAND  0.03
+#define MAX_TURN_SPEED  400
+#define MAX_SPEED       2000
+#define YAW_DEADBAND    0.03
+
+#define TURNING_SPEED   100
 
 typedef enum{
     CHASSIS_FL = 0,
@@ -57,6 +59,20 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
  * @param yaw_angle  angle of gimabl deviated from chassis, in radian. (counter colockwise is positive)
  */
 void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
+
+/**
+ * @brief calculate chassis rotation based on remote controller
+ * @param my_chassis an (array) of motors pid that represent chassis
+ * @param rc         dbus struct; for getting remote controller data
+ */
+void calc_remote_rotate(chassis_t *my_chassis, dbus_t *rc);
+
+/**
+ * @brief add rotation component to motor target
+ * @param my_chassis an (array) of motors pid that represent chassis
+ * @param speed      turning speed
+ */
+void add_rotation(chassis_t *my_chassis, float speed);
 
 /**
  * Makes chassis roate based on yaw motor feedback

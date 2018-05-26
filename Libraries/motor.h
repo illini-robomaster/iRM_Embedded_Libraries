@@ -178,6 +178,7 @@ typedef struct {
     uint16_t        rx_id;
     uint16_t        tx_id;
     uint8_t         can_id;
+    float           target;
     float           out;
 }   motor_t;
 
