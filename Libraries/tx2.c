@@ -32,7 +32,7 @@ uint8_t tx2_init(data_process_t* source) {
     print("\r\nsource->buff[1] 0x%08x \r\n", source->buff[1]);
 #endif
     /* Enable multibuffer DMA */
-    return uart_dma_multibuffer_it(source->huart->hdmarx, source->huart->Instance->DR, (uint32_t)*(source->buff[0]), (uint32_t)*(source->buff[1]), source->buff_size);
+    return uart_dma_multibuffer_it(source->huart->hdmarx, (uint32_t)&source->huart->Instance->DR, (uint32_t)source->buff[0], (uint32_t)source->buff[1], source->buff_size);
 }
 
 uint8_t tx2_dispatcher(void* target_struct, data_process_t* process_struct) {
