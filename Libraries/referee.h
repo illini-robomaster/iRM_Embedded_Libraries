@@ -14,9 +14,16 @@
 #include "bsp_config.h"
 #include "data_process.h"
 
+/*
+ * Document version 2018/04/13 v1.4
+ * Server version   2018/05/04
+ * Client version   2018/05/04
+ * Firmware version 
+ */
+
 #define REFEREE_SOF         0xA5
 #define REFEREE_PORT        BSP_REFEREE_PORT
-#define REFEREE_FIFO_SIZE   (BSP_REFEREE_MAX_LEN / 2)
+#define REFEREE_FIFO_SIZE   BSP_REFEREE_MAX_LEN
 #define REFEREE_BUFF_SIZE   BSP_REFEREE_MAX_LEN
 
 typedef enum {
@@ -27,6 +34,7 @@ typedef enum {
     CMD_RFID_DATA           = 0x0005,
     CMD_GAME_RESULT         = 0x0006,
     CMD_BUFF_DATA           = 0x0007,
+    CMD_ROBOT_POSITION      = 0x0008,
     CMD_CUSTOM_DATA         = 0x0100,
 } referee_cmdid_t;
 
@@ -37,7 +45,6 @@ typedef struct {
     uint8_t     robot_grade;        // Robot's current grade
     uint16_t    remain_hp;          // Robot's current HP
     uint16_t    max_hp;             // Robot's maximum HP
-    uint8_t     location_valid_flag;// Location/angle information effective zone bit [location_valid_flag_t]
 } __packed game_robot_info_t;
 
 typedef enum {
@@ -48,11 +55,6 @@ typedef enum {
     GAME_IN_GAME        = 4,        // In combat
     GAME_RESULT         = 5,        // Calculating competition result
 } game_process_t;
-
-typedef enum {
-    LOCATION_INVALID    = 0,        // Location invalid
-    LOCATION_VALID      = 1,        // Location valid
-} location_valid_flag_t;
 
 /* ===== CMD_DAMAGE_DATA 0x0002 ===== */
 typedef struct {
@@ -65,23 +67,24 @@ typedef enum {
     ARMOR_DAMAGE_LEFT   = 1,        // Left armor damaged
     ARMOR_DAMAGE_REAR   = 2,        // Rear armor damaged
     ARMOR_DAMAGE_RIGHT  = 3,        // Right armor damaged
+    ARMOR_DAMAGE_TOP_1  = 4,        // Top armor 1 damaged
+    ARMOR_DAMAGE_TOP_2  = 5,        // TOP armor 2 damaged
 } armor_damage_t;
 
 typedef enum {
     DAMAGE_ARMOR        = 0,        // Armor damaged
     DAMAGE_MOD_OFFLINE  = 1,        // Module offline damage
-    DAMAGE_SPEED_LIMIT  = 2,        // Projectile exceeds launching speed limit
-    DAMAGE_RATE_LIMIT   = 3,        // Projectile exceeds launching rate limit
-    DAMAGE_OVERHEAT     = 4,        // Barrel overheat
-    DAMAGE_POWER_LIMIT  = 5,        // Chassis power over run
+    // DAMAGE_SPEED_LIMIT  = 2,        // Projectile exceeds launching speed limit
+    // DAMAGE_RATE_LIMIT   = 3,        // Projectile exceeds launching rate limit
+    // DAMAGE_OVERHEAT     = 4,        // Barrel overheat
+    // DAMAGE_POWER_LIMIT  = 5,        // Chassis power over run
 } damage_type_t;
 
 /* ===== CMD_SHOOT_DATA 0x0003 ===== */
 typedef struct {
     uint8_t bullet_type;            // Projectile type [bullet_type_t]
-    uint8_t bullet_freq;            // Projectile launching frequency
-    float   bullet_spd;             // Projectile launching speed
-    float   reserved;               // Reserved
+    uint8_t bullet_freq;            // Projectile launching frequency (bullets per second)
+    float   bullet_spd;             // Projectile launching speed (meters per second)
 } __packed shoot_data_t;
 
 typedef enum {
@@ -91,10 +94,10 @@ typedef enum {
 
 /* ===== CMD_POWER_HEAT_DATA 0x0004 ===== */
 typedef struct {
-    float       chassis_volt;       // Chassis output voltage
-    float       chassis_current;    // Chassis output current
-    float       chassis_power;      // Chassis output power
-    float       chassis_pwr_buf;    // Chassis power buffer
+    float       chassis_volt;       // Chassis output voltage (volt)
+    float       chassis_current;    // Chassis output current (ampere)
+    float       chassis_power;      // Chassis output power (watt)
+    float       chassis_pwr_buf;    // Chassis power buffer (watt)
     uint16_t    barrel_heat_17;     // 17mm barrel heat
     uint16_t    barrel_heat_42;     // 42mm barrel heat
 } __packed power_heat_data_t;
@@ -110,8 +113,14 @@ typedef enum {
     CARD_DEFENSE_BUFF   = 1,        // Defense buff card
     CARD_RED_HEAL       = 2,        // Red team heal card
     CARD_BLUE_HEAL      = 3,        // Blue team heal card
-    CARD_RED_RUNE       = 4,        // Red team rune card
-    CARD_BLUE_RUNE      = 5,        // Blue team rune card
+    CARD_RED_CURE       = 4,        // Red team cure card
+    CARD_BLUE_CURE      = 5,        // Blue team cure card
+    CARD_RED_COOL_DOWN  = 6,        // Red team cool down card
+    CARD_BLUE_COOL_DOWN = 7,        // Blue team cool down card
+    CARD_FORT           = 8,        // Fort card
+    CARD_RESERVE        = 9,        // Reserved card
+    CARD_RESOURCE       = 10,       // Resource island card
+    CARD_ICRA           = 11,       // ICRA large rune hit point card
 } card_type_t;
 
 /* ===== CMD_GAME_RESULT 0x0006 ===== */
@@ -127,15 +136,29 @@ typedef enum {
 
 /* ===== CMD_BUFF_DATA 0x0007 ===== */
 typedef struct {
-    uint8_t buff_type;              // Buff categories [buff_type_t]
-    uint8_t buff_percent;           // Buff percentage (10 represents 10% buff)
+    uint16_t buff_heal:1;               // 00 Heal by heal point
+    uint16_t buff_engineer:1;           // 01 Heal by engineer robot
+    uint16_t buff_cure:1;               // 02 Heal by cure card
+    uint16_t buff_res_defense:1;        // 03 Defense buff by resource island
+    uint16_t buff_l_rune_friendly:1;    // 04 Our team activated large rune
+    uint16_t buff_l_rune_enemy:1;       // 05 Enemy team activated large rune
+    uint16_t buff_s_rune_friendly:1;    // 06 Our team activated small rune
+    uint16_t buff_s_rune_enemy:1;       // 07 Enemy team activated small rune
+    uint16_t buff_cool_down:1;          // 08 Cool down accelerated
+    uint16_t buff_fort_defense:1;       // 09 Defense buff by fort
+    uint16_t buff_full_defense:1;       // 10 100% Defense
+    uint16_t buff_base_defense_off:1;   // 11 Base defense without sentry
+    uint16_t buff_base_defense_on:1;    // 12 Base defense with sentry
+    uint16_t buff_reserve:3;            // 13:15 Reserved
 } __packed buff_data_t;
 
-typedef enum {
-    BUFF_ATTACK         = 0,        // Attack buff
-    BUFF_DEFENSE        = 1,        // Defense buff
-    BUFF_RUNE           = 2,        // Rune buff (high power)
-} buff_type_t;
+/* ===== CMD_ROBOT_POSITION 0x0008 ===== */
+typedef struct {
+    float position_x;               // Position X (meter)
+    float position_y;               // Position Y (meter)
+    float position_z;               // Position Z (meter)
+    float barrel_yaw;               // Barrel Yaw (degree)
+} __packed robot_position_t;
 
 /* ===== CMD_CUSTOM_DATA 0x0100 ===== */
 typedef struct {
@@ -155,6 +178,7 @@ typedef struct {
     rfid_data_t         rfid_data;          // 0x0005
     game_result_t       game_result;        // 0x0006
     buff_data_t         buff_data;          // 0x0007
+    robot_position_t    robot_position;     // 0x0008
     custom_data_t       custom_data;        // 0x0100
 } referee_t;
 

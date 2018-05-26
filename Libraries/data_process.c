@@ -3,7 +3,7 @@
  * @date    2018-04-19
  * @file    data_process.c
  * @brief   Process uart received data in DMA buffer
- * @log     2018-04-19 nickelliang
+ * @log     2018-05-26 nickelliang
  */
 
 #include "data_process.h"
@@ -95,7 +95,6 @@ uint8_t data_process_rx(data_process_t *source) {
 uint8_t data_process_tx(data_process_t *source) {
     uint32_t count = fifo_used_count(source->transmit_fifo);
     uint8_t buffer[count];
-
     if (count != 0) {
         if (fifo_s_gets(source->transmit_fifo, buffer, count) != count) {
             bsp_error_handler(__FUNCTION__, __LINE__, "Failed to get enough FIFO data.");
@@ -103,7 +102,6 @@ uint8_t data_process_tx(data_process_t *source) {
         }
         uart_tx_blocking(source->huart, buffer, count); // @todo Try DMA TX
     }
-
     return 1;
 }
 

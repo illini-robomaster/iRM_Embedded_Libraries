@@ -3,7 +3,7 @@
  * @date    2018-04-18
  * @file    referee.c
  * @brief   Referee system utility
- * @log     2018-04-18 nickelliang
+ * @log     2018-05-26 nickelliang
  */
 
 #include "referee.h"
@@ -52,6 +52,8 @@ uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) 
         case CMD_BUFF_DATA:
             memcpy(&(referee->buff_data), data_addr, data_length);
             break;
+        case CMD_ROBOT_POSITION:
+            memcpy(&(referee->robot_position), data_addr, data_length);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "Unknown CMDID.");
             return 0;
@@ -80,7 +82,7 @@ uint8_t referee_packer(void *target_struct, data_process_t *process_struct, uint
     }
 
     data_to_fifo(cmdid, data_stream, data_length, source); // Put data into tx fifo
-    referee_outgoing(); // Set TX signal
+    referee_outgoing(); // Acknowledge data is ready to transmit
 
     return 1;
 }

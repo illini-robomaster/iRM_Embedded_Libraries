@@ -60,7 +60,7 @@ uint8_t tx2_packer(void *target_struct, data_process_t *process_struct, uint16_t
     }
 
     data_to_fifo(cmdid, data_stream, data_length, source); // Put data into tx fifo
-    tx2_outgoing(); // Set TX signal
+    tx2_outgoing(); // Acknowledge data is ready to transmit
 
     return 1;
 }
