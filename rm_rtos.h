@@ -22,7 +22,7 @@
 #include "bsp_sdio.h"
 #include "task_referee.h"
 #include "task_imu.h"
-// #include "task_motion.h"
+#include "task_motion.h"
 
 #include "test_sdio.h"
 
@@ -81,7 +81,7 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
 extern inline void RM_RTOS_THREADS_Init(void) {
     // referee_task_create();
     // imu_task_create();
-    // motion_task_create();
+    motion_task_create();
 }
 
 /**
@@ -109,7 +109,7 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
     //osTimerStart(gimbal_timer_id,gimbal_period);
     //osTimerStart(chassis_timer_id, chassis_period);
     // run_all_tests();
-    test_sdio();
+    // test_sdio();
     /* There must be a while loop here. */
     while(1) {
         osDelay(1);

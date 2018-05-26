@@ -43,8 +43,11 @@ void motion_task(void const *argu) {
         float yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // chassis part; should be generic
         // TODO: replace the following three 0s with yaw_astray_in_rad
-        calc_keyboard_move(my_chassis, rc, 0);
+#ifdef USE_REMOTE
         calc_remote_move(my_chassis, rc, 0);
+#else
+        calc_keyboard_move(my_chassis, rc, 0);
+#endif
         calc_gimbal_compensate(my_chassis, 0);
         run_chassis(my_chassis);
         // gimbal part; customization happens at IMU

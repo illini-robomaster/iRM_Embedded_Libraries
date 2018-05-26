@@ -2,13 +2,14 @@
 #include <math.h>
 #include <stdlib.h>
 
-static void normalize2D(float *vx, float *vy) {
+static void normalize_to_range(float *vx, float *vy) {
     float norm = 1;
-    if(*vx != 0 || *vy != 0) {
+    if (*vx != 0 || *vy != 0)
         norm = sqrt(*vx * *vx + *vy * *vy);
+    if (norm > 1) {
+        *vx /= norm;
+        *vy /= norm;
     }
-    *vx /= norm;
-    *vy /= norm;
 }
 
 void chassis_init(chassis_t *my_chassis){
@@ -50,7 +51,7 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
         v_x -= 1;
     if (rc->key.bit.D)
         v_x += 1;
-    normalize2D(&v_x, &v_y);
+    normalize_to_range(&v_x, &v_y);
     // rotation; change of basis matrix.
     float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
     float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
@@ -62,9 +63,9 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
 
 void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
     yaw_angle = -yaw_angle + Q_PI;
-    float v_y = rc->ch1 / (-660.0);
-    float v_x = rc->ch0 / 660.0;
-    normalize2D(&v_x, &v_y);
+    float v_y = rc->ch1 * 1.0 / 660;
+    float v_x = rc->ch0 * 1.0 / 660;
+    normalize_to_range(&v_x, &v_y);
     // rotation; change of basis matrix.
     float out_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
     float out_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
