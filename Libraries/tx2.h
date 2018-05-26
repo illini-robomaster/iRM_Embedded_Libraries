@@ -74,6 +74,6 @@ uint8_t tx2_dispatcher(void* target_struct, data_process_t* process_struct);
  * @author Nickel_Liang
  * @date   2018-05-23
  */
-__weak void tx2_callback(void);
+void tx2_callback(void);
 
 #endif
