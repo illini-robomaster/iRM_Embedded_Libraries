@@ -23,6 +23,7 @@
 #include "task_referee.h"
 #include "task_imu.h"
 #include "task_motion.h"
+#include "task_tx2.h"
 
 #include "test_sdio.h"
 
@@ -81,7 +82,8 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
 extern inline void RM_RTOS_THREADS_Init(void) {
     // referee_task_create();
     // imu_task_create();
-    motion_task_create();
+    // motion_task_create();
+    tx2_task_create();
 }
 
 /**
@@ -91,7 +93,7 @@ extern inline void RM_RTOS_THREADS_Init(void) {
  * @date    2018-04-13
  */
 extern inline void RM_RTOS_QUEUES_Init(void) {
-    sdio_queue_init();
+    // sdio_queue_init();
     return;
 }
 

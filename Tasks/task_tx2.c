@@ -85,5 +85,6 @@ void tx2_task(void const *argu) {
  * @date   2018-05-23
  */
 void tx2_callback() {
-    osSignalSet(tx2_task_handle, TX2_RX_SIGNAL);
+    int32_t ret;
+    ret = osSignalSet(tx2_task_handle, TX2_RX_SIGNAL);
 }

@@ -37,7 +37,7 @@ uint8_t tx2_dispatcher(void* target_struct, data_process_t* process_struct) {
     data_process_t* source  = process_struct;
     uint16_t data_length    = source->data_len;
     uint16_t cmdid          = *(uint16_t*)(source->frame_packet + DATA_PROCESS_HEADER_LEN);
-    uint8_t* data_addr     = source->frame_packet + DATA_PROCESS_HEADER_LEN + DATA_PROCESS_CMD_LEN;
+    uint8_t *data_addr      = source->frame_packet + DATA_PROCESS_HEADER_LEN + DATA_PROCESS_CMD_LEN;
 
     switch (cmdid) {
         case CMD_GIMBAL_CONTROL:

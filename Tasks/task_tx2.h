@@ -13,8 +13,8 @@
 #include "tx2.h"
 
 /* TX2 signal handling */
-#define TX2_RX_SIGNAL   (1 << 0)
-#define TX2_TX_SIGNAL   (1 << 1)
+#define TX2_RX_SIGNAL   (1 << 2)
+#define TX2_TX_SIGNAL   (1 << 3)
 
 /* Global variable */
 extern tx2_t        tx2_info;
