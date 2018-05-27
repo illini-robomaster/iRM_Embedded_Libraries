@@ -35,18 +35,19 @@
  */
 extern inline void RM_Main_Init(void) {
     buzzer_init();
-    buzzer_sing_song(initialize, 1); // Control board power up.
+    if (MUTE_MODE == OFF)
+        buzzer_sing_song(initialize, 1); // Control board power up.
     led_on();
     can1_init();
     can2_init();
-    gpio_interrupt_init();
     dbus_init();
     onboard_imu_init();
     sdio_init();
+    key_init();
 
     /* Indicate successfully initialized */
     led_red_on();
-    print("All peripherals initialized.\n");
+    print("All peripherals initialized.\r\n");
 
     /* Wait for ESC to initialize */
     /* @todo change to more delicate CAN bus condition check function */

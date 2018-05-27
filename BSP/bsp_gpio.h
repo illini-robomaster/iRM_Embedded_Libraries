@@ -10,20 +10,16 @@
 #define _BSP_GPIO_H_
 
 #include "stm32f4xx_hal.h"
+#include "bsp_error_handler.h"
+#include "bsp_print.h"
+#include "bsp_key.h"
+#include "main.h"
 
 /**
  * @ingroup bsp
  * @defgroup bsp_gpio BSP GPIO
  * @{
  */
-
-/**
- * Init NVIC (Interrupt) of GPIO pins. Used for Trigger Switch read.
- *
- * @author Eric_Liang
- * @date   2018-04-13
- */
-void gpio_interrupt_init(void);
 
 /** @} */
 

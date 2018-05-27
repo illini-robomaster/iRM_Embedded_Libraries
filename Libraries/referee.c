@@ -14,7 +14,7 @@ uint8_t referee_init(data_process_t* source) {
     /* Enable DMA for RX */
     uart_enable_rx_dma(source->huart);
     /* Enable multibuffer DMA */
-    return uart_dma_multibuffer_it(source->huart->hdmarx, source->huart->Instance->DR, (uint32_t)(source->buff[0]), (uint32_t)(source->buff[1]), source->buff_size);
+    return uart_dma_multibuffer_it(source->huart->hdmarx, (uint32_t)&source->huart->Instance->DR, (uint32_t)(source->buff[0]), (uint32_t)(source->buff[1]), source->buff_size);
 }
 
 uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) {

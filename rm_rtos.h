@@ -20,6 +20,7 @@
 #include "bsp_led.h"
 #include "bsp_laser.h"
 #include "bsp_sdio.h"
+#include "bsp_key.h"
 #include "task_referee.h"
 #include "task_imu.h"
 #include "task_motion.h"
@@ -106,11 +107,12 @@ extern inline void RM_RTOS_QUEUES_Init(void) {
  */
 extern inline void RM_RTOS_Default_Task(void const * argument) {
     /* Add codes to initialize default thread here */
-
+#ifdef DEBUG
+    BSP_DEBUG;
     print("Enter default task.\n");
+#endif
     //osTimerStart(gimbal_timer_id,gimbal_period);
     //osTimerStart(chassis_timer_id, chassis_period);
-    // run_all_tests();
     // test_sdio();
     /* There must be a while loop here. */
     while(1) {
@@ -126,7 +128,8 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
  */
 extern inline void RM_RTOS_Ready() {
     /* Indicate RTOS booted. Ready to battle. */
-    buzzer_sing_song(startup, 1);
+    if (MUTE_MODE == OFF)
+        buzzer_sing_song(startup, 1);
     led_green_on();
     laser_on();
     print("RTOS initialzed. Ready to battle.\n");

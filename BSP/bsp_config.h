@@ -36,6 +36,10 @@
 #define PRINT_TO_UART       1   // Set to 1 to print to uart port specified above
 #define PRINT_TO_SD         0   // Not supported yet
 
+/* ===== General Utility ===== */
+#define ON      1
+#define OFF     0
+#define DISABLE 2 // Not avaliable due to a conflict
 
 /** @} */
 

@@ -7,14 +7,30 @@
  */
 
 #include "bsp_gpio.h"
-#include "main.h"
 
 /* @todo Need to add support for upto 5 switches */
-void gpio_interrupt_init(void) {
-    /* For SWITCH_1_Pin */
-    HAL_NVIC_SetPriority(EXTI4_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(EXTI4_IRQn);
-    /* For SWITCH_2_Pin */
-    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+/**
+ * This is a weak function, declared in stm32f4xx_hal_gpio.c
+ *
+ * @param  GPIO_Pin   A GPIO pin that can generate external interrupt signal
+ * @author Nickel_Liang
+ * @date   2018-05-27
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    switch (GPIO_Pin) {
+        case SWITCH_1_Pin:
+            /* @todo Add switch callback function here */
+            break;
+        case KEY_Pin:
+            key_fsm();
+            break;
+        case SWITCH_2_Pin:
+            /* @todo Add switch callback function here */
+            break;
+        case SD_EXTI_Pin:
+            /* @todo Add SD callback function here */
+            break;
+        default:
+            bsp_error_handler(__FUNCTION__, __LINE__, "Undefined GPIO callbacked.");
+    }
 }

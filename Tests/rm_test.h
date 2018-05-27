@@ -13,14 +13,11 @@
 #include "test_haptor.h"
 #include "test_tx2.h"
 #include "test_sdio.h"
+#include "test_key.h"
 
 /* Test utility */
 #define PASS    1
 #define FAIL    0
-
-#define ON      1
-#define OFF     0
-#define DISABLE 2 // Not avaliable due to a conflict
 
 #define RM_RTOS 0
 #define RM_MAIN 1
@@ -28,7 +25,7 @@
 #define TEST_HEADER                 \
     print("[TEST] Running %s at %s:%d\n", __FUNCTION__, __FILE__, __LINE__)
 #define TEST_OUTPUT(name, result)   \
-    print("[TEST] %s %s\n", name, (result) ? "PASS" : "FAIL");
+    print("[TEST] %s : %s\n", name, (result) ? "PASS" : "FAIL");
 
 /* Test options */
 #define RUN_IN          RM_MAIN // RM_RTOS : Run test in RTOS default task @todo Not yet implemented
@@ -47,6 +44,7 @@
 #define TEST_CHASSIS    OFF
 #define TEST_TX2        DISABLE
 #define TEST_SDIO       DISABLE
+#define TEST_KEY        OFF
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -74,6 +72,8 @@ extern inline void run_all_tests() {
         test_tx2();
     if (TEST_SDIO == ON)
         TEST_OUTPUT("SDIO TEST", test_sdio());
+    if (TEST_KEY == ON)
+        TEST_OUTPUT("KEY TEST", test_key());
 }
 
 #endif

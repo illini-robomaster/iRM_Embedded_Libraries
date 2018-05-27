@@ -1,0 +1,81 @@
+/**
+ * @author  Nickel_Liang <nickelliang>
+ * @date    2018-05-27
+ * @file    bsp_key.c
+ * @brief   BSP for key press
+ * @log     2018-05-27 nickelliang
+ */
+
+#include "bsp_key.h"
+
+static uint32_t key_previous_tick;
+uint16_t key_previous_count;
+key_state_t key_state;
+uint8_t key_press;
+uint16_t key_count;
+
+void key_init(void) {
+    key_count = 0;
+    key_previous_count = 0;
+    key_state = KEY_UP;
+    key_previous_tick = HAL_GetTick();
+    key_press = !KEY_PRESSED;
+}
+
+void key_fsm(void) {
+    if (key_valid()) {
+        switch (key_state) {
+            case KEY_UP:
+                key_count++;
+                key_press = KEY_PRESSED;
+                key_state = KEY_DOWN;
+                break;
+            case KEY_DOWN:
+                key_press = !KEY_PRESSED;
+                key_state = KEY_UP;
+                break;
+        }
+    }
+}
+
+static inline uint8_t key_valid(void) {
+    uint32_t tick = HAL_GetTick();
+    uint8_t ret = 0;
+    // if (tick - key_previous_tick > KEY_RESET_MS) {
+    //     key_press = !KEY_PRESSED;
+    //     ret = 1;
+    // }
+    if (tick - key_previous_tick > KEY_DEBOUNCE_MS)
+        ret = 1;
+    key_previous_tick = tick;
+    return ret;
+}
+
+uint8_t key_pressed(void) {
+    if (key_pressed)
+        return 1;
+    else
+        return 0;
+}
+
+uint8_t key_press_count(void) {
+    return key_count;
+}
+
+uint8_t key_pressed_once(void) {
+    if (key_previous_count == key_count)
+        return 0;
+    key_previous_count = key_count;
+    return 1;
+}
+
+uint16_t key_pressed_time(void) {
+    uint16_t diff = key_count - key_previous_count;
+    key_previous_count = key_count;
+    return diff;
+}
+
+void wait_until_key_pressed(void) {
+    print("Please press the key to continue...\r\n");
+    while (!key_pressed_once());
+}
