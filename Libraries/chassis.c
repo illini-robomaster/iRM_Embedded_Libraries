@@ -1,4 +1,5 @@
 #include "chassis.h"
+#include "utils.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -83,7 +84,7 @@ void calc_remote_rotate(chassis_t *my_chassis, dbus_t *rc) {
 
 void add_rotation(chassis_t *my_chassis, float speed) {
     /* apply safety boundary for turning speed */
-    speed = speed <= TURNING_SPEED ? speed : TURNING_SPEED;
+    speed = fabs(speed) <= MAX_TURN_SPEED ? speed : sign(speed) * TURNING_SPEED;
 
     my_chassis[CHASSIS_FL]->motor->target += speed;
     my_chassis[CHASSIS_RR]->motor->target += speed;

@@ -121,17 +121,15 @@ uint16_t dma_current_data_counter(DMA_Stream_TypeDef *dma_stream) {
 
 uint8_t dma_current_memory_target(DMA_Stream_TypeDef *dma_stream) {
     /* Return which memory buffer is in use */
-    return (uint8_t)(dma_stream->CR & DMA_SxCR_CT);
+    return (uint8_t)((dma_stream->CR & DMA_SxCR_CT) != 0);
 }
 
 static void dma_m1_rxcplt_callback(DMA_HandleTypeDef *hdma) {
     /* DMA buffer should never reach upper limit */
-    bsp_error_handler(__FUNCTION__, __LINE__, "DMA buffer 1 full.");
 }
 
 static void dma_m0_rxcplt_callback(DMA_HandleTypeDef *hdma) {
     /* DMA buffer should never reach upper limit */
-    bsp_error_handler(__FUNCTION__, __LINE__, "DMA buffer 0 full.");
 }
 
 /* ===== Weak Functions ===== */
