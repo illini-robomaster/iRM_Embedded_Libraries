@@ -8,6 +8,8 @@
 
 #include "bsp_buzzer.h"
 
+/* @todo Need to reconstruct to use standard PWM lib */
+
 void buzzer_init(void) {
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
     TIM3->PSC = 83;
@@ -19,10 +21,10 @@ void buzzer_sing_tone(BUZZER_FREQ freq, int volume) {
         TIM3->CCR1 = TIM3->ARR / 2; // Output Volume
     }
     else if (volume == 1) {
-    TIM3->CCR1 = TIM3->ARR / 100; // For Test
+        TIM3->CCR1 = TIM3->ARR / 100; // For Test
     }
     else {
-    TIM3->CCR1 = TIM3->ARR / 200; // When I'm video chatting with my gf...
+        TIM3->CCR1 = TIM3->ARR / 200; // When I'm video chatting with my gf...
     }
 }
 

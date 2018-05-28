@@ -9,10 +9,10 @@
 #include "bsp_key.h"
 
 static uint32_t key_previous_tick;
-uint16_t key_previous_count;
-key_state_t key_state;
-uint8_t key_press;
-uint16_t key_count;
+uint16_t        key_previous_count;
+key_state_t     key_state;
+uint8_t         key_press;
+uint16_t        key_count;
 
 void key_init(void) {
     key_count = 0;
@@ -52,10 +52,7 @@ static inline uint8_t key_valid(void) {
 }
 
 uint8_t key_pressed(void) {
-    if (key_pressed)
-        return 1;
-    else
-        return 0;
+    return key_press;
 }
 
 uint8_t key_press_count(void) {
