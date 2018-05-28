@@ -68,7 +68,7 @@
 /* Startup delay to wait ESC to initialize. In microseconds. */
 #define STARTUP_DELAY               2000
 /* Mute startup sing song. Default set to OFF. */
-#define MUTE_MODE                   ON
+#define MUTE_MODE                   OFF
 
 /* General Constants */
 #define PI                          3.14159265358979f

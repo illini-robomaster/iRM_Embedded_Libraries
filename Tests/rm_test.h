@@ -42,7 +42,7 @@
 #define TEST_MOUSE      OFF
 #define TEST_HAPTOR     OFF
 #define TEST_CHASSIS    OFF
-#define TEST_TX2        DISABLE
+#define TEST_TX2        OFF
 #define TEST_SDIO       DISABLE
 #define TEST_KEY        OFF
 

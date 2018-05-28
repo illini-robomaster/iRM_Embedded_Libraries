@@ -11,10 +11,10 @@
 static osMutexId        tx2_rx_mutex;
 static osMutexId        tx2_tx_mutex;
 static osEvent          tx2_event;
-static data_process_t*  tx2_process;
 
-tx2_t       tx2_info;
-osThreadId  tx2_task_handle;
+data_process_t  *tx2_process;
+tx2_t           tx2_info;
+osThreadId      tx2_task_handle;
 
 void tx2_task_create(void) {
     osThreadDef(tx2_task_name, tx2_task, osPriorityAboveNormal, 0, 512);

@@ -17,8 +17,9 @@
 #define TX2_TX_SIGNAL   (1 << 3)
 
 /* Global variable */
-extern tx2_t        tx2_info;
-extern osThreadId   tx2_task_handle;
+extern data_process_t   *tx2_process;
+extern tx2_t            tx2_info;
+extern osThreadId       tx2_task_handle;
 
 /**
  * Create TX2 task

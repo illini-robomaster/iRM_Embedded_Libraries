@@ -17,7 +17,6 @@
 
 /* Includes */
 #include "rm_config.h"
-#include "rm_test.h"
 #include "bsp_print.h"
 #include "bsp_buzzer.h"
 #include "bsp_can.h"
@@ -26,6 +25,7 @@
 #include "bsp_uart.h"
 #include "bsp_imu.h"
 #include "bsp_sdio.h"
+#include "dbus.h"
 
 /**
  * Initialize peripherals before get into RTOS
@@ -52,9 +52,6 @@ extern inline void RM_Main_Init(void) {
     /* Wait for ESC to initialize */
     /* @todo change to more delicate CAN bus condition check function */
     HAL_Delay(STARTUP_DELAY);
-#ifdef TEST
-    run_all_tests();
-#endif
     return;
 }
 
