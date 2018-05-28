@@ -51,7 +51,7 @@ uint8_t tx2_packer(void *target_struct, data_process_t *process_struct, uint16_t
 
     switch (cmdid) {
         case CMD_AIM_REQUEST:
-            data_stream = (uint8_t*)&tx2->gimbal_control;
+            data_stream = (uint8_t*)&tx2->aim_request;
             data_length = (uint16_t)sizeof(aim_request_t);
             break;
         default:
