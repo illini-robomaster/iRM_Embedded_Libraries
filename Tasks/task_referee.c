@@ -11,10 +11,10 @@
 static osMutexId        referee_rx_mutex;
 static osMutexId        referee_tx_mutex;
 static osEvent          referee_event;
-static data_process_t*  referee_process;
 
-referee_t   referee_info;
-osThreadId  referee_task_handle;
+data_process_t  *referee_process;
+referee_t       referee_info;
+osThreadId      referee_task_handle;
 
 void referee_task_create(void) {
     osThreadDef(referee_task_name, referee_task, osPriorityAboveNormal, 0, 512);

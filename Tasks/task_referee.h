@@ -17,8 +17,9 @@
 #define REFEREE_TX_SIGNAL   (1 << 1)
 
 /* Global variable */
-extern referee_t    referee_info;
-extern osThreadId   referee_task_handle;
+extern data_process_t   *referee_process;
+extern referee_t        referee_info;
+extern osThreadId       referee_task_handle;
 
 /**
  * Create referee task

@@ -14,6 +14,7 @@
 #include "test_tx2.h"
 #include "test_sdio.h"
 #include "test_key.h"
+#include "test_referee.h"
 
 /* Test utility */
 #define PASS    1
@@ -43,6 +44,7 @@
 #define TEST_HAPTOR     OFF
 #define TEST_CHASSIS    OFF
 #define TEST_TX2        OFF
+#define TEST_REFEREE    OFF
 #define TEST_SDIO       DISABLE
 #define TEST_KEY        OFF
 
@@ -70,6 +72,8 @@ extern inline void run_all_tests() {
         test_haptor();
     if (TEST_TX2 == ON)
         test_tx2();
+    if (TEST_REFEREE == ON)
+        test_referee();
     if (TEST_SDIO == ON)
         TEST_OUTPUT("SDIO TEST", test_sdio());
     if (TEST_KEY == ON)
