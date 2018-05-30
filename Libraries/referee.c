@@ -54,6 +54,7 @@ uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) 
             break;
         case CMD_ROBOT_POSITION:
             memcpy(&(referee->robot_position), data_addr, data_length);
+            break;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "Unknown CMDID.");
             return 0;

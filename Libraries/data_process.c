@@ -148,6 +148,8 @@ static uint8_t buffer_to_fifo(data_process_t *source) {
             return 0;
         }
         if (write_len != fifo_s_puts(source->data_fifo, &buff[source->read_index], write_len)) {
+            print("write index: %d\r\n", write_index);
+            print("memory target: %d\r\n", dma_memory_target);
             bsp_error_handler(__FUNCTION__, __LINE__, "FIFO overflow, need to resize.");
             return 0;
         }
@@ -182,6 +184,8 @@ static uint8_t buffer_to_fifo(data_process_t *source) {
 static uint8_t fifo_to_struct(data_process_t *source) {
     uint8_t byte = 0;
     uint8_t func_ret = 0;
+    uint8_t flag = 0;
+
     while (!fifo_is_empty(source->data_fifo)) {
         byte = fifo_s_peek(source->data_fifo, 0); // Peek head
 #ifdef DEBUG
@@ -189,21 +193,21 @@ static uint8_t fifo_to_struct(data_process_t *source) {
         print("Used: %d\r\n", source->data_fifo->used);
         print("Free: %d\r\n", source->data_fifo->free);
 #endif
-        if (byte == source->sof) {  // If head is start of frame
-            if (process_header(source) && process_frame(source)) {
-                source->dispatcher_func(source->source_struct, source);
-                return 1;
-            }
+        if (byte != source->sof) {
+            fifo_s_get(source->data_fifo);
+            continue;
         }
-        else {
-            fifo_s_get(source->data_fifo);  // Dispose junk value
+
+        if (process_header(source) && process_frame(source)) {
+            source->dispatcher_func(source->source_struct, source);
+            flag = 1;
         }
     }
 #ifdef DEBUG
     BSP_DEBUG;
     print("End of loop.\r\n");
 #endif
-    return 0;
+    return flag;
 }
 
 uint8_t data_to_fifo(uint16_t cmdid, uint8_t *data, uint16_t length, data_process_t *source) {
