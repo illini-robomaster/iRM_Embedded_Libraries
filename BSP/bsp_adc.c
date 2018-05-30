@@ -5,11 +5,6 @@ uint16_t adc1_buff[BSP_ADC1_CHANNEL_SIZE];
 // uint16_t adc3_buff[BSP_ADC3_CHANNEL_SIZE];
 
 uint8_t adc_dma_enable(ADC_HandleTypeDef *hadc, uint16_t *pData, uint32_t channel) {
-    if (HAL_ADC_Start(hadc) != HAL_OK) {
-        bsp_error_handler(__FUNCTION__, __LINE__, "HAL ADC Start failed!");
-        return 0;
-    }
-
     if (HAL_ADC_Start_DMA(hadc, (uint32_t*)pData, channel) != HAL_OK) {
         bsp_error_handler(__FUNCTION__, __LINE__, "HAL ADC Start DMA failed!");
         return 0;

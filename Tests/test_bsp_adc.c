@@ -1,8 +1,6 @@
 #include "test_bsp_adc.h"
 #include "cmsis_os.h"
 
-uint16_t data[2];
-
 void test_bsp_adc(void) {
     adc1_dma_enable();
     while (1) {
