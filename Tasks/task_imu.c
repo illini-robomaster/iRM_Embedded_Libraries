@@ -5,7 +5,7 @@ static osEvent imu_event;
 osThreadId imu_task_handle;
 
 void imu_task_create(void){
-    osThreadDef(imu_task_name, imu_task, osPriorityAboveNormal, 0, 128);
+    osThreadDef(imu_task_name, imu_task, osPriorityAboveNormal, 0, 256);
     imu_task_handle = osThreadCreate(osThread(imu_task_name), NULL);
 #ifdef DEBUG
     BSP_DEBUG;

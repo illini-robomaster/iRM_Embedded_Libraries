@@ -17,7 +17,7 @@ referee_t       referee_info;
 osThreadId      referee_task_handle;
 
 void referee_task_create(void) {
-    osThreadDef(referee_task_name, referee_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(referee_task_name, referee_task, osPriorityAboveNormal, 0, 4096);
     referee_task_handle = osThreadCreate(osThread(referee_task_name), NULL);
     if (referee_task_handle == NULL)
         bsp_error_handler(__FUNCTION__, __LINE__, "Referee task failed to create.");
