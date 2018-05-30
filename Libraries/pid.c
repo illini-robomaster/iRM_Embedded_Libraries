@@ -58,7 +58,7 @@ pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
         int32_t low_lim, int32_t  high_lim, int32_t int_lim, int32_t int_rng, int32_t max_derr,
         float kp, float ki, float kd, float maxout, float dt, float deadband) {
     if (!pid)
-        pid = malloc(sizeof(pid_ctl_t));
+        pid = pvPortMalloc(sizeof(pid_ctl_t));
     pid->mode       = mode;
     pid->motor      = motor;
     pid->dt         = dt;
