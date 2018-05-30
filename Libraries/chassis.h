@@ -25,7 +25,7 @@
 #define MAX_SPEED       2000
 #define YAW_DEADBAND    0.03f
 
-#define TURNING_SPEED   100
+#define TURNING_SPEED   300
 
 typedef enum{
     CHASSIS_FL = 0,
