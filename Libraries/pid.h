@@ -127,6 +127,7 @@ static float position_pid_calc(pid_ctl_t *pid);
  * @param kd        differentiative constant
  * @param maxout    maximum final out put [set to 0 to disable]
  * @param dt        delta t in millisecond
+ * @param deadband  pid deadband. If the motor error is within the deadband, it's taken as 0 error.
  * @return initialized pid controller pointer
  */
 pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
@@ -141,6 +142,15 @@ pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
  * @param kd    derivative gain
  */
 void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd);
+
+/**
+ * Use manual error input; target value is 0.
+ * @brief
+ * @param  pid          ptr to pid controller
+ * @param  manual_error manual user input error
+ * @return              calculated current output
+ */
+int32_t pid_manual_error(pid_ctl_t *pid, int32_t manual_error);
 
 /**
  * @brief use angle data from sensor to control angle

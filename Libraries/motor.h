@@ -275,7 +275,7 @@ static uint8_t match_id(uint16_t *old_id, uint16_t new_id);
  * @param range maximum absolute range
  * @return the clipped value
  */
-static int16_t clip(int16_t val, int16_t range);
+int16_t clip(int16_t val, int16_t range);
 
 /**
  * @brief limit current output to prevent from buring the motor

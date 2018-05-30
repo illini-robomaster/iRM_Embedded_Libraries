@@ -72,7 +72,14 @@ pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
     pid->idx        = 0;
     pid->integrator = 0;
     pid_set_param(pid, kp, ki, kd);
+    for (int i = 0; i < HISTORY_DATA_SIZE; ++i) { pid->err[i] = 0; }
     return pid;
+}
+
+int32_t pid_manual_error(pid_ctl_t *pid, int32_t manual_error) {
+    pid->idx = (++pid->idx) % HISTORY_DATA_SIZE;
+    pid->err[pid->idx] = manual_error;
+    return position_pid_calc(pid);
 }
 
 int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle) {
@@ -111,6 +118,8 @@ int32_t pid_calc(pid_ctl_t *pid, int32_t target) {
         case FLYWHEEL:
         case POKE:
             return pid_speed_ctl_speed(pid, target);
+        case ABSOLUTE_YAW:
+            return pid_manual_error(pid, target);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "pid mode does not exist");
             return 0;

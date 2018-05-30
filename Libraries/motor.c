@@ -80,7 +80,7 @@ static uint8_t match_id(uint16_t *old_id, uint16_t new_id) {
         return (*old_id == new_id);
 }
 
-static int16_t clip(int16_t val, int16_t range) {
+int16_t clip(int16_t val, int16_t range) {
     if (val >= range / 2)
         val -= range;
     else if (val <= -range / 2)
@@ -126,6 +126,7 @@ motor_t *motor_init(motor_t *motor,
     motor->can_id   = can_id;
     motor->rx_id    = rx_id;
     motor->out      = 1;
+    motor->target   = 0;
     if (rx_id >= CAN_RX1_START &&
             rx_id < CAN_RX1_START + CAN_GROUP_SIZE)
         motor->tx_id = CAN_TX1_ID;

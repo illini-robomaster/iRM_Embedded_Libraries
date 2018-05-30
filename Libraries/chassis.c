@@ -55,6 +55,7 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
     // rotation; change of basis matrix.
     float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
     float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
+    print("Tarx: %f, Tary: %f", target_x, target_y);
     my_chassis[CHASSIS_FL]->motor->target = target_x;
     my_chassis[CHASSIS_RR]->motor->target = -target_x; // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = target_y;

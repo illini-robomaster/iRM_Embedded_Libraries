@@ -12,11 +12,15 @@
 /* End User Include */
 
 #define MOTION_CYCLE 5
-#define MOTOR_2_RAD  0.0007669904 // (360 / 8192) * (pi / 180)
-#define DEG_2_MOTOR  22.75556 // (8192 / 360)
+#define MOTOR_2_RAD  0.0007669904f // (360 / 8192) * (pi / 180)
+#define DEG_2_MOTOR  22.75556f // (8192 / 360)
 
 /* Global variable */
-extern osThreadId motion_task_handle;
+extern osThreadId chassis_task_handle;
+extern osThreadId gimbal_task_handle;
+
+extern gimbal_t my_gimbal;
+extern chassis_t my_chassis;
 
 /**
  * get current yaw angle for gimbal
@@ -25,20 +29,6 @@ extern osThreadId motion_task_handle;
  * @return  current yaw angle for gimbal in degree (without wrap around. E.g., you may get 370)
  */
 float get_gimbal_yaw_angle(motor_t *gimbal_motor);
-
-/**
- * Helper function that initializes gimbal
- * @brief
- * @return  pointer to initialized gimbal
- */
-gimbal_t *gimbal_task_init(void);
-
-/**
- * Helper function that initializes chassis
- * @brief
- * @return  ptr to initialized chassis
- */
-chassis_t *chassis_task_init(void);
 
 /**
  * RTOS helper function to create thread for motion task
@@ -51,6 +41,13 @@ void motion_task_create(void);
  * @brief
  * @param argu RTOS arguments
  */
-void motion_task(void const *argu);
+void chassis_task(void const *argu);
+
+/**
+ * RTOS thread function. SHOULD NEVER RETURN.
+ * @brief
+ * @param argu RTOS arguments
+ */
+void gimbal_task(void const *argu);
 
 #endif

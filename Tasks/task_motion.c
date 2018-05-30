@@ -1,16 +1,28 @@
 #include "task_motion.h"
 
-//static osEvent motion_event;
-osThreadId motion_task_handle;
+osThreadId chassis_task_handle;
+osThreadId gimbal_task_handle;
+gimbal_t my_gimbal;
+chassis_t my_chassis;
 
 void motion_task_create(void) {
+    gimbal_init(&my_gimbal);
+    chassis_init(&my_chassis);
     print("Function called\r\n");
-    osThreadDef(motion_task_name, motion_task, osPriorityAboveNormal, 0, 256);
-    motion_task_handle = osThreadCreate(osThread(motion_task_name), NULL);
-    if (motion_task_handle == NULL)
-        print("motion task create failed.\r\n");
+    osThreadDef(chassis_task_name, chassis_task, osPriorityAboveNormal, 0, 256);
+    chassis_task_handle = osThreadCreate(osThread(chassis_task_name), NULL);
+    if (chassis_task_handle == NULL)
+        print("Chassis task create failed.\r\n");
     else
-        print("motion task created.\r\n");
+        print("Chassis task created.\r\n");
+   /*
+    osThreadDef(gimbal_task_name, gimbal_task, osPriorityAboveNormal, 0, 256);
+    gimbal_task_handle = osThreadCreate(osThread(gimbal_task_name), NULL);
+    if (gimbal_task_handle == NULL)
+        print("Gimbal task create failed.\r\n");
+    else
+        print("Gimbal task created.\r\n");
+        */
 }
 
 float get_gimbal_yaw_angle(motor_t *gimbal_motor) {
@@ -19,43 +31,42 @@ float get_gimbal_yaw_angle(motor_t *gimbal_motor) {
     return gimbal_yaw_angle;
 }
 
-chassis_t *chassis_task_init(void) {
-    chassis_t *ret = (chassis_t*)malloc(sizeof(chassis_t) * 4);
-    print("chassis task initing\r\n");
-    chassis_init(ret);
-    return ret;
-}
-
-gimbal_t *gimbal_task_init(void) {
-    gimbal_t *ret = (gimbal_t*)malloc(sizeof(gimbal_t));
-    gimbal_init(ret);
-    return ret;
-}
-
-void motion_task(void const *argu) {
-    print("MOTION TASK STARTED\r\n");
-    gimbal_t *my_gimbal = gimbal_task_init();
-    chassis_t *my_chassis = chassis_task_init();
-    dbus_t* rc = dbus_get_struct();
+void chassis_task(void const *argu) {
+    print("CHASSIS TASK STARTED\r\n");
+    dbus_t *rc = dbus_get_struct();
+    float yaw_astray_in_rad;
+    int16_t yaw_astray;
     while (1) {
-        gimbal_update(my_gimbal);
-        int16_t yaw_astray = get_motor_angle(my_gimbal->yaw->motor) - my_gimbal->yaw_middle; // how far
-        float yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
-        // chassis part; should be generic
+        gimbal_update(&my_gimbal);
+        yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle; // how far
+        yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
-        calc_remote_move(my_chassis, rc, 0);
-        calc_remote_rotate(my_chassis, rc);
+        calc_remote_move(&my_chassis, rc, 0);
+        calc_remote_rotate(&my_chassis, rc);
 #else
-        calc_keyboard_move(my_chassis, rc, 0);
+        calc_keyboard_move(&my_chassis, rc, 0);
 #endif
-        calc_gimbal_compensate(my_chassis, 0);
-        run_chassis(my_chassis);
-        // gimbal part; customization happens at IMU
-        int16_t observed_absolute_gimbal_yaw = yaw_astray + imuBoard.angle[YAW] * DEG_2_MOTOR;
+        calc_gimbal_compensate(&my_chassis, yaw_astray_in_rad);
+
+        run_chassis(&my_chassis);
+        osDelay(MOTION_CYCLE);
+    }
+}
+
+void gimbal_task(void const *argu) {
+    print("GIMBAL TASK STARTED\r\n");
+    dbus_t *rc = dbus_get_struct();
+    int16_t yaw_astray, observed_absolute_gimbal_yaw;
+    while (1) {
+        gimbal_update(&my_gimbal);
+        yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle;
+        observed_absolute_gimbal_yaw = yaw_astray + imuBoard.angle[YAW] * DEG_2_MOTOR;
+        //while (observed_absolute_gimbal_yaw < 0) { observed_absolute_gimbal_yaw += ANGLE_RANGE_6623; }
         observed_absolute_gimbal_yaw = observed_absolute_gimbal_yaw % ANGLE_RANGE_6623;
-        //gimbal_mouse_move(my_gimbal, rc, observed_absolute_gimbal_yaw);
-        //run_gimbal(my_gimbal);
+
+        gimbal_mouse_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
+        run_gimbal(&my_gimbal);
         osDelay(MOTION_CYCLE);
     }
 }

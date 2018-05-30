@@ -16,14 +16,14 @@
 
 /* empirical parameters */
 #define chs_kp 10
-#define chs_ki 0.9
+#define chs_ki 0.9f
 #define chs_kd 0
 #define chs_int_lim 200
 #define chs_calc_interval 5
 
 #define MAX_TURN_SPEED  400
 #define MAX_SPEED       2000
-#define YAW_DEADBAND    0.03
+#define YAW_DEADBAND    0.03f
 
 #define TURNING_SPEED   100
 

@@ -4,10 +4,10 @@
 #include "bsp_imu.h"
 #include <math.h>
 
-#define DT          0.02    // measurement time interval. RTOS should give exact time to me.
-#define QANGLE      0.00002 // angle noise variance
-#define QGYRO       0.0065  // gyro noise variance
-#define RANGLE      0.1     // measurement noise covariance cov(gyro, angle)
+#define DT          0.02f    // measurement time interval. RTOS should give exact time to me.
+#define QANGLE      0.00002f // angle noise variance
+#define QGYRO       0.0065f  // gyro noise variance
+#define RANGLE      0.1f     // measurement noise covariance cov(gyro, angle)
 #define STATIC_LIM  4       // if (all) gyro values are smaller than this lim, we assume it's static
 #define STATIC_TURN 20      // we only start to update zero bias if the robots are static in 10 measurements
 #define IMUSAMPLES  300     // how many gyro samples to grab
