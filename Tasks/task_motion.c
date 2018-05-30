@@ -10,7 +10,7 @@ void motion_task_create(void) {
     chassis_init(&my_chassis);
     print("Function called\r\n");
     osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 256);
-    chassis_task_handle = osThreadCreate(osThread(chassis_task_name), NULL);
+    chassis_task_handle = osThreadCreate(osThread(chassisTask), NULL);
     if (chassis_task_handle == NULL)
         print("Chassis task create failed.\r\n");
     else

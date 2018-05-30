@@ -13,7 +13,7 @@ osThreadId      test_task_handle;
 
 void test_task_create(void) {
     osThreadDef(testTask, test_task, osPriorityAboveNormal, 0, 512);
-    test_task_handle = osThreadCreate(osThread(test_task_name), NULL);
+    test_task_handle = osThreadCreate(osThread(testTask), NULL);
     if (test_task_handle == NULL)
         bsp_error_handler(__FUNCTION__, __LINE__, "test task create failed.");
 }
