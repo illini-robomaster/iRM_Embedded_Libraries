@@ -17,7 +17,7 @@ uint8_t adc1_dma_enable(void) {
     return adc_dma_enable(&hadc1, adc1_buff, BSP_ADC1_CHANNEL_SIZE);
 }
 
-uint8_t adc1_get_val(uint8_t channel) {
+uint16_t adc1_get_val(uint8_t channel) {
     if (channel >= BSP_ADC1_CHANNEL_SIZE) {
         bsp_error_handler(__FUNCTION__, __LINE__, "exceed maximum channel size for ADC1");
         return 0;

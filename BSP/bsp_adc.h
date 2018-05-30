@@ -33,7 +33,7 @@ uint8_t adc1_dma_enable(void);
  * @param channel which channel to be read (same as the rank number marked in ioc settings)
  * @return analog output ranging from 0 ~ 4095 (a read failure will return 0) 
  */
-uint8_t adc1_get_val(uint8_t channel);
+uint16_t adc1_get_val(uint8_t channel);
 
 /**
  * @brief read voltage value from ADC1
