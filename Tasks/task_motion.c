@@ -9,7 +9,7 @@ void motion_task_create(void) {
     gimbal_init(&my_gimbal);
     chassis_init(&my_chassis);
     print("Function called\r\n");
-    osThreadDef(chassis_task_name, chassis_task, osPriorityAboveNormal, 0, 256);
+    osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 256);
     chassis_task_handle = osThreadCreate(osThread(chassis_task_name), NULL);
     if (chassis_task_handle == NULL)
         print("Chassis task create failed.\r\n");

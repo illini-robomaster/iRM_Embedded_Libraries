@@ -17,7 +17,7 @@ tx2_t           tx2_info;
 osThreadId      tx2_task_handle;
 
 void tx2_task_create(void) {
-    osThreadDef(tx2_task_name, tx2_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(tx2Task, tx2_task, osPriorityAboveNormal, 0, 512);
     tx2_task_handle = osThreadCreate(osThread(tx2_task_name), NULL);
     if (tx2_task_handle == NULL)
         bsp_error_handler(__FUNCTION__, __LINE__, "TX2 task create failed.");
