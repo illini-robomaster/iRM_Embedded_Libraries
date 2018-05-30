@@ -14,7 +14,7 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
         return NULL;
     }
 
-    data_process_t *source  = (data_process_t*)malloc(sizeof(data_process_t));   /* Initialize a data process instance */
+    data_process_t *source  = (data_process_t*)pvPortMalloc(sizeof(data_process_t));   /* Initialize a data process instance */
     if (source == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate data process object.");
         return NULL;
@@ -36,7 +36,7 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
         return NULL;
     }
 
-    source->buff[0]         = (uint8_t*)malloc(2 * source->buff_size);
+    source->buff[0]         = (uint8_t*)pvPortMalloc(2 * source->buff_size);
     if (source->buff[0] == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate DMA buffer for data process object.");
         fifo_s_destory(source->data_fifo);
@@ -50,7 +50,7 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
     print("source->buff[1] 0x%08x \r\n", source->buff[1]);
 #endif
 
-    source->frame_packet    = (uint8_t*)malloc(fifo_size);
+    source->frame_packet    = (uint8_t*)pvPortMalloc(fifo_size);
     if (source->frame_packet == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate frame packet buffer for data process object.");
         free(source->buff[0]);

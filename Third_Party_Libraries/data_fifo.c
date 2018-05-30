@@ -14,13 +14,13 @@ fifo_s_t* fifo_s_create(uint32_t unit_cnt, osMutexId mutex) {
     //! Check input parameters.
     ASSERT(0 != unit_cnt);
     //! Allocate Memory for pointer of new FIFO Control Block.
-    pfifo = (fifo_s_t*) malloc(sizeof(fifo_s_t));
+    pfifo = (fifo_s_t*) pvPortMalloc(sizeof(fifo_s_t));
     if (NULL == pfifo) {
         //! Allocate Failure, exit now.
         return (NULL);
     }
     //! Allocate memory for FIFO.
-    base_addr = malloc(unit_cnt);
+    base_addr = pvPortMalloc(unit_cnt);
     if (NULL == base_addr) {
         //! Allocate Failure, exit now.
         return (NULL);
