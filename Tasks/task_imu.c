@@ -23,7 +23,9 @@ uint8_t imu_task_init(void){
 }
 
 void imu_task(void const *argu){
+    taskENTER_CRITICAL();
     imu_task_init();
+    taskEXIT_CRITICAL();
     int idle_period = DT * 1000;
     print("IDLE PERIOD: %d\r\n", idle_period);
     uint32_t imu_wake_time = osKernelSysTick();

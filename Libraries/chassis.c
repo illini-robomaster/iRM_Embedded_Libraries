@@ -13,7 +13,7 @@ static void normalize_to_range(float *vx, float *vy) {
     }
 }
 
-void chassis_init(chassis_t *my_chassis){
+void chassis_init(pid_ctl_t *my_chassis[4]){
     motor_t *m_fl, *m_fr, *m_rl, *m_rr;
     pid_ctl_t *pid_fl, *pid_fr, *pid_rl, *pid_rr;
     m_fl = m_fr = m_rl = m_rr = NULL;
@@ -39,7 +39,7 @@ void chassis_init(chassis_t *my_chassis){
     my_chassis[CHASSIS_RR] = pid_rr;
 }
 
-void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
+void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     // counterclockwise: positive
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = 0;
@@ -63,7 +63,7 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
     my_chassis[CHASSIS_FR]->motor->target = -target_y;
 }
 
-void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
+void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = rc->ch1 * 1.0 / 660;
     float v_x = rc->ch0 * 1.0 / 660;
@@ -77,13 +77,13 @@ void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle) {
     my_chassis[CHASSIS_FR]->motor->target = -target_y;
 }
 
-void calc_remote_rotate(chassis_t *my_chassis, dbus_t *rc) {
+void calc_remote_rotate(pid_ctl_t *my_chassis[4], dbus_t *rc) {
     float speed = rc->ch2 * 1.0 / 660 * MAX_TURN_SPEED;
 
     add_rotation(my_chassis, speed);
 }
 
-void add_rotation(chassis_t *my_chassis, float speed) {
+void add_rotation(pid_ctl_t *my_chassis[4], float speed) {
     /* apply safety boundary for turning speed */
     speed = fabs(speed) <= MAX_TURN_SPEED ? speed : sign(speed) * TURNING_SPEED;
 
@@ -93,7 +93,7 @@ void add_rotation(chassis_t *my_chassis, float speed) {
     my_chassis[CHASSIS_FR]->motor->target += speed;
 }
 
-void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle) {
+void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], float yaw_angle) {
     if (fabsf(yaw_angle) < YAW_DEADBAND)
         return;
 
@@ -103,7 +103,7 @@ void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle) {
         add_rotation(my_chassis, -TURNING_SPEED);   // CCW
 }
 
-void run_chassis(chassis_t *my_chassis){
+void run_chassis(pid_ctl_t *my_chassis[4]){
     for (int i = 0; i < 4; ++i) {
         my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->target);
     }

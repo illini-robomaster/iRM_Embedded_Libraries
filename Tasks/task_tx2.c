@@ -17,7 +17,7 @@ tx2_t           tx2_info;
 osThreadId      tx2_task_handle;
 
 void tx2_task_create(void) {
-    osThreadDef(tx2Task, tx2_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(tx2Task, tx2_task, osPriorityNormal, 0, 512);
     tx2_task_handle = osThreadCreate(osThread(tx2Task), NULL);
     if (tx2_task_handle == NULL)
         bsp_error_handler(__FUNCTION__, __LINE__, "TX2 task create failed.");
@@ -30,7 +30,8 @@ uint8_t tx2_task_init(void) {
     osMutexDef(tx2_tx_mutex);
     tx2_tx_mutex = osMutexCreate(osMutex(tx2_tx_mutex));
     /* Initialize data process instance */
-    tx2_process = data_process_init(&TX2_PORT, tx2_rx_mutex, TX2_FIFO_SIZE, TX2_BUFF_SIZE, TX2_SOF, tx2_dispatcher, &tx2_info, tx2_tx_mutex, tx2_packer);
+    tx2_process = data_process_init(&TX2_PORT, tx2_rx_mutex, TX2_FIFO_SIZE,
+            TX2_BUFF_SIZE, TX2_SOF, tx2_dispatcher, &tx2_info, tx2_tx_mutex, tx2_packer);
     if (NULL == tx2_process) {
         bsp_error_handler(__FUNCTION__, __LINE__, "TX2 data process instance initialization failed.");
         return 0;

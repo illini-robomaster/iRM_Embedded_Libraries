@@ -25,7 +25,7 @@
 #define MAX_SPEED       2000
 #define YAW_DEADBAND    0.03f
 
-#define TURNING_SPEED   300
+#define TURNING_SPEED   40
 
 typedef enum{
     CHASSIS_FL = 0,
@@ -34,14 +34,12 @@ typedef enum{
     CHASSIS_RR = 3
 } chassis_motor_t;
 
-typedef pid_ctl_t* chassis_t;
-
 /**
  * Initialize chassis motor pids
  * @brief
  * @param my_chassis ptr to the desired chassis object to be initialized
  */
-void chassis_init(chassis_t *my_chassis);
+void chassis_init(pid_ctl_t *my_chassis[4]);
 
 /**
  * calculate chassis move based on keyboard input
@@ -50,7 +48,7 @@ void chassis_init(chassis_t *my_chassis);
  * @param rc         dbus struct; for getting remote controller data
  * @param yaw_angle  Counterclockwise is positive. In radian. How far is gimbal deviate from chassis
  */
-void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
+void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
 
 /**
  * @brief calculate chassis move based on remote controller
@@ -58,21 +56,21 @@ void calc_keyboard_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
  * @param rc         dbus struct; for getting remote controller data
  * @param yaw_angle  angle of gimabl deviated from chassis, in radian. (counter colockwise is positive)
  */
-void calc_remote_move(chassis_t *my_chassis, dbus_t *rc, float yaw_angle);
+void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
 
 /**
  * @brief calculate chassis rotation based on remote controller
  * @param my_chassis an (array) of motors pid that represent chassis
  * @param rc         dbus struct; for getting remote controller data
  */
-void calc_remote_rotate(chassis_t *my_chassis, dbus_t *rc);
+void calc_remote_rotate(pid_ctl_t *my_chassis[4], dbus_t *rc);
 
 /**
  * @brief add rotation component to motor target
  * @param my_chassis an (array) of motors pid that represent chassis
  * @param speed      turning speed
  */
-void add_rotation(chassis_t *my_chassis, float speed);
+void add_rotation(pid_ctl_t *my_chassis[4], float speed);
 
 /**
  * Makes chassis roate based on yaw motor feedback
@@ -81,13 +79,13 @@ void add_rotation(chassis_t *my_chassis, float speed);
  * @param my_chassis my chassis object. An array of pid that represents chassis
  * @param yaw_angle  yaw angle from yaw motor feedback
  */
-void calc_gimbal_compensate(chassis_t *my_chassis, float yaw_angle);
+void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], float yaw_angle);
 
 /**
  * Run chassis motors. SHOULD ONLY BE CALLED AFTER PID CALC
  * @brief
  * @param my_chassis my chassis object. An array of pid that represents chassis
  */
-void run_chassis(chassis_t *my_chassis);
+void run_chassis(pid_ctl_t *my_chassis[4]);
 
 #endif

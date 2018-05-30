@@ -80,9 +80,9 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
  */
 extern inline void RM_RTOS_THREADS_Init(void) {
     referee_task_create();
-    imu_task_create();
-    // motion_task_create();
     tx2_task_create();
+    imu_task_create();
+    motion_task_create();
 #ifdef TEST
     test_task_create();
 #endif

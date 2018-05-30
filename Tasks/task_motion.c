@@ -3,11 +3,13 @@
 osThreadId chassis_task_handle;
 osThreadId gimbal_task_handle;
 gimbal_t my_gimbal;
-chassis_t my_chassis;
+pid_ctl_t *my_chassis[4];
 
 void motion_task_create(void) {
+    taskENTER_CRITICAL();
     gimbal_init(&my_gimbal);
-    chassis_init(&my_chassis);
+    chassis_init(my_chassis);
+    taskEXIT_CRITICAL();
     print("Function called\r\n");
     osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 256);
     chassis_task_handle = osThreadCreate(osThread(chassisTask), NULL);
@@ -42,14 +44,14 @@ void chassis_task(void const *argu) {
         yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
-        calc_remote_move(&my_chassis, rc, 0);
-        calc_remote_rotate(&my_chassis, rc);
+        calc_remote_move(my_chassis, rc, 0);
+        calc_remote_rotate(my_chassis, rc);
 #else
-        calc_keyboard_move(&my_chassis, rc, 0);
+        calc_keyboard_move(my_chassis, rc, 0);
 #endif
-        calc_gimbal_compensate(&my_chassis, yaw_astray_in_rad);
+        calc_gimbal_compensate(my_chassis, yaw_astray_in_rad);
 
-        run_chassis(&my_chassis);
+        run_chassis(my_chassis);
         osDelay(MOTION_CYCLE);
     }
 }

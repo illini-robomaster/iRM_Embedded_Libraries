@@ -20,7 +20,7 @@ extern osThreadId chassis_task_handle;
 extern osThreadId gimbal_task_handle;
 
 extern gimbal_t my_gimbal;
-extern chassis_t my_chassis;
+extern pid_ctl_t* my_chassis[4];
 
 /**
  * get current yaw angle for gimbal
