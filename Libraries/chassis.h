@@ -22,10 +22,10 @@
 #define chs_calc_interval 5
 
 #define MAX_TURN_SPEED  1500
-#define MAX_SPEED       2000
-#define YAW_DEADBAND    0.03f
+#define MAX_SPEED       2500
+#define YAW_DEADBAND    0.07f
 
-#define TURNING_SPEED   40
+#define TURNING_SPEED   700
 
 typedef enum{
     CHASSIS_FL = 0,
@@ -68,7 +68,7 @@ void calc_remote_rotate(pid_ctl_t *my_chassis[4], dbus_t *rc);
 /**
  * @brief add rotation component to motor target
  * @param my_chassis an (array) of motors pid that represent chassis
- * @param speed      turning speed
+ * @param speed      turning speed; postive for CCW direction
  */
 void add_rotation(pid_ctl_t *my_chassis[4], float speed);
 

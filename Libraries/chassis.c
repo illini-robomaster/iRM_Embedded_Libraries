@@ -87,10 +87,10 @@ void add_rotation(pid_ctl_t *my_chassis[4], float speed) {
     /* apply safety boundary for turning speed */
     speed = fabs(speed) <= MAX_TURN_SPEED ? speed : sign(speed) * TURNING_SPEED;
 
-    my_chassis[CHASSIS_FL]->motor->target += speed;
-    my_chassis[CHASSIS_RR]->motor->target += speed;
-    my_chassis[CHASSIS_RL]->motor->target += speed;
-    my_chassis[CHASSIS_FR]->motor->target += speed;
+    my_chassis[CHASSIS_FL]->motor->target -= speed;
+    my_chassis[CHASSIS_RR]->motor->target -= speed;
+    my_chassis[CHASSIS_RL]->motor->target -= speed;
+    my_chassis[CHASSIS_FR]->motor->target -= speed;
 }
 
 void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], float yaw_angle) {

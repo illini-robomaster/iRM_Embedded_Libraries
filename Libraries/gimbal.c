@@ -1,4 +1,5 @@
 #include "gimbal.h"
+#include "utils.h"
 
 void gimbal_init(gimbal_t *my_gimbal) {
     /* Init Yaw */
@@ -6,7 +7,7 @@ void gimbal_init(gimbal_t *my_gimbal) {
     my_gimbal->yaw_ang = 0;
 #if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     motor_t *yaw = motor_init(NULL, 0x209, CAN1_ID, M6623);
-    my_gimbal->yaw = pid_init(NULL, ABSOLUTE_YAW, yaw, 0, 0, 2000, 500, 200, 9, 0.1, 70, 1600, 5, 0);
+    my_gimbal->yaw = pid_init(NULL, ABSOLUTE_YAW, yaw, 0, 0, 2000, 500, 200, 4, 0.1, 20, 1600, 5, 0);
 #elif defined(ENGINEERING)
     motor_t *yaw = motor_init(NULL, 0x209, CAN1_ID, M6623);
     pid_init(my_gimbal->yaw, GIMBAL_MAN_SHOOT, yaw, 3000, 6800, 1000000, 200, 200, 30, 0.02, 140, 3500, 5, 0);
@@ -23,6 +24,8 @@ void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int16_t observed_abs_yaw
     my_gimbal->yaw_ang -= rc->mouse.x * 0.2;
     //my_gimbal->pitch_ang -= rc->mouse.y * 0.2;
     my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, my_gimbal->yaw_ang - observed_abs_yaw);
+    if (abs(my_gimbal->yaw->err[my_gimbal->yaw->idx]) > 100)
+        my_gimbal->yaw->motor->out += sign(my_gimbal->yaw->err[my_gimbal->yaw->idx]) * 600; //700
     //my_gimbal->pitch->motor->out = pid_calc(&pid_pitch, my_gimbal->pitch_ang);
     // stop it if it reaches the true mech limit
 }

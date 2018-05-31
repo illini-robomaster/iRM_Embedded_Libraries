@@ -17,14 +17,12 @@ void motion_task_create(void) {
         print("Chassis task create failed.\r\n");
     else
         print("Chassis task created.\r\n");
-   /*
     osThreadDef(gimbal_task_name, gimbal_task, osPriorityAboveNormal, 0, 256);
     gimbal_task_handle = osThreadCreate(osThread(gimbal_task_name), NULL);
     if (gimbal_task_handle == NULL)
         print("Gimbal task create failed.\r\n");
     else
         print("Gimbal task created.\r\n");
-        */
 }
 
 float get_gimbal_yaw_angle(motor_t *gimbal_motor) {
@@ -44,10 +42,10 @@ void chassis_task(void const *argu) {
         yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
-        calc_remote_move(my_chassis, rc, 0);
+        calc_remote_move(my_chassis, rc, yaw_astray_in_rad);
         calc_remote_rotate(my_chassis, rc);
 #else
-        calc_keyboard_move(my_chassis, rc, 0);
+        calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
 #endif
         calc_gimbal_compensate(my_chassis, yaw_astray_in_rad);
 
