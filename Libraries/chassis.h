@@ -23,7 +23,7 @@
 
 #define MAX_TURN_SPEED  1500
 #define MAX_SPEED       2500
-#define YAW_DEADBAND    0.07f
+#define YAW_DEADBAND    0.1f
 
 #define TURNING_SPEED   700
 

@@ -35,7 +35,7 @@ typedef enum {
     CHASSIS_ROTATE,
     FLYWHEEL,
     HAPTOR,
-    ABSOLUTE_YAW
+    MANUAL_ERR_INPUT
 }   pid_mode_t;
 
 /**

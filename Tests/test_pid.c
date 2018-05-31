@@ -4,6 +4,7 @@
 #include "bsp_print.h"
 #include "stdlib.h"
 #include "dbus.h"
+#include "utils.h"
 
 #define MIN(x, y) x < y ? x : y
 #define MAX(x, y) x > y ? x : y
@@ -21,7 +22,7 @@ void test_pitch() {
     motor_t motor;
     pid_ctl_t pid;
     size_t i;
-    int32_t low_lim, high_lim; 
+    int32_t low_lim, high_lim;
 
 #ifdef ENGINEERING
     low_lim = 4000;
@@ -42,7 +43,11 @@ void test_pitch() {
         for (target_val = low_lim; target_val < high_lim; target_val += 200) {
             for (i = 0; i < 400; i++) {
                 motor.out = pid_calc(&pid, target_val);
+#ifdef ENGINEERING
                 set_motor_output(&motor, NULL, NULL, NULL);
+#else
+                set_motor_output(NULL, &motor, NULL, NULL);
+#endif
                 HAL_Delay(1);
             }
         }
@@ -55,7 +60,7 @@ void test_yaw() {
     size_t i;
 
     motor_init(&motor, 0x209, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 70, 1600, 5, 0);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 2000, 500, 200, 4, 0.1, 20, 1600, 5, 0);
     int target_val_1 = 6000;
     int target_val_2 = 5600;
     int target_val = 5600;
@@ -63,6 +68,8 @@ void test_yaw() {
         for (target_val = 5200; target_val < 6800; target_val += 200) {
             for (i = 0; i < 400; i++) {
                 motor.out = pid_calc(&pid, target_val);
+                if (abs(pid.err[pid.idx]) > 100)
+                    motor.out += sign(pid.err[pid.idx]) * 600; //700
                 set_motor_output(&motor, NULL, NULL, NULL);
                 HAL_Delay(5);
             }
