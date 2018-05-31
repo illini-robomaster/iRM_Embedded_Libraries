@@ -48,6 +48,10 @@ static float position_pid_calc(pid_ctl_t *pid) {
     return final_out;
 }
 
+int32_t default_model(void *args) {
+    return 0;
+}
+
 void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
     pid->kp = kp;
     pid->ki = ki;
@@ -71,9 +75,15 @@ pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
     pid->maxout     = maxout;
     pid->idx        = 0;
     pid->integrator = 0;
+    pid->model      = default_model;
+    pid->model_args = NULL;
     pid_set_param(pid, kp, ki, kd);
     for (int i = 0; i < HISTORY_DATA_SIZE; ++i) { pid->err[i] = 0; }
     return pid;
+}
+
+void pid_set_model(pid_ctl_t *pid, int32_t (*model)(void *)) {
+    pid->model = model;
 }
 
 int32_t pid_manual_error(pid_ctl_t *pid, int32_t manual_error) {
@@ -113,13 +123,17 @@ int32_t pid_calc(pid_ctl_t *pid, int32_t target) {
     switch (pid->mode) {
         case GIMBAL_AUTO_SHOOT:
         case GIMBAL_MAN_SHOOT:
-            return pid_angle_ctl_angle(pid, target);
+            return pid_angle_ctl_angle(pid, target) + \
+                pid->model(pid->model_args);
         case CHASSIS_ROTATE:
         case FLYWHEEL:
         case POKE:
-            return pid_speed_ctl_speed(pid, target);
+            return pid_speed_ctl_speed(pid, target) + \
+                pid->model(pid->model_args);
         case ABSOLUTE_YAW:
-            return pid_manual_error(pid, target);
+            return pid_manual_error(pid, target) + \
+                pid->model(pid->model_args);
+            break;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "pid mode does not exist");
             return 0;

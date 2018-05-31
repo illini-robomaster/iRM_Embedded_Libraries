@@ -57,6 +57,12 @@ typedef enum {
  * @var int_lim     integration limit
  * @var int_rng     integration range (integrator won't change out side the range)
  * @var max_derr    maximum error derivative (prevent discontinuity in set point sudden jump)
+ * @var model       a function pointer which take in an array of argument and
+ *                  return an int32_t number to be added to the regular pid output
+ * @var model_args  an array of argument used by the model function
+ * @note you should explicitly call pid_set_model to enable addtional model output
+ * @note you should explicitly set model_args every time before calling pid_calc
+ *       in order for your model to work properly.
  */
 typedef struct {
     float   kp;
@@ -79,6 +85,9 @@ typedef struct {
     int32_t     int_rng;
     int32_t     max_derr;
     int32_t     ldata;
+
+    int32_t (*model)(void *);
+    void *model_args;
 }   pid_ctl_t;
 
 /**
@@ -133,6 +142,15 @@ static float position_pid_calc(pid_ctl_t *pid);
 pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
         int32_t low_lim, int32_t high_lim, int32_t int_lim, int32_t int_rng, int32_t max_derr,
         float kp, float ki, float kd, float maxout, float dt, float deadband);
+
+/**
+ * @brief set a specific model as additional output to the pid controller
+ * @param pid   pid controller
+ * @param model a model function pointer that takes an array of argument 
+ *              and return an int32_t output
+ * @return none
+ */
+void pid_set_model(pid_ctl_t *pid, int32_t (*model)(void *));
 
 /**
  * @brief set the p, i, d parameter of a pid controller
