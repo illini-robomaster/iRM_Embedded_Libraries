@@ -11,7 +11,7 @@ void test_pid() {
     // test_poke();
     // test_shoot();
     // test_chassis();
-    // test_pitch();
+    test_pitch();
     // test_yaw();
 }
 
@@ -27,25 +27,26 @@ void test_pitch() {
     motor_init(&motor, 0x205, CAN1_ID, M3510);
     pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 400, 200, 5, 0, 0, 3000, 5, 0);
 #elif defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
-    low_lim = 4800;
-    high_lim = 6200;
+    low_lim = 5200;
+    high_lim = 6800;
     motor_init(&motor, 0x20A, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 400, 200, 7.7, 0.2, 130, 3000, 5, 0);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 0, 800, 4, 0.03, 15, 1800, 20, 10);
 #endif
 
     int target_val_1 = 6800;
     int target_val_2 = 5200;
     int target_val;
+    uint32_t pid_pitch_time = osKernelSysTick();
     while (1) {
-        for (target_val = low_lim; target_val < high_lim; target_val += 200) {
-            for (i = 0; i < 400; i++) {
+        for (target_val = low_lim; target_val < high_lim; target_val += 400) {
+            for (i = 0; i < 100; i++) {
                 motor.out = pid_calc(&pid, target_val);
 #ifdef ENGINEERING
                 set_motor_output(&motor, NULL, NULL, NULL);
 #else
                 set_motor_output(NULL, &motor, NULL, NULL);
 #endif
-                HAL_Delay(1);
+                osDelayUntil(&pid_pitch_time, 20);
             }
         }
     }
@@ -57,18 +58,17 @@ void test_yaw() {
     size_t i;
 
     motor_init(&motor, 0x209, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 2000, 500, 200, 4, 0.1, 20, 1600, 5, 0);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 0, 0, 0, 20, 0, 80, 4500, 20, 0);
     int target_val_1 = 6000;
     int target_val_2 = 5600;
     int target_val = 5600;
+    uint32_t pid_yaw_time = osKernelSysTick();
     while (1) {
-        for (target_val = 5200; target_val < 6800; target_val += 200) {
-            for (i = 0; i < 400; i++) {
+        for (target_val = 5200; target_val < 6800; target_val += 400) {
+            for (i = 0; i < 100; i++) {
                 motor.out = pid_calc(&pid, target_val);
-                if (abs(pid.err[pid.idx]) > 100)
-                    motor.out += sign(pid.err[pid.idx]) * 600; //700
                 set_motor_output(&motor, NULL, NULL, NULL);
-                HAL_Delay(5);
+                osDelayUntil(&pid_yaw_time, 20);
             }
         }
     }

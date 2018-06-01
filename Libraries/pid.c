@@ -37,7 +37,10 @@ static float position_pid_calc(pid_ctl_t *pid) {
 
     float pout = pid->kp * err_now;
     float iout = pid->ki * pid->integrator;
-    float dout = pid->kd * (err_now - err_last) / pid->dt;
+    float dout = pid->kd * (err_now - err_last);
+
+    if (pid->max_derr && abs(err_now - err_last) > pid->max_derr)
+        dout = 0;
 
     float final_out = pout + iout + dout;
     if (pid->maxout)
@@ -57,7 +60,7 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 }
 
 pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
-        int32_t low_lim, int32_t  high_lim, int32_t int_lim, int32_t int_rng, int16_t step_size,
+        int32_t low_lim, int32_t  high_lim, int32_t int_lim, int32_t int_rng, int16_t max_derr,
         float kp, float ki, float kd, float maxout, float dt, float deadband) {
     if (!pid)
         pid = pvPortMalloc(sizeof(pid_ctl_t));
@@ -74,7 +77,7 @@ pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
     pid->idx        = 0;
     pid->integrator = 0;
     pid->prev_tar   = get_motor_angle(motor);
-    pid->step_size  = step_size;
+    pid->max_derr   = max_derr;
     pid->model      = default_model;
     pid->model_args = NULL;
     pid_set_param(pid, kp, ki, kd);
@@ -100,12 +103,14 @@ int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle) {
         target_angle = pid->high_lim;
     /* set angle error into the circular buffer */
     pid->idx = (++pid->idx) % HISTORY_DATA_SIZE;
+    /* ramping control not quite efficient
     if (pid->step_size) {
         if (clip_angle_err(pid->motor, target_angle - pid->prev_tar) > 0)
             target_angle = min(pid->prev_tar + pid->step_size, target_angle);
         else
             target_angle = max(pid->prev_tar - pid->step_size, target_angle);
-    }
+    } */
+    pid->prev_tar = target_angle;
     pid->err[pid->idx] = get_angle_err(pid->motor, target_angle);
     /* calculate generic position pid */
     return position_pid_calc(pid);
