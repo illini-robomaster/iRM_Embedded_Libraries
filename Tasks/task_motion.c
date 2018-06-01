@@ -36,6 +36,7 @@ void chassis_task(void const *argu) {
     dbus_t *rc = dbus_get_struct();
     float yaw_astray_in_rad;
     int16_t yaw_astray;
+    uint32_t chassis_wake_time = osKernelSysTick();
     while (1) {
         gimbal_update(&my_gimbal);
         yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle; // how far
@@ -43,14 +44,13 @@ void chassis_task(void const *argu) {
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
         calc_remote_move(my_chassis, rc, yaw_astray_in_rad);
-        calc_remote_rotate(my_chassis, rc);
 #else
         calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
 #endif
         calc_gimbal_compensate(my_chassis, yaw_astray_in_rad);
 
         run_chassis(my_chassis);
-        osDelay(MOTION_CYCLE);
+        osDelayUntil(&chassis_wake_time, MOTION_CYCLE);
     }
 }
 
@@ -58,15 +58,19 @@ void gimbal_task(void const *argu) {
     print("GIMBAL TASK STARTED\r\n");
     dbus_t *rc = dbus_get_struct();
     int16_t yaw_astray, observed_absolute_gimbal_yaw;
+    uint32_t gimbal_wake_time = osKernelSysTick();
     while (1) {
         gimbal_update(&my_gimbal);
         yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle;
         observed_absolute_gimbal_yaw = yaw_astray + imuBoard.angle[YAW] * DEG_2_MOTOR;
-        //while (observed_absolute_gimbal_yaw < 0) { observed_absolute_gimbal_yaw += ANGLE_RANGE_6623; }
         observed_absolute_gimbal_yaw = observed_absolute_gimbal_yaw % ANGLE_RANGE_6623;
 
+#ifdef USE_REMOTE
+        gimbal_remote_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
+#else
         gimbal_mouse_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
+#endif
         run_gimbal(&my_gimbal);
-        osDelay(MOTION_CYCLE);
+        osDelayUntil(&gimbal_wake_time, MOTION_CYCLE);
     }
 }

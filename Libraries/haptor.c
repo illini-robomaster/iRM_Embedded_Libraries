@@ -10,7 +10,7 @@ void init_haptor() {
     pid_haptor = malloc(sizeof(pid_ctl_t));
     haptor_state = MIDDLE;
     motor_init(m_haptor, 0x206, CAN1_ID, M2006);
-    pid_init(pid_haptor, HAPTOR, m_haptor, -8000, 8000, 700000, 0, 0, 13, 0.04, 0, 1300, 5, 10);
+    pid_init(pid_haptor, HAPTOR, m_haptor, -8000, 8000, 700000, 0, 0, 13, 0.04, 0, 1300, 10);
 }
 
 void haptor_down() {

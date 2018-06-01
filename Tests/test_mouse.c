@@ -15,28 +15,28 @@ static int32_t clip_to_range(int32_t val, int32_t low, int32_t high) {
 void init_yaw(motor_t *motor, pid_ctl_t *pid) {
 #if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     motor_init(motor, 0x209, CAN1_ID, M6623);
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 70, 1600, 5, 0);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 14, 1600, 0);
 #elif defined(ENGINEERING)
     motor_init(motor, 0x209, CAN1_ID, M6623);
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 3000, 6800, 1000000, 200, 200, 30, 0.02, 140, 3500, 5, 0);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 3000, 6800, 1000000, 200, 200, 30, 0.02, 28, 3500, 0);
 #elif defined(HERO)
     /* TODO */
     motor_init(motor, 0x209, CAN1_ID, M6623);
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 70, 1600, 5, 0);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 5200, 6800, 2000, 500, 200, 9, 0.1, 14, 1600, 0);
 #endif
 }
 
 void init_pitch(motor_t *motor, pid_ctl_t *pid) {
 #if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     motor_init(motor, 0x20A, CAN1_ID, M6623);
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 4800, 6200, 3000, 400, 100, 12, 0.2, 90, 3000, 5, 0);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 4800, 6200, 3000, 400, 100, 12, 0.2, 18, 3000, 0);
 #elif defined(ENGINEERING)
     motor_init(motor, 0x205, CAN1_ID, M3510);
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 4000, 7900, 3000, 400, 200, 8, 0.05, 20, 3000, 5, 0);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 4000, 7900, 3000, 400, 200, 8, 0.05, 4, 3000, 0);
 #elif defined(HERO)
     /* TODO */
     motor_init(motor, 0x20A, CAN1_ID, M6623);
-    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 1400, 2500, 3000, 400, 100, 12, 0.2, 90, 3000, 5, 0);
+    pid_init(pid, GIMBAL_MAN_SHOOT, motor, 1400, 2500, 3000, 400, 100, 12, 0.2, 18, 3000, 0);
 #endif
 }
 
@@ -46,9 +46,9 @@ static void init_shoot(motor_t *m_fy_left, motor_t *m_fy_right, motor_t *m_poke,
     motor_init(m_poke, 0x208, CAN1_ID, M3508);
     motor_init(m_fy_left, 0x205, CAN1_ID, M3508);
     motor_init(m_fy_right, 0x206, CAN1_ID, M3508);
-    pid_init(pid_poke, POKE, m_poke, -2000, 0, 80000, 0, 0, 14, 2.3, 0, 10000, 5, 0);
-    pid_init(pid_fy_left, FLYWHEEL, m_fy_left, -9000, 0, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
-    pid_init(pid_fy_right, FLYWHEEL, m_fy_right, 0, 9000, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
+    pid_init(pid_poke, POKE, m_poke, -2000, 0, 80000, 0, 0, 14, 2.3, 0, 10000, 0);
+    pid_init(pid_fy_left, FLYWHEEL, m_fy_left, -9000, 0, 0, 0, 0, 22, 0, 0, 3000, 0);
+    pid_init(pid_fy_right, FLYWHEEL, m_fy_right, 0, 9000, 0, 0, 0, 22, 0, 0, 3000, 0);
 #elif defined(HERO)
     motor_init(m_poke, 0x208, CAN1_ID, M3508);
     motor_init(m_fy_left, 0x205, CAN1_ID, M3508);

@@ -25,13 +25,13 @@ void chassis_init(pid_ctl_t *my_chassis[4]){
     m_rr = motor_init(NULL, RR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
 
     pid_fl = pid_init(NULL, CHASSIS_ROTATE, m_fl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
+                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
     pid_fr = pid_init(NULL, CHASSIS_ROTATE, m_fr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
+                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
     pid_rl = pid_init(NULL, CHASSIS_ROTATE, m_rl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
+                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
     pid_rr = pid_init(NULL, CHASSIS_ROTATE, m_rr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, chs_calc_interval, 0);
+                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
 
     my_chassis[CHASSIS_FL] = pid_fl;
     my_chassis[CHASSIS_FR] = pid_fr;

@@ -61,13 +61,12 @@ void pid_set_param(pid_ctl_t *pid, float kp, float ki, float kd) {
 
 pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
         int32_t low_lim, int32_t  high_lim, int32_t int_lim, int32_t int_rng, int16_t max_derr,
-        float kp, float ki, float kd, float maxout, float dt, float deadband) {
+        float kp, float ki, float kd, float maxout, float deadband) {
     if (!pid)
         pid = pvPortMalloc(sizeof(pid_ctl_t));
     get_motor_data(motor);
     pid->mode       = mode;
     pid->motor      = motor;
-    pid->dt         = dt;
     pid->deadband   = deadband;
     pid->low_lim    = low_lim;
     pid->high_lim   = high_lim;

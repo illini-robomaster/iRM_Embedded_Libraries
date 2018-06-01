@@ -58,6 +58,15 @@ void gimbal_init(gimbal_t *my_gimbal);
 void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int16_t observed_abs_yaw);
 
 /**
+ * calculate gimbal movement based on remote controller
+ * @brief
+ * @param my_gimbal        my gimbal object
+ * @param rc               public dbus struct that holds remote controller data
+ * @param observed_abs_yaw absolute yaw angle with respect to the ground (instead of chassis)
+ */
+void gimbal_remote_move(gimbal_t *my_gimbal, dbus_t *rc, int16_t observed_abs_yaw);
+
+/**
  * Run motor with corresponding values. SHOULD ONLY BE CALLED AFTER PID CALC
  * @brief
  * @param my_gimbal my gimbal object

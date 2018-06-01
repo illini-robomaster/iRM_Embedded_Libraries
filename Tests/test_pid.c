@@ -25,12 +25,13 @@ void test_pitch() {
     low_lim = 4000;
     high_lim = 7000;
     motor_init(&motor, 0x205, CAN1_ID, M3510);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 400, 200, 5, 0, 0, 3000, 5, 0);
+    /* TODO: Warning!! Engineering PID requires re-tuning */
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 400, 200, 5, 0, 0, 3000, 0);
 #elif defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     low_lim = 5200;
     high_lim = 6800;
     motor_init(&motor, 0x20A, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 0, 800, 4, 0.03, 15, 1800, 20, 10);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 0, 800, 4, 0.03, 15, 1800, 0);
 #endif
 
     int target_val_1 = 6800;
@@ -58,7 +59,7 @@ void test_yaw() {
     size_t i;
 
     motor_init(&motor, 0x209, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 0, 0, 0, 20, 0, 80, 4500, 20, 0);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 0, 0, 0, 20, 0, 80, 4500, 0);
     int target_val_1 = 6000;
     int target_val_2 = 5600;
     int target_val = 5600;
@@ -93,9 +94,10 @@ void test_shoot() {
     motor_init(&mt_pitch, 0x20A, CAN1_ID, M6623);
     motor_init(&mt_l, 0x205, CAN1_ID, M3508);
     motor_init(&mt_r, 0x206, CAN1_ID, M3508);
-    pid_init(&pid_pitch, GIMBAL_MAN_SHOOT, &mt_pitch, 4800, 6200, 3000, 500, 200, 7.7, 0.2, 130, 3000, 5, 0);
-    pid_init(&pid_left, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 5, 0);
-    pid_init(&pid_right, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 5, 0);
+    /* TODO: Warning!! All PID requires re-tuning */
+    pid_init(&pid_pitch, GIMBAL_MAN_SHOOT, &mt_pitch, 4800, 6200, 3000, 500, 200, 7.7, 0.2, 130, 3000, 0);
+    pid_init(&pid_left, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 0);
+    pid_init(&pid_right, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, fw_kp, fw_ki, fw_kd, 3000, 0);
     mt_l.out = mt_r.out = mt_pitch.out = 1;
 
     int32_t target_speed = 2000;
@@ -117,9 +119,10 @@ void test_poke() {
     motor_init(&mt_poke, 0x208, CAN1_ID, M3508);
     motor_init(&mt_l, 0x205, CAN1_ID, M3508);
     motor_init(&mt_r, 0x206, CAN1_ID, M3508);
-    pid_init(&pid_poke, POKE, &mt_poke, -2000, 0, 80000, 0, 0, 18, 0.15, 0, 10000, 5, 0);
-    pid_init(&pid_l, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
-    pid_init(&pid_r, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
+    /* TODO: Warning!! All PID requires re-tuning */
+    pid_init(&pid_poke, POKE, &mt_poke, -2000, 0, 80000, 0, 0, 18, 0.15, 0, 10000, 0);
+    pid_init(&pid_l, FLYWHEEL, &mt_l, -4000, 0, 0, 0, 0, 22, 0, 0, 3000, 0);
+    pid_init(&pid_r, FLYWHEEL, &mt_r, 0, 4000, 0, 0, 0, 22, 0, 0, 3000, 0);
     mt_poke.out = 1;
     mt_l.out = 1;
     mt_r.out = 1;

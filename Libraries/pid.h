@@ -69,7 +69,6 @@ typedef struct {
     float   ki;
     float   kd;
     float   maxout;
-    float   dt;
     float   deadband;
 
     pid_mode_t  mode;
@@ -135,13 +134,12 @@ static float position_pid_calc(pid_ctl_t *pid);
  * @param ki        intergrative constant
  * @param kd        differentiative constant
  * @param maxout    maximum final out put [set to 0 to disable]
- * @param dt        delta t in millisecond
  * @param deadband  pid deadband. If the motor error is within the deadband, it's taken as 0 error.
  * @return initialized pid controller pointer
  */
 pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
         int32_t low_lim, int32_t high_lim, int32_t int_lim, int32_t int_rng, int16_t max_derr,
-        float kp, float ki, float kd, float maxout, float dt, float deadband);
+        float kp, float ki, float kd, float maxout, float deadband);
 
 /**
  * @brief set a specific model as additional output to the pid controller
