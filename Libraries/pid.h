@@ -83,8 +83,8 @@ typedef struct {
     int32_t     high_lim;
     int32_t     int_lim;
     int32_t     int_rng;
-    int32_t     max_derr;
-    int32_t     ldata;
+    int32_t     prev_tar;
+    int16_t     step_size;
 
     int32_t (*model)(void *);
     void *model_args;
@@ -140,7 +140,7 @@ static float position_pid_calc(pid_ctl_t *pid);
  * @return initialized pid controller pointer
  */
 pid_ctl_t *pid_init(pid_ctl_t *pid, pid_mode_t mode, motor_t *motor,
-        int32_t low_lim, int32_t high_lim, int32_t int_lim, int32_t int_rng, int32_t max_derr,
+        int32_t low_lim, int32_t high_lim, int32_t int_lim, int32_t int_rng, int16_t step_size,
         float kp, float ki, float kd, float maxout, float dt, float deadband);
 
 /**
