@@ -1,10 +1,10 @@
 #ifndef _IMU_ONBOARD_H_
 #define _IMU_ONBOARD_H_
 
+#include "lib_config.h"
 #include "bsp_imu.h"
 #include <math.h>
 
-#define DT          0.02f    // measurement time interval. RTOS should give exact time to me.
 #define QANGLE      0.00002f // angle noise variance
 #define QGYRO       0.0065f  // gyro noise variance
 #define RANGLE      0.1f     // measurement noise covariance cov(gyro, angle)

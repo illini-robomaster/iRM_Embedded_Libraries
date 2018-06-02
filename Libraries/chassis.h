@@ -4,6 +4,7 @@
 #include "pid.h"
 #include "motor.h"
 #include "dbus.h"
+#include "lib_config.h"
 
 #define Q_PI 0.7853982 // \pi / 4
 
@@ -19,7 +20,6 @@
 #define chs_ki 0.9f
 #define chs_kd 0
 #define chs_int_lim 200
-#define chs_calc_interval 5
 
 #define MAX_TURN_SPEED  1500
 #define MAX_SPEED       2500

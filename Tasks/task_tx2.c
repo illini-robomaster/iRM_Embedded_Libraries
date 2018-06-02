@@ -32,7 +32,7 @@ uint8_t tx2_task_init(void) {
     /* Initialize data process instance */
     tx2_process = data_process_init(&TX2_PORT, tx2_rx_mutex, TX2_FIFO_SIZE,
             TX2_BUFF_SIZE, TX2_SOF, tx2_dispatcher, &tx2_info, tx2_tx_mutex, tx2_packer);
-    if (NULL == tx2_process) {
+    if (tx2_process == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "TX2 data process instance initialization failed.");
         return 0;
     }

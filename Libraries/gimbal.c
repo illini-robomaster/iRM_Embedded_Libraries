@@ -8,7 +8,7 @@ void gimbal_init(gimbal_t *my_gimbal) {
     my_gimbal->yaw_ang = 0;
 #if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     yaw = motor_init(NULL, 0x209, CAN1_ID, M6623);
-    my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 5200, 6800, 0, 0, 0, 20, 0, 80, 4500, 0);
+    my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 5200, 6800, 0, 0, 0, 20, 0, 70, 4500, 0);
 #elif defined(ENGINEERING)
     // TODO
 #elif defined(HERO)
@@ -29,15 +29,15 @@ void gimbal_init(gimbal_t *my_gimbal) {
     // not implemented yet
 }
 
-void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int16_t observed_abs_yaw) {
+void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw) {
     my_gimbal->yaw_ang -= rc->mouse.x * 0.2;
     my_gimbal->pitch_ang -= rc->mouse.y * 0.2;
-    my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, my_gimbal->yaw_ang - observed_abs_yaw);
-    my_gimbal->pitch->motor->out = pid_calc(my_gimbal->pitch, my_gimbal->pitch_ang);
+    my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, (int32_t)(my_gimbal->yaw_ang) - observed_abs_yaw);
+    my_gimbal->pitch->motor->out = pid_calc(my_gimbal->pitch, (int32_t)(my_gimbal->pitch_ang));
     // stop it if it reaches the true mech limit
 }
 
-void gimbal_remote_move(gimbal_t *my_gimbal, dbus_t *rc, int16_t observed_abs_yaw) {
+void gimbal_remote_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw) {
     my_gimbal->yaw_ang -= rc->ch2 * 0.1;
     my_gimbal->pitch_ang += rc->ch3 * 0.1;
     my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, my_gimbal->yaw_ang - observed_abs_yaw);

@@ -82,7 +82,7 @@ void update_zero_bias(void){
 void discrete_integral(imu_axis_t desired_axis){
     float* pgyro = (float*)(&imuBoard.my_raw_imu.gyro.x);
     float rate = *(pgyro + desired_axis) - imuBoard.angle_zero_bias[desired_axis];
-    imuBoard.angle[desired_axis] += rate * DT;
+    imuBoard.angle[desired_axis] += rate * IMU_DT;
 }
 
 float kalman_filter_update(imu_axis_t desired_axis){
@@ -91,18 +91,18 @@ float kalman_filter_update(imu_axis_t desired_axis){
     float p_cache[4] = {0, 0, 0, 0};
     //EQ 1 - A priori state estimate
     //ideal estimated angle
-    float temp_angle = imuBoard.angle[desired_axis] + rate * DT;
+    float temp_angle = imuBoard.angle[desired_axis] + rate * IMU_DT;
     //EQ 2 - A priori estimate covariance
     //p_{k}_{k-1} (estimate from past observations)
     p_cache[0] = QANGLE - imuBoard.p_k[desired_axis][0][1] -
-                        imuBoard.p_k[desired_axis][1][0] + DT * imuBoard.p_k[desired_axis][1][1];
+                        imuBoard.p_k[desired_axis][1][0] + IMU_DT * imuBoard.p_k[desired_axis][1][1];
     p_cache[1] = -1 * imuBoard.p_k[desired_axis][1][1];
     p_cache[2] = -1 * imuBoard.p_k[desired_axis][1][1];
     p_cache[3] = QGYRO;
-    imuBoard.p_k[desired_axis][0][0] += p_cache[0] * DT; // dt^2 << 0. Ignore.
-    imuBoard.p_k[desired_axis][0][1] += p_cache[1] * DT;
-    imuBoard.p_k[desired_axis][1][0] += p_cache[2] * DT;
-    imuBoard.p_k[desired_axis][1][1] += p_cache[3] * DT;
+    imuBoard.p_k[desired_axis][0][0] += p_cache[0] * IMU_DT; // IMU_DT^2 << 0. Ignore.
+    imuBoard.p_k[desired_axis][0][1] += p_cache[1] * IMU_DT;
+    imuBoard.p_k[desired_axis][1][0] += p_cache[2] * IMU_DT;
+    imuBoard.p_k[desired_axis][1][1] += p_cache[3] * IMU_DT;
     //EQ 3 - Optimal Kalman Gain
     float angle_err = (imuBoard.acc_angle[desired_axis] - imuBoard.init_acc_angle[desired_axis]) - temp_angle;
     float E = RANGLE + imuBoard.p_k[desired_axis][0][0];

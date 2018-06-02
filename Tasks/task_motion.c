@@ -57,14 +57,13 @@ void chassis_task(void const *argu) {
 void gimbal_task(void const *argu) {
     print("GIMBAL TASK STARTED\r\n");
     dbus_t *rc = dbus_get_struct();
-    int16_t yaw_astray, observed_absolute_gimbal_yaw;
+    int16_t yaw_astray;
+    int32_t observed_absolute_gimbal_yaw;
     uint32_t gimbal_wake_time = osKernelSysTick();
     while (1) {
         gimbal_update(&my_gimbal);
         yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle;
-        observed_absolute_gimbal_yaw = yaw_astray + imuBoard.angle[YAW] * DEG_2_MOTOR;
-        observed_absolute_gimbal_yaw = observed_absolute_gimbal_yaw % ANGLE_RANGE_6623;
-
+        observed_absolute_gimbal_yaw = (int32_t)(yaw_astray) + (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
 #ifdef USE_REMOTE
         gimbal_remote_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
 #else

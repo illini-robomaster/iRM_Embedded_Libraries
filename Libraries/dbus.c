@@ -80,7 +80,7 @@ uint8_t dbus_data_process(uint8_t buff[DBUS_BUF_LEN], dbus_t* dbus) {
         return 0;
     }
     /* Read in keyboard value */
-    dbus->key.code = buff[14] | buff[15] << 8; // key borad code
+    dbus->key.code = buff[14] | buff[15] << 8; // keyboard code
     return 1;
 }
 
