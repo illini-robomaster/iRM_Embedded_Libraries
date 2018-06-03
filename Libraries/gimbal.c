@@ -40,7 +40,7 @@ void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw
 void gimbal_remote_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw) {
     my_gimbal->yaw_ang -= rc->ch2 * 0.1;
     my_gimbal->pitch_ang += rc->ch3 * 0.1;
-    my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, my_gimbal->yaw_ang - observed_abs_yaw);
+    my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, (int32_t)my_gimbal->yaw_ang - observed_abs_yaw);
     my_gimbal->pitch->motor->out = pid_calc(my_gimbal->pitch, my_gimbal->pitch_ang);
 }
 
