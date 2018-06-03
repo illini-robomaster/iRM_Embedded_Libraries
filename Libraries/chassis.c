@@ -3,6 +3,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+static pid_ctl_t chassis_rotate;
+
 static void normalize_to_range(float *vx, float *vy) {
     float norm = 1;
     if (*vx != 0 || *vy != 0)
@@ -37,6 +39,9 @@ void chassis_init(pid_ctl_t *my_chassis[4]){
     my_chassis[CHASSIS_FR] = pid_fr;
     my_chassis[CHASSIS_RL] = pid_rl;
     my_chassis[CHASSIS_RR] = pid_rr;
+
+    pid_init(&chassis_rotate, MANUAL_ERR_INPUT, m_fl, 0, 0,
+                0, 0, 0, ROTATE_KP, 0, 0, MAX_TURN_SPEED, YAW_DEADBAND);
 }
 
 void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
@@ -77,30 +82,10 @@ void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     my_chassis[CHASSIS_FR]->motor->target = -target_y;
 }
 
-void calc_remote_rotate(pid_ctl_t *my_chassis[4], dbus_t *rc) {
-    float speed = rc->ch2 * 1.0 / 660 * MAX_TURN_SPEED;
+void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], int16_t yaw_angle) {
+    int32_t rotate_speed = pid_calc(&chassis_rotate, yaw_angle);
 
-    add_rotation(my_chassis, speed);
-}
-
-void add_rotation(pid_ctl_t *my_chassis[4], float speed) {
-    /* apply safety boundary for turning speed */
-    speed = fabs(speed) <= MAX_TURN_SPEED ? speed : sign(speed) * TURNING_SPEED;
-
-    my_chassis[CHASSIS_FL]->motor->target -= speed;
-    my_chassis[CHASSIS_RR]->motor->target -= speed;
-    my_chassis[CHASSIS_RL]->motor->target -= speed;
-    my_chassis[CHASSIS_FR]->motor->target -= speed;
-}
-
-void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], float yaw_angle) {
-    if (fabsf(yaw_angle) < YAW_DEADBAND)
-        return;
-
-    if (yaw_angle > 0)
-        add_rotation(my_chassis, TURNING_SPEED);    // CW
-    else
-        add_rotation(my_chassis, -TURNING_SPEED);   // CCW
+    for (int i = 0; i < 4; ++i) { my_chassis[i]->motor->target -= rotate_speed; }
 }
 
 void run_chassis(pid_ctl_t *my_chassis[4]){

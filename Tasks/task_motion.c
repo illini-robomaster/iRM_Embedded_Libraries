@@ -47,7 +47,7 @@ void chassis_task(void const *argu) {
 #else
         calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
 #endif
-        calc_gimbal_compensate(my_chassis, yaw_astray_in_rad);
+        calc_gimbal_compensate(my_chassis, yaw_astray);
 
         run_chassis(my_chassis);
         osDelayUntil(&chassis_wake_time, MOTION_CYCLE);

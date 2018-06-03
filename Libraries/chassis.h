@@ -21,9 +21,11 @@
 #define chs_kd 0
 #define chs_int_lim 200
 
-#define MAX_TURN_SPEED  1500
+#define ROTATE_KP 2.4f
+
+#define MAX_TURN_SPEED  2500
 #define MAX_SPEED       2500
-#define YAW_DEADBAND    0.1f
+#define YAW_DEADBAND    50 // 22 ~ 1 deg
 
 #define TURNING_SPEED   700
 
@@ -59,27 +61,13 @@ void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
 void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
 
 /**
- * @brief calculate chassis rotation based on remote controller
- * @param my_chassis an (array) of motors pid that represent chassis
- * @param rc         dbus struct; for getting remote controller data
- */
-void calc_remote_rotate(pid_ctl_t *my_chassis[4], dbus_t *rc);
-
-/**
- * @brief add rotation component to motor target
- * @param my_chassis an (array) of motors pid that represent chassis
- * @param speed      turning speed; postive for CCW direction
- */
-void add_rotation(pid_ctl_t *my_chassis[4], float speed);
-
-/**
  * Makes chassis roate based on yaw motor feedback
  * @TODO: use P controller instead
  * @brief
  * @param my_chassis my chassis object. An array of pid that represents chassis
  * @param yaw_angle  yaw angle from yaw motor feedback
  */
-void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], float yaw_angle);
+void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], int16_t yaw_angle);
 
 /**
  * Run chassis motors. SHOULD ONLY BE CALLED AFTER PID CALC
