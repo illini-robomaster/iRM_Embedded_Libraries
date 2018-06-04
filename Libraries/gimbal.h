@@ -24,7 +24,6 @@ void gimbal_update(gimbal_t *my_gimbal);
 
 /**
  * Initialize gimbal motors
- * @TODO: complete pid for pitch/camera_pitch
  * @brief
  * @param my_gimbal [description]
  */

@@ -4,22 +4,6 @@
 #include "rm_config.h"
 #include "utils.h"
 
-static int32_t abs_limit(int32_t *data, int32_t lim) {
-    if (*data > lim)
-        *data = lim;
-    else if (*data < -lim)
-        *data = -lim;
-    return *data;
-}
-
-static float fabs_limit(float *data, float lim) {
-    if (*data > lim)
-        *data = lim;
-    else if (*data < -lim)
-        *data = -lim;
-    return *data;
-}
-
 static int32_t get_prev_n_err(pid_ctl_t *pid, uint8_t n) {
     return pid->err[(pid->idx + HISTORY_DATA_SIZE - n) % HISTORY_DATA_SIZE];
 }

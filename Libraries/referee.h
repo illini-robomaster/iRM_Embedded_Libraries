@@ -18,7 +18,7 @@
  * Document version 2018/04/13 v1.4
  * Server version   2018/05/04
  * Client version   2018/05/04
- * Firmware version 
+ * Firmware version
  */
 
 #define REFEREE_SOF         0xA5
@@ -97,7 +97,7 @@ typedef struct {
     float       chassis_volt;       // Chassis output voltage (volt)
     float       chassis_current;    // Chassis output current (ampere)
     float       chassis_power;      // Chassis output power (watt)
-    float       chassis_pwr_buf;    // Chassis power buffer (watt)
+    float       chassis_pwr_buf;    // Chassis power buffer (joule)
     uint16_t    barrel_heat_17;     // 17mm barrel heat
     uint16_t    barrel_heat_42;     // 42mm barrel heat
 } __packed power_heat_data_t;
