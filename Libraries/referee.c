@@ -8,6 +8,9 @@
 
 #include "referee.h"
 
+data_process_t  *referee_process;
+referee_t       referee_info;
+
 uint8_t referee_init(data_process_t* source) {
     /* Initialize REFEREE to IDLE interrupt */
     uart_port_init(source->huart);

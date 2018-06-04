@@ -182,6 +182,9 @@ typedef struct {
     custom_data_t       custom_data;        // 0x0100
 } referee_t;
 
+extern data_process_t   *referee_process;
+extern referee_t        referee_info;
+
 /**
  * Initialize referee system dma
  *
