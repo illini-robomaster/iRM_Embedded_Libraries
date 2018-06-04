@@ -35,7 +35,8 @@ typedef enum {
     CHASSIS_ROTATE,
     FLYWHEEL,
     HAPTOR,
-    MANUAL_ERR_INPUT
+    MANUAL_ERR_INPUT,
+    POWER_CTL
 }   pid_mode_t;
 
 /**
@@ -183,6 +184,14 @@ int32_t pid_angle_ctl_angle(pid_ctl_t *pid, int32_t target_angle);
  * @return calculated current output
  */
 int32_t pid_speed_ctl_speed(pid_ctl_t *pid, int32_t target_speed);
+
+/**
+ * @brief use referee power data to control acceleration limit
+ * @param pid           pid controller
+ * @param target_power  target power (should be a safety value rather than an extreme limit)
+ * @return  delta speed change 
+ */
+int32_t pid_power_ctl_delta_speed(pid_ctl_t *pid, int32_t target_power);
 
 /**
  * @brief calculate pid value and set output to the motor

@@ -3,6 +3,7 @@
 #include "bsp_error_handler.h"
 #include "rm_config.h"
 #include "utils.h"
+#include "referee.h"
 
 static int32_t get_prev_n_err(pid_ctl_t *pid, uint8_t n) {
     return pid->err[(pid->idx + HISTORY_DATA_SIZE - n) % HISTORY_DATA_SIZE];
@@ -12,6 +13,35 @@ static float position_pid_calc(pid_ctl_t *pid) {
     int32_t err_now     = pid->err[pid->idx];
     int32_t err_last    = get_prev_n_err(pid, 1);
 
+    if (!pid->int_rng || abs(err_now) < pid->int_rng)
+        pid->integrator += err_now;
+    if (pid->int_lim)
+        abs_limit(&pid->integrator, pid->int_lim);
+    if (pid->deadband && abs(err_now) < pid->deadband)
+        err_now = 0;
+
+    float pout = pid->kp * err_now;
+    float iout = pid->ki * pid->integrator;
+    float dout = pid->kd * (err_now - err_last);
+
+    if (pid->max_derr && abs(err_now - err_last) > pid->max_derr)
+        dout = 0;
+
+    float final_out = pout + iout + dout;
+    if (pid->maxout)
+        fabs_limit(&final_out, pid->maxout);
+
+    return final_out;
+}
+
+static float delta_pid_calc(pid_ctl_t *pid) {
+    int32_t err_now     = pid->err[pid->idx];
+    int32_t err_last    = get_prev_n_err(pid, 1);
+    int32_t err_llast   = get_prev_n_err(pid, 2);
+
+    err_now     = err_last - err_now;
+    err_last    = err_llast - err_last;
+    
     if (!pid->int_rng || abs(err_now) < pid->int_rng)
         pid->integrator += err_now;
     if (pid->int_lim)
@@ -112,22 +142,39 @@ int32_t pid_speed_ctl_speed(pid_ctl_t *pid, int32_t target_speed) {
     return position_pid_calc(pid);
 }
 
+int32_t pid_power_ctl_delta_speed(pid_ctl_t *pid, int32_t target_power) {
+    /* force target power to be in range */
+    if (target_power - pid->low_lim < 0)
+        target_power = pid->low_lim;
+    else if (target_power - pid->high_lim > 0)
+        target_power = pid->high_lim;
+    /* set power error into the circular buffer */
+    pid->idx = (++pid->idx) % HISTORY_DATA_SIZE;
+    pid->err[pid->idx] = target_power - referee_info.power_heat_data.chassis_power;
+    /* calculate generic position pid */
+    return position_pid_calc(pid);
+}
+
 int32_t pid_calc(pid_ctl_t *pid, int32_t target) {
-    get_motor_data(pid->motor);
     switch (pid->mode) {
         case GIMBAL_AUTO_SHOOT:
         case GIMBAL_MAN_SHOOT:
+            get_motor_data(pid->motor);
             return pid_angle_ctl_angle(pid, target) + \
                 pid->model(pid->model_args);
         case CHASSIS_ROTATE:
         case FLYWHEEL:
         case POKE:
+            get_motor_data(pid->motor);
             return pid_speed_ctl_speed(pid, target) + \
                 pid->model(pid->model_args);
         case MANUAL_ERR_INPUT:
+            get_motor_data(pid->motor);
             return pid_manual_error(pid, target) + \
                 pid->model(pid->model_args);
-            break;
+        case POWER_CTL:
+            return pid_power_ctl_delta_speed(pid, target) + \
+                pid->model(pid->model_args);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "pid mode does not exist");
             return 0;
