@@ -35,11 +35,13 @@ void chassis_task(void const *argu) {
     print("CHASSIS TASK STARTED\r\n");
     dbus_t *rc = dbus_get_struct();
     float yaw_astray_in_rad;
-    int16_t yaw_astray;
+    int16_t yaw_astray, cur_yaw_feedback;
+    uint8_t evasion_mode = 0;
     uint32_t chassis_wake_time = osKernelSysTick();
     while (1) {
         gimbal_update(&my_gimbal);
-        yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle; // how far
+        cur_yaw_feedback = get_motor_angle(my_gimbal.yaw->motor);
+        yaw_astray = cur_yaw_feedback - my_gimbal.yaw_middle; // how far
         yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
@@ -47,7 +49,11 @@ void chassis_task(void const *argu) {
 #else
         calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
 #endif
-        calc_gimbal_compensate(my_chassis, yaw_astray);
+        if (rc->key.bit.X) {
+            evasive_move(my_chassis, cur_yaw_feedback, my_gimbal.yaw->motor);
+        } else {
+            adjust_chassis_gimbal_pos(my_chassis, my_gimbal.yaw_middle, my_gimbal.yaw->motor);
+        }
 
         run_chassis(my_chassis);
         osDelayUntil(&chassis_wake_time, MOTION_CYCLE);

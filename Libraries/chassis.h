@@ -23,9 +23,10 @@
 
 #define ROTATE_KP 2.4f
 
-#define MAX_TURN_SPEED  2500
-#define MAX_SPEED       2500
-#define YAW_DEADBAND    50 // 22 ~ 1 deg
+#define EVASIVE_DEADBAND 300
+#define MAX_TURN_SPEED   2500
+#define MAX_SPEED        2500
+#define YAW_DEADBAND     50 // 22 ~ 1 deg
 
 #define TURNING_SPEED   700
 
@@ -62,12 +63,14 @@ void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
 
 /**
  * Makes chassis roate based on yaw motor feedback
- * @TODO: use P controller instead
  * @brief
  * @param my_chassis my chassis object. An array of pid that represents chassis
- * @param yaw_angle  yaw angle from yaw motor feedback
+ * @param desired_yaw_angle desired relative yaw angle;
+ * @param yaw_motor ptr to yaw motor for getting angle feedback.
  */
-void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], int16_t yaw_angle);
+void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_angle, motor_t *yaw_motor);
+
+void evasive_move(pid_ctl_t *my_chassis[4], int16_t cur_yaw_feedback, motor_t *yaw_motor);
 
 /**
  * Run chassis motors. SHOULD ONLY BE CALLED AFTER PID CALC

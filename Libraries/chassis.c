@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 static pid_ctl_t chassis_rotate;
+const static int16_t evasive_tar[2] = {MEASURED_LEFTMOST_YAW, MEASURED_RIGHTMOST_YAW};
+static uint8_t evasive_tar_cnt = 0;
 
 static void normalize_to_range(float *vx, float *vy) {
     float norm = 1;
@@ -61,7 +63,6 @@ void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     // rotation; change of basis matrix.
     float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
     float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
-    print("Tarx: %f, Tary: %f", target_x, target_y);
     my_chassis[CHASSIS_FL]->motor->target = target_x;
     my_chassis[CHASSIS_RR]->motor->target = -target_x; // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = target_y;
@@ -82,8 +83,19 @@ void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     my_chassis[CHASSIS_FR]->motor->target = -target_y;
 }
 
-void calc_gimbal_compensate(pid_ctl_t *my_chassis[4], int16_t yaw_angle) {
-    int32_t rotate_speed = pid_calc(&chassis_rotate, yaw_angle);
+void evasive_move(pid_ctl_t *my_chassis[4], int16_t cur_yaw_feedback, motor_t *yaw_motor) {
+    if(abs(cur_yaw_feedback - MEASURED_LEFTMOST_YAW) < EVASIVE_DEADBAND) {
+        evasive_tar_cnt = 1;
+    }
+    if(abs(cur_yaw_feedback - MEASURED_RIGHTMOST_YAW) < EVASIVE_DEADBAND) {
+        evasive_tar_cnt = 0;
+    }
+    adjust_chassis_gimbal_pos(my_chassis, evasive_tar[evasive_tar_cnt], yaw_motor);
+}
+
+void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_angle, motor_t *yaw_motor) {
+    int16_t deviation = get_motor_angle(yaw_motor) - desired_yaw_angle;
+    int32_t rotate_speed = pid_calc(&chassis_rotate, deviation);
 
     for (int i = 0; i < 4; ++i) { my_chassis[i]->motor->target -= rotate_speed; }
 }
