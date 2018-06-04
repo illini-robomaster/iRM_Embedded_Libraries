@@ -12,7 +12,7 @@ void test_motor() {
 
 void motor_feedback(void) {
     motor_t *motor;
-    motor_init(motor, 0x209, CAN1_ID, M6623);
+    motor = motor_init(NULL, 0x209, CAN1_ID, M6623);
 
     while (1) {
         get_motor_data(motor);
