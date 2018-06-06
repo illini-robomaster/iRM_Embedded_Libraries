@@ -79,12 +79,12 @@ extern inline void RM_RTOS_TIMERS_Init(void) {
  * @date    2018-04-13
  */
 extern inline void RM_RTOS_THREADS_Init(void) {
-#ifdef TEST
-    test_task_create();
-#else
     referee_task_create();
     tx2_task_create();
     imu_task_create();
+#ifdef TEST
+    test_task_create();
+#else
     motion_task_create();
 #endif
 }

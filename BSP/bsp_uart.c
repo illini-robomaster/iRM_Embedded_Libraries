@@ -184,6 +184,9 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
     else if (huart == &BSP_TX2_PORT) {
         bsp_error_handler(__FUNCTION__, __LINE__, "TX2 TX callbacked.");
     }
+    else if (huart == &BSP_PRINT_PORT) {
+
+    }
     else {
         bsp_error_handler(__FUNCTION__, __LINE__, "Undefined active UART device TX callbacked.");
     }

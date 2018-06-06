@@ -11,8 +11,9 @@ void test_pid() {
     // test_poke();
     // test_shoot();
     // test_chassis();
-    test_pitch();
+    // test_pitch();
     // test_yaw();
+    test_2006();
 }
 
 void test_pitch() {
@@ -132,5 +133,22 @@ void test_poke() {
         mt_r.out = pid_calc(&pid_r, target_speed);
         mt_poke.out = pid_calc(&pid_poke, -300);
         set_motor_output(&mt_l, &mt_r, NULL, &mt_poke);
+    }
+}
+
+void test_2006() {
+    motor_t     mt_2006;
+    pid_ctl_t   pid_2006;
+
+    motor_init(&mt_2006, 0x201, CAN1_ID, M2006);
+    pid_init(&pid_2006, POKE, &mt_2006, -2000, 2000, 0, 0, 0, 3, 0.5, 0, 5000, 0);
+
+    int32_t target_speed = 300;
+    uint32_t mt_2006_wake_time = osKernelSysTick();
+
+    while (1) {
+        mt_2006.out = pid_calc(&pid_2006, target_speed);
+        set_motor_output(&mt_2006, NULL, NULL, NULL);
+        osDelayUntil(&mt_2006_wake_time, 20);
     }
 }

@@ -19,22 +19,15 @@
  * @{
  */
 
-static char printf_temp[512];
-
 /**
  * Implementation of printf equivalent in embedded system
  *
- * @param  expr     string and format to print
+ * @param  fmt     formatted string
+ * @param  ...     variable length arguments 
  * @author Yixiao Sun
  * @date   2017-12-20
  */
-#define print(expr...) do {                                                      \
-    sprintf(printf_temp, expr);                                                  \
-    if (PRINT_TO_UART == 1)                                                      \
-        HAL_UART_Transmit(&BSP_PRINT_PORT, (uint8_t*)printf_temp, strlen(printf_temp), 200); \
-    if (PRINT_TO_SD == 1)                                                        \
-        break;                                                                   \
-} while(0)
+void print(const char *fmt, ...);
 
 /** @} */
 

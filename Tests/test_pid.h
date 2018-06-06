@@ -18,4 +18,6 @@ void test_poke();
 
 void new_test_poke(void);
 
+void test_2006();
+
 #endif
