@@ -46,10 +46,12 @@ void chassis_task(void const *argu) {
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
         calc_remote_move(my_chassis, rc, yaw_astray_in_rad);
+        evasion_mode = (rc->swl == RC_SWITCH_UP);
 #else
         calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
+        evasion_mode = rc->key.bit.X;
 #endif
-        if (rc->key.bit.X) {
+        if (evasion_mode) {
             evasive_move(my_chassis, cur_yaw_feedback, my_gimbal.yaw->motor);
         } else {
             adjust_chassis_gimbal_pos(my_chassis, my_gimbal.yaw_middle, my_gimbal.yaw->motor);
