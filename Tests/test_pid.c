@@ -13,7 +13,37 @@ void test_pid() {
     // test_chassis();
     // test_pitch();
     // test_yaw();
-    test_2006();
+    // test_2006();
+}
+
+void test_power_speed(void) {
+    motor_t *chassis_mt[4];
+    pid_ctl_t *chassis[4];
+    pid_ctl_t *power_pid;
+    uint32_t can_ids[4] = {0x201, 0x202, 0x203, 0x204};
+    for (uint8_t i = 0; i < 4; ++i) {
+        chassis_mt[i] = motor_init(NULL, can_ids[i], CAN1_ID, M3508);
+        chassis[i] = pid_init(NULL, CHASSIS_ROTATE, chassis_mt[i], -5000, 5000, 200,
+                    0, 0, 10, 0.9, 0, 0, 0);
+    }
+    power_pid = pid_init(NULL, POWER_CTL, chassis_mt[0], 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0);
+    int32_t target_speed = 0;
+    int32_t delta_speed = 0;
+    dbus_t *rc = dbus_get_struct();
+    uint32_t os_time = osKernelSysTick();
+    while(1) {
+        if (rc->swl == RC_SWITCH_UP) {
+            delta_speed = pid_calc(power_pid, 8);
+            target_speed += delta_speed;
+        } else {
+            target_speed = 0;
+        }
+        for (uint8_t i = 0; i < 4; i++) {
+            chassis[i]->motor->out = pid_calc(chassis[i], target_speed);
+        }
+        set_motor_output(chassis_mt[0], chassis_mt[1], chassis_mt[2], chassis_mt[3]);
+        osDelayUntil(&os_time, 20);
+    }
 }
 
 void test_pitch() {

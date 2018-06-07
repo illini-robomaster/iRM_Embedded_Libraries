@@ -4,6 +4,7 @@
 #include "pid.h"
 #include "motor.h"
 #include "dbus.h"
+#include "referee.h"
 #include "lib_config.h"
 
 #define Q_PI 0.7853982 // \pi / 4
@@ -21,11 +22,12 @@
 #define chs_kd 0
 #define chs_int_lim 200
 
-#define ROTATE_KP 2.4f
+#define ROTATE_KP 2.7f
 
-#define EVASIVE_DEADBAND 300
-#define MAX_TURN_SPEED   2500
-#define MAX_SPEED        2500
+#define EVASIVE_DEADBAND 400
+#define MAX_TURN_SPEED   1500
+#define MAX_LINEAR_SPEED 2500
+#define MAX_SPEED        5000
 #define YAW_DEADBAND     50 // 22 ~ 1 deg
 
 #define TURNING_SPEED   700
@@ -70,6 +72,13 @@ void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
  */
 void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_angle, motor_t *yaw_motor);
 
+/**
+ * [evasive_move description]
+ * @brief
+ * @param [name]           array of motors that control chassis
+ * @param cur_yaw_feedback current yaw feedback read from yaw motor
+ * @param yaw_motor        ptr to yaw motor
+ */
 void evasive_move(pid_ctl_t *my_chassis[4], int16_t cur_yaw_feedback, motor_t *yaw_motor);
 
 /**

@@ -20,4 +20,6 @@ void new_test_poke(void);
 
 void test_2006();
 
+void test_power_speed(void);
+
 #endif

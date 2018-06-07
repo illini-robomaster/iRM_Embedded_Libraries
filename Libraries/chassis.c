@@ -51,18 +51,13 @@ void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = 0;
     float v_x = 0;
-    if (rc->key.bit.W)
-        v_y += 1;
-    if (rc->key.bit.S)
-        v_y -= 1;
-    if (rc->key.bit.A)
-        v_x -= 1;
-    if (rc->key.bit.D)
-        v_x += 1;
-    normalize_to_range(&v_x, &v_y);
+    if (rc->key.bit.W) v_y += 1;
+    if (rc->key.bit.S) v_y -= 1;
+    if (rc->key.bit.A) v_x -= 1;
+    if (rc->key.bit.D) v_x += 1;
     // rotation; change of basis matrix.
-    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
-    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_LINEAR_SPEED;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_LINEAR_SPEED;
     my_chassis[CHASSIS_FL]->motor->target = target_x;
     my_chassis[CHASSIS_RR]->motor->target = -target_x; // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = target_y;
@@ -73,10 +68,9 @@ void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = rc->ch1 * 1.0 / 660;
     float v_x = rc->ch0 * 1.0 / 660;
-    normalize_to_range(&v_x, &v_y);
     // rotation; change of basis matrix.
-    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_SPEED;
-    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_SPEED;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_LINEAR_SPEED;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_LINEAR_SPEED;
     my_chassis[CHASSIS_FL]->motor->target = target_x;
     my_chassis[CHASSIS_RR]->motor->target = -target_x; // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = target_y;
@@ -97,13 +91,12 @@ void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_ang
     int16_t deviation = get_motor_angle(yaw_motor) - desired_yaw_angle;
     int32_t rotate_speed = pid_calc(&chassis_rotate, deviation);
 
-    for (int i = 0; i < 4; ++i) { my_chassis[i]->motor->target -= rotate_speed; }
+    for (int i = 0; i < 4; ++i) my_chassis[i]->motor->target -= rotate_speed;
 }
 
 void run_chassis(pid_ctl_t *my_chassis[4]){
-    for (int i = 0; i < 4; ++i) {
-        my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->target);
-    }
+    //referee_info.power_heat_data.chassis_power;
+    for (uint8_t i = 0; i < 4; ++i) my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->target);
     set_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
                 my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);
 }
