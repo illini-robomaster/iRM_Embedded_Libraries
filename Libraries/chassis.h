@@ -25,9 +25,9 @@
 #define ROTATE_KP 2.7f
 
 #define EVASIVE_DEADBAND 400
-#define MAX_TURN_SPEED   1500
-#define MAX_LINEAR_SPEED 2500
-#define MAX_SPEED        5000
+#define MAX_TURN_SPEED   3000
+#define MAX_LINEAR_SPEED 3500
+#define MAX_SPEED        7000
 #define YAW_DEADBAND     50 // 22 ~ 1 deg
 
 #define TURNING_SPEED   700

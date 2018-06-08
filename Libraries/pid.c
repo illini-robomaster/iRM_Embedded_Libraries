@@ -169,7 +169,6 @@ int32_t pid_calc(pid_ctl_t *pid, int32_t target) {
             return pid_speed_ctl_speed(pid, target) + \
                 pid->model(pid->model_args);
         case MANUAL_ERR_INPUT:
-            get_motor_data(pid->motor);
             return pid_manual_error(pid, target) + \
                 pid->model(pid->model_args);
         case POWER_CTL:

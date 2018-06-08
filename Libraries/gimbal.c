@@ -45,7 +45,7 @@ void gimbal_remote_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_ya
 }
 
 void gimbal_update(gimbal_t *my_gimbal) {
-    get_motor_data(my_gimbal->pitch->motor);
+    //get_motor_data(my_gimbal->pitch->motor);
     get_motor_data(my_gimbal->yaw->motor);
     //get_motor_data(my_gimbal->camera_pitch->motor);
 }
