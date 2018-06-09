@@ -75,11 +75,15 @@ void gimbal_task(void const *argu) {
         if (motion_mode == NORMAL && rc->swr == RC_SWITCH_UP) {
             chassis_stop();
             motion_mode = REVERSE;
+            yaw_ramp_ctl(&my_gimbal, -4096, 100);
+            my_gimbal.yaw_middle = REVERSE_MIDDLE_YAW;
             chassis_mode_backward();
         }
         else if (motion_mode == REVERSE && rc->swr == RC_SWITCH_MI) {
             chassis_stop();
             motion_mode = NORMAL;
+            yaw_ramp_ctl(&my_gimbal, 4096, 100);
+            my_gimbal.yaw_middle = NORMAL_MIDDLE_YAW;
             chassis_mode_forward();
         }
         observed_absolute_gimbal_yaw = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);

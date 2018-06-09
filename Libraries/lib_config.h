@@ -29,10 +29,10 @@
 
 #elif defined(ENGINEERING)
     /* gimbal related */
-    #define INIT_MIDDLE_YAW         4400
+    #define INIT_MIDDLE_YAW         400
     #define INIT_MIDDLE_PITCH       7000
-    #define NORMAL_MIDDLE_YAW       4400
-    #define REVERSE_MIDDLE_YAW      400
+    #define NORMAL_MIDDLE_YAW       400
+    #define REVERSE_MIDDLE_YAW      4400
     #define EVASIVE_LEFTMOST_YAW    0    // no need for evasive mode
     #define EVASIVE_RIGHTMOST_YAW   0
     #define PITCH_LOW_LIMIT         5000

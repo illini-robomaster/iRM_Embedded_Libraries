@@ -12,8 +12,6 @@
 /* End User Include */
 
 #define MOTION_CYCLE 20
-#define MOTOR_2_RAD  0.0007669904f // (360 / 8192) * (pi / 180)
-#define DEG_2_MOTOR  22.75556f // (8192 / 360)
 
 /* Global variable */
 extern osThreadId chassis_task_handle;

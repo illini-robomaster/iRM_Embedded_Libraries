@@ -48,6 +48,14 @@ void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw
 void gimbal_remote_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw);
 
 /**
+ * @brief set a sequence of way point for yaw motor for a large angle smooth and slow turn
+ * @param my_gimbal my gimbal object
+ * @param delta_ang the amount of angle yaw needs to turn
+ * @param step_size angle differences between consecutive waypoints
+ */
+void yaw_ramp_ctl(gimbal_t *my_gimbal, int32_t delta_ang, uint16_t step_size);
+
+/**
  * Run motor with corresponding values. SHOULD ONLY BE CALLED AFTER PID CALC
  * @brief
  * @param my_gimbal my gimbal object

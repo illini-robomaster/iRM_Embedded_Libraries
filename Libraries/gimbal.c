@@ -1,4 +1,6 @@
 #include "gimbal.h"
+#include "imu_onboard.h"
+#include "motor.h"
 #include "utils.h"
 
 void gimbal_init(gimbal_t *my_gimbal) {
@@ -51,6 +53,20 @@ void gimbal_update(gimbal_t *my_gimbal) {
     //get_motor_data(my_gimbal->pitch->motor);
     get_motor_data(my_gimbal->yaw->motor);
     //get_motor_data(my_gimbal->camera_pitch->motor);
+}
+
+void yaw_ramp_ctl(gimbal_t *my_gimbal, int32_t delta_ang, uint16_t step_size) {
+    int8_t direction = sign(delta_ang);
+    int32_t observed_abs_yaw;
+
+    for (size_t i = 0; i < abs(delta_ang); i += step_size) {
+        observed_abs_yaw = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
+        my_gimbal->yaw_ang += direction * step_size;
+        my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, (int32_t)(my_gimbal->yaw_ang) - observed_abs_yaw);
+        my_gimbal->pitch->motor->out = pid_calc(my_gimbal->pitch, (int32_t)my_gimbal->pitch_ang);
+        run_gimbal(my_gimbal);
+        osDelay(20);
+    }
 }
 
 void run_gimbal(gimbal_t *my_gimbal) {

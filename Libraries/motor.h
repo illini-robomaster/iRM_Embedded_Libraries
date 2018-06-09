@@ -67,6 +67,9 @@
 
 #define ANGLE_RANGE_DJI     8192
 
+#define MOTOR_2_RAD  0.0007669904f  // (360 / 8192) * (pi / 180)
+#define DEG_2_MOTOR  22.75556f      // (8192 / 360)
+
 /**
  * @enum    motor_type_t
  * @brief   a enum type that defines avaiblable motor types
