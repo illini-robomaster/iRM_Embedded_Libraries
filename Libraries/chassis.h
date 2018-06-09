@@ -16,9 +16,6 @@
 #define RL_MOTOR_CANID 0x203
 #define RR_MOTOR_CANID 0x204
 
-
-#define ROTATE_KP 2.7f
-
 #define EVASIVE_DEADBAND 400
 #define YAW_DEADBAND     50 // 22 ~ 1 deg
 

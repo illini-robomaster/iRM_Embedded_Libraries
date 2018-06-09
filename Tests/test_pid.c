@@ -53,11 +53,11 @@ void test_pitch() {
     int32_t low_lim, high_lim;
 
 #ifdef ENGINEERING
-    low_lim = 4000;
-    high_lim = 7000;
+    low_lim = 5000;
+    high_lim = 7700;
     motor_init(&motor, 0x205, CAN1_ID, M3510);
-    /* TODO: Warning!! Engineering PID requires re-tuning */
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 400, 200, 5, 0, 0, 3000, 0);
+    /* TODO: needs to be re-tuned with camera load on */
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 0, 0, 4, 0, 8, 8000, 0);
 #elif defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     low_lim = 5200;
     high_lim = 6800;
@@ -88,15 +88,18 @@ void test_yaw() {
     motor_t motor;
     pid_ctl_t pid;
     size_t i;
+    int target_val;
 
+#if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     motor_init(&motor, 0x209, CAN1_ID, M6623);
     pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 0, 0, 0, 20, 0, 80, 4500, 0);
-    int target_val_1 = 6000;
-    int target_val_2 = 5600;
-    int target_val = 5600;
+#elif defined(ENGINEERING)
+    motor_init(&motor, 0x209, CAN1_ID, M6623);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 0, 0, 0, 0, 600, 7, 0, 32, 3500, 0);
+#endif
     uint32_t pid_yaw_time = osKernelSysTick();
     while (1) {
-        for (target_val = 5200; target_val < 6800; target_val += 400) {
+        for (target_val = 400; target_val < 6800; target_val += 0) {
             for (i = 0; i < 100; i++) {
                 motor.out = pid_calc(&pid, target_val);
                 set_motor_output(&motor, NULL, NULL, NULL);

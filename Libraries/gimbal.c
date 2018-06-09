@@ -10,7 +10,8 @@ void gimbal_init(gimbal_t *my_gimbal) {
     yaw = motor_init(NULL, 0x209, CAN1_ID, M6623);
     my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 5200, 6800, 0, 0, 0, 20, 0, 70, 4500, 0);
 #elif defined(ENGINEERING)
-    // TODO
+    yaw = motor_init(NULL, 0x209, CAN1_ID, M6623);
+    my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 0, 0, 0, 0, 0, 4.2, 0, 35, 2500, 0);
 #elif defined(HERO)
     // TODO
 #endif
@@ -18,10 +19,11 @@ void gimbal_init(gimbal_t *my_gimbal) {
     motor_t *pitch;
     my_gimbal->pitch_ang = INIT_MIDDLE_PITCH;
 #ifdef ENGINEERING
-    // TODO
+    pitch = motor_init(NULL, 0x205, CAN1_ID, M3510);
+    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 0, 0, 0, 4, 0, 8, 8000, 0);
 #elif defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     pitch = motor_init(NULL, 0x20A, CAN1_ID, M6623);
-    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, 4800, 6200, 0, 0, 800, 4, 0.03, 15, 1800, 0);
+    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 0, 0, 800, 4, 0.03, 15, 1800, 0);
 #elif defined(HERO)
     // TODO
 #endif

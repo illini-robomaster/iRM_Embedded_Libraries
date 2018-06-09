@@ -5,6 +5,9 @@ static osEvent imu_event;
 osThreadId imu_task_handle;
 
 void imu_task_create(void){
+    /* initialize imu, do not move robot */
+    imu_task_init();
+    /* create thread and enter non-blocking logic */
     osThreadDef(imuTask, imu_task, osPriorityAboveNormal, 0, 256);
     imu_task_handle = osThreadCreate(osThread(imuTask), NULL);
 #ifdef DEBUG
@@ -23,7 +26,6 @@ uint8_t imu_task_init(void){
 }
 
 void imu_task(void const *argu){
-    imu_task_init();
     int idle_period = IMU_DT * 1000;
     print("IDLE PERIOD: %d\r\n", idle_period);
     uint32_t imu_wake_time = osKernelSysTick();

@@ -26,7 +26,7 @@ void print_imu_data(void){
 }
 
 void onboard_imu_lib_init(void){
-    print("Initing and calibrating onboard imu\r\n");
+    print("Initializing and calibrating onboard imu\r\n");
     for(int i = 0; i < 3; ++i){
         imuBoard.angle[i] = 0;
         for(int j = 0; j < 2; ++j){

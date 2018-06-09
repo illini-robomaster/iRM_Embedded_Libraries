@@ -98,7 +98,7 @@ void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_ang
     int16_t deviation = get_angle_err(yaw_motor, desired_yaw_angle);
     int32_t rotate_speed = pid_calc(&chassis_rotate, deviation);
 
-    for (int i = 0; i < 4; ++i) my_chassis[i]->motor->target -= direction * rotate_speed;
+    for (int i = 0; i < 4; ++i) my_chassis[i]->motor->target += rotate_speed;
 }
 
 void chassis_mode_forward(void) {
