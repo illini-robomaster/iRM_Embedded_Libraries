@@ -203,13 +203,10 @@ void print_motor_data(motor_t *motor) {
 int16_t get_motor_angle(motor_t *motor) {
     switch (motor->type) {
         case M3508:
-            return motor->as.m3508.angle;
         case M3510:
-            return motor->as.m3510.angle;
         case M6623:
-            return motor->as.m6623.angle;
         case M2006:
-            return motor->as.m2006.angle;
+            return motor->as.mdji.angle;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
             return 0;
@@ -220,17 +217,11 @@ int16_t get_angle_err(motor_t *motor, int16_t target) {
     int16_t diff;
     switch (motor->type) {
         case M3508:
-            diff = target - motor->as.m3508.angle;
-            return clip(diff, ANGLE_RANGE_3508);
         case M3510:
-            diff = target - motor->as.m3510.angle;
-            return clip(diff, ANGLE_RANGE_3510);
         case M6623:
-            diff = target - motor->as.m6623.angle;
-            return clip(diff, ANGLE_RANGE_6623);
         case M2006:
-            diff = target - motor->as.m2006.angle;
-            return clip(diff, ANGLE_RANGE_2006);
+            diff = target - motor->as.mdji.angle;
+            return clip(diff, ANGLE_RANGE_DJI);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
             return 0;
@@ -240,13 +231,10 @@ int16_t get_angle_err(motor_t *motor, int16_t target) {
 int16_t clip_angle_err(motor_t *motor, int16_t err) {
     switch (motor->type) {
         case M3508:
-            return clip(err, ANGLE_RANGE_3508);
         case M3510:
-            return clip(err, ANGLE_RANGE_3510);
         case M6623:
-            return clip(err, ANGLE_RANGE_6623);
         case M2006:
-            return clip(err, ANGLE_RANGE_2006);
+            return clip(err, ANGLE_RANGE_DJI);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
             return 0;

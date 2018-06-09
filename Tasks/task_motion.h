@@ -22,6 +22,11 @@ extern osThreadId gimbal_task_handle;
 extern gimbal_t my_gimbal;
 extern pid_ctl_t* my_chassis[4];
 
+typedef enum {
+    NORMAL,
+    REVERSE,
+}   motion_mode_t;
+
 /**
  * get current yaw angle for gimbal
  * @brief

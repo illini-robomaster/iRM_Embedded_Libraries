@@ -37,7 +37,6 @@
 // CCW and CW are looking towards the aixs
 #define ANGLE_MIN_3510      0       // 0    degree
 #define ANGLE_MAX_3510      8191    // 360  degree
-#define ANGLE_RANGE_3510    8192
 #define ANGLE_CRT_3510      1       // angle direction normal
 #define CURRENT_MIN_3510    -29000  // CCW  ~1.3A
 #define CURRENT_MAX_3510    29000   // CW   ~1.3A Looking towards LED
@@ -45,7 +44,6 @@
 
 #define ANGLE_MIN_3508      0       // 0    degree
 #define ANGLE_MAX_3508      8191    // 360  degree
-#define ANGLE_RANGE_3508    8192
 #define ANGLE_CRT_3508      1       // angle direction normal
 #define CURRENT_MIN_3508    -12288  // CW   20A
 #define CURRENT_MAX_3508    12288   // CCW  20A
@@ -54,7 +52,6 @@
 
 #define ANGLE_MIN_6623      0       // 0    degree
 #define ANGLE_MAX_6623      8191    // 360  degree
-#define ANGLE_RANGE_6623    8192
 #define ANGLE_CRT_6623      1       // angle direction normal
 #define CURRENT_MIN_6623    -5000   // CCW  ~5.3A
 #define CURRENT_MAX_6623    5000    // CW   ~5.3A
@@ -62,12 +59,13 @@
 
 #define ANGLE_MIN_2006      0       // 0    degree
 #define ANGLE_MAX_2006      8191    // 360  degree
-#define ANGLE_RANGE_2006    8192
 #define ANGLE_CRT_2006      1       // angle direction normal
 #define CURRENT_MIN_2006    -10000  // CW  10A
 #define CURRENT_MAX_2006    10000   // CCW   10A
 #define CURRENT_CRT_2006    1       // current direction normal
 #define SPEED_CRT_2006      1       // speed direction noraml
+
+#define ANGLE_RANGE_DJI     8192
 
 /**
  * @enum    motor_type_t
@@ -81,7 +79,8 @@ typedef enum {
     M3508,
     M3510,
     M2006,
-    M6623
+    M6623,
+    MDJI
 }   motor_type_t;
 
 /**
@@ -94,7 +93,6 @@ typedef enum {
  */
 typedef struct {
     int16_t     angle;
-    int16_t     langle;
     int16_t     current_get;
     int16_t     speed_rpm;
     uint8_t     temperature;
@@ -137,6 +135,15 @@ typedef struct {
 }   motor_2006_t;
 
 /**
+ * @struct  motor_dji_t
+ * @brief   store generic dji motor data
+ * @var angle   most recent angle data
+ */
+typedef struct {
+    int16_t     angle;
+}   motor_dji_t;
+
+/**
  * @union   motor_interp_t
  * @brief   motor data interpretation as all kinds of motors
  * @var m3508           generic 3508 motor
@@ -155,6 +162,7 @@ typedef union {
     motor_3510_t m3510;
     motor_2006_t m2006;
     motor_6623_t m6623;
+    motor_dji_t  mdji;
     /* specific functioning motor */
     motor_3508_t chassis;
     motor_3508_t friction;

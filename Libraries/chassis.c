@@ -4,8 +4,15 @@
 #include <stdlib.h>
 
 static pid_ctl_t chassis_rotate;
-const static int16_t evasive_tar[2] = {MEASURED_LEFTMOST_YAW, MEASURED_RIGHTMOST_YAW};
+const static int16_t evasive_tar[2] = {EVASIVE_LEFTMOST_YAW, EVASIVE_RIGHTMOST_YAW};
 static uint8_t evasive_tar_cnt = 0;
+
+/**
+ * backward:    -1
+ * disabled:    0
+ * forward:     1
+ */
+int8_t direction = 1;
 
 static void normalize_to_range(float *vx, float *vy) {
     float norm = 1;
@@ -71,31 +78,42 @@ void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     // rotation; change of basis matrix.
     float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_LINEAR_SPEED;
     float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_LINEAR_SPEED;
-    my_chassis[CHASSIS_FL]->motor->target = target_x;
-    my_chassis[CHASSIS_RR]->motor->target = -target_x; // velocity is the same. It's just these two motors are installed in opposite direction.
-    my_chassis[CHASSIS_RL]->motor->target = target_y;
-    my_chassis[CHASSIS_FR]->motor->target = -target_y;
+    my_chassis[CHASSIS_FL]->motor->target = direction * target_x;
+    my_chassis[CHASSIS_RR]->motor->target = direction * (-target_x); // velocity is the same. It's just these two motors are installed in opposite direction.
+    my_chassis[CHASSIS_RL]->motor->target = direction * target_y;
+    my_chassis[CHASSIS_FR]->motor->target = direction * (-target_y);
 }
 
 void evasive_move(pid_ctl_t *my_chassis[4], int16_t cur_yaw_feedback, motor_t *yaw_motor) {
-    if(abs(cur_yaw_feedback - MEASURED_LEFTMOST_YAW) < EVASIVE_DEADBAND) {
+    if(abs(cur_yaw_feedback - EVASIVE_LEFTMOST_YAW) < EVASIVE_DEADBAND) {
         evasive_tar_cnt = 1;
     }
-    if(abs(cur_yaw_feedback - MEASURED_RIGHTMOST_YAW) < EVASIVE_DEADBAND) {
+    if(abs(cur_yaw_feedback - EVASIVE_RIGHTMOST_YAW) < EVASIVE_DEADBAND) {
         evasive_tar_cnt = 0;
     }
     adjust_chassis_gimbal_pos(my_chassis, evasive_tar[evasive_tar_cnt], yaw_motor);
 }
 
 void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_angle, motor_t *yaw_motor) {
-    int16_t deviation = get_motor_angle(yaw_motor) - desired_yaw_angle;
+    int16_t deviation = get_angle_err(yaw_motor, desired_yaw_angle);
     int32_t rotate_speed = pid_calc(&chassis_rotate, deviation);
 
-    for (int i = 0; i < 4; ++i) my_chassis[i]->motor->target -= rotate_speed;
+    for (int i = 0; i < 4; ++i) my_chassis[i]->motor->target -= direction * rotate_speed;
+}
+
+void chassis_mode_forward(void) {
+    direction = 1;
+}
+
+void chassis_mode_backward(void) {
+    direction = -1;
+}
+
+void chassis_stop(void) {
+    direction = 0;
 }
 
 void run_chassis(pid_ctl_t *my_chassis[4]){
-    //referee_info.power_heat_data.chassis_power;
     for (uint8_t i = 0; i < 4; ++i) my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->target);
     set_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
                 my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);

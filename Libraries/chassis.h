@@ -16,18 +16,10 @@
 #define RL_MOTOR_CANID 0x203
 #define RR_MOTOR_CANID 0x204
 
-/* empirical parameters */
-#define chs_kp 10
-#define chs_ki 0.9f
-#define chs_kd 0
-#define chs_int_lim 200
 
 #define ROTATE_KP 2.7f
 
 #define EVASIVE_DEADBAND 400
-#define MAX_TURN_SPEED   3000
-#define MAX_LINEAR_SPEED 3500
-#define MAX_SPEED        7000
 #define YAW_DEADBAND     50 // 22 ~ 1 deg
 
 #define TURNING_SPEED   700
@@ -72,6 +64,7 @@ void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
  */
 void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_angle, motor_t *yaw_motor);
 
+//TODO for Roger: finish this god damn doc
 /**
  * [evasive_move description]
  * @brief
@@ -80,6 +73,21 @@ void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_ang
  * @param yaw_motor        ptr to yaw motor
  */
 void evasive_move(pid_ctl_t *my_chassis[4], int16_t cur_yaw_feedback, motor_t *yaw_motor);
+
+/**
+ * @brief set chassis to forward mode
+ */
+void chassis_mode_forward(void);
+
+/**
+ * @brief set chassis to backward mode
+ */
+void chassis_mode_backward(void);
+
+/**
+ * @brief disable all chassis related movement
+ */
+void chassis_stop(void);
 
 /**
  * Run chassis motors. SHOULD ONLY BE CALLED AFTER PID CALC

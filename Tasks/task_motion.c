@@ -4,6 +4,7 @@ osThreadId chassis_task_handle;
 osThreadId gimbal_task_handle;
 gimbal_t my_gimbal;
 pid_ctl_t *my_chassis[4];
+motion_mode_t motion_mode = NORMAL;
 
 void motion_task_create(void) {
     taskENTER_CRITICAL();
@@ -17,8 +18,8 @@ void motion_task_create(void) {
         print("Chassis task create failed.\r\n");
     else
         print("Chassis task created.\r\n");
-    osThreadDef(gimbal_task_name, gimbal_task, osPriorityAboveNormal, 0, 256);
-    gimbal_task_handle = osThreadCreate(osThread(gimbal_task_name), NULL);
+    osThreadDef(gimbalTask, gimbal_task, osPriorityAboveNormal, 0, 256);
+    gimbal_task_handle = osThreadCreate(osThread(gimbalTask), NULL);
     if (gimbal_task_handle == NULL)
         print("Gimbal task create failed.\r\n");
     else
@@ -51,11 +52,10 @@ void chassis_task(void const *argu) {
         calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
         evasion_mode = rc->key.bit.X;
 #endif
-        if (evasion_mode) {
+        if (evasion_mode)
             evasive_move(my_chassis, cur_yaw_feedback, my_gimbal.yaw->motor);
-        } else {
+        else
             adjust_chassis_gimbal_pos(my_chassis, my_gimbal.yaw_middle, my_gimbal.yaw->motor);
-        }
 
         run_chassis(my_chassis);
         osDelayUntil(&chassis_wake_time, MOTION_CYCLE);
@@ -69,6 +69,18 @@ void gimbal_task(void const *argu) {
     int32_t observed_absolute_gimbal_yaw;
     uint32_t gimbal_wake_time = osKernelSysTick();
     while (1) {
+#ifdef ENGINEERING
+        if (motion_mode == NORMAL && rc->swr == RC_SWITCH_UP) {
+            chassis_stop();
+            motion_mode = REVERSE;
+            chassis_mode_backward();
+        }
+        else if (motion_mode == REVERSE && rc->swr == RC_SWITCH_MI) {
+            chassis_stop();
+            motion_mode = NORMAL;
+            chassis_mode_forward();
+        }
+#endif
         gimbal_update(&my_gimbal);
         yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle;
         observed_absolute_gimbal_yaw = (int32_t)(yaw_astray) + (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
