@@ -109,22 +109,6 @@ typedef struct {
 }   pid_ctl_t;
 
 /**
- * @brief clip int32_t number into [-lim, lim]
- * @param data pointer to the number to be clipped
- * @param lim  absolute limit range
- * @return clipped value
- */
-static int32_t abs_limit(int32_t *data, int32_t lim);
-
-/**
- * @brief clip floating point number into [-lim, lim]
- * @param data pointer to the number to be clipped
- * @param lim  absolute limit range
- * @return clipped value
- */
-static float fabs_limit(float *data, float lim);
-
-/**
  * @brief get the nth latest error value (e.g. n = 0 means the latest error value)
  * @param pid   pid data structure
  * @param n     the nth latest

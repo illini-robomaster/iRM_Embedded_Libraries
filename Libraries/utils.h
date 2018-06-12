@@ -19,25 +19,31 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
-#define sign(x) x < 0 ? -1 : 1
+#include <stdint.h>
+
+#define sign(x) x < 0 ? -1 : (x == 0 ? 0 : 1)
 
 #define min(x, y) x < y ? x : y
 #define max(x, y) x > y ? x : y
 
-inline int32_t abs_limit(int32_t *data, int32_t lim) {
-    if (*data > lim)
-        *data = lim;
-    else if (*data < -lim)
-        *data = -lim;
-    return *data;
-}
+/**
+ * @brief clip int32_t number into [-lim, lim]
+ * @param data pointer to the number to be clipped
+ * @param lim  absolute limit range
+ * @return clipped value
+ */
+int32_t abs_limit(int32_t *data, int32_t lim);
 
-inline float fabs_limit(float *data, float lim) {
-    if (*data > lim)
-        *data = lim;
-    else if (*data < -lim)
-        *data = -lim;
-    return *data;
-}
+/**
+ * @brief clip floating point number into [-lim, lim]
+ * @param data pointer to the number to be clipped
+ * @param lim  absolute limit range
+ * @return clipped value
+ */
+float fabs_limit(float *data, float lim);
 
+int32_t clip_to_range(int32_t *data, int32_t low_lim, int32_t high_lim);
+
+float fclip_to_range(float *data, float low_lim, float high_lim);
+    
 #endif

@@ -70,6 +70,6 @@
     #define MEASURED_MIDDLE_PITCH   6000
 #endif
 
-#define IMU_DT          0.02f    // measurement time interval (in seconds). RTOS should give exact time to me.
+#define IMU_DT          0.001f    // measurement time interval (in seconds). RTOS should give exact time to me.
 
 #endif

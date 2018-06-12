@@ -26,7 +26,7 @@ void imu_task_create(void){
     /* initialize imu, do not move robot */
     imu_task_init();
     /* create thread and enter non-blocking logic */
-    osThreadDef(imuTask, imu_task, osPriorityAboveNormal, 0, 256);
+    osThreadDef(imuTask, imu_task, osPriorityNormal, 0, 256);
     imu_task_handle = osThreadCreate(osThread(imuTask), NULL);
 #ifdef DEBUG
     BSP_DEBUG;
@@ -48,14 +48,7 @@ void imu_task(void const *argu){
     print("IDLE PERIOD: %d\r\n", idle_period);
     uint32_t imu_wake_time = osKernelSysTick();
     while (1) {
-        //print("IMU task loop sends greets :D .\r\n");
-        uint32_t tickStart = HAL_GetTick();
         onboard_imu_update();
-        //print_imu_data();
         osStatus ret_stat = osDelayUntil(&imu_wake_time, idle_period);
-        if(ret_stat != osOK){
-            print("DELAY WAS NOT EXECTUTED!!!!!!!!!!");
-        }
-        //print("TIME ELAPSED: %d\r\nSANITY", HAL_GetTick() - tickStart);
     }
 }
