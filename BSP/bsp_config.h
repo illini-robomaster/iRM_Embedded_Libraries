@@ -54,6 +54,11 @@
 #define PRINT_TO_UART       1   // Set to 1 to print to uart port specified above
 #define PRINT_TO_SD         0   // Not supported yet
 
+/* ===== bsp_adc config ===== */
+#define BSP_ADC_MAX_SAMPLE_SIZE 500
+#define BSP_ADC_MAX_VOLT        3.3
+#define BSP_ADC_MAX_ADC_OUT     4095
+
 /* ===== General Utility ===== */
 #define ON      1
 #define OFF     0

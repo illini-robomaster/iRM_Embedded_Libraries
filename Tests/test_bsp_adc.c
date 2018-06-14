@@ -20,10 +20,11 @@
 #include "cmsis_os.h"
 
 void test_bsp_adc(void) {
-    adc1_dma_enable();
+    adc_t *adc1 = adc_dma_enable(NULL, &hadc1, 0, 100);
+    adc_t *adc2 = adc_dma_enable(NULL, &hadc1, 1, 100);
     while (1) {
-        uint16_t chan0 = adc1_get_val(0);
-        uint16_t chan1 = adc1_get_val(1);
+        uint16_t chan0 = adc_get_val(adc1);
+        uint16_t chan1 = adc_get_val(adc2);
         print("channel 0: %d channel 1: %d\r\n", chan0, chan1);
         osDelay(300);
     }
