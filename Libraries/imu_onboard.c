@@ -17,6 +17,7 @@
  *************************************************************************/
 
 #include "imu_onboard.h"
+#include "cmsis_os.h"
 
 imu_onboard_t imuBoard;
 
@@ -71,9 +72,9 @@ void onboard_imu_lib_init(void){
 void onboard_imu_update(void){
     mpu6500_get_data(&(imuBoard.my_raw_imu));
     update_acc_angle();
-    if(MY_ABS(imuBoard.my_raw_imu.gyro.x) < STATIC_LIM
-                && MY_ABS(imuBoard.my_raw_imu.gyro.y) < STATIC_LIM
-                && MY_ABS(imuBoard.my_raw_imu.gyro.z) < STATIC_LIM) {
+    if(fabs(imuBoard.my_raw_imu.gyro.x) < STATIC_LIM
+                && fabs(imuBoard.my_raw_imu.gyro.y) < STATIC_LIM
+                && fabs(imuBoard.my_raw_imu.gyro.z) < STATIC_LIM) {
         ++imuBoard.static_measurement_count;
     } else {
         imuBoard.static_measurement_count = 0;

@@ -49,6 +49,6 @@ void imu_task(void const *argu){
     uint32_t imu_wake_time = osKernelSysTick();
     while (1) {
         onboard_imu_update();
-        osStatus ret_stat = osDelayUntil(&imu_wake_time, idle_period);
+        osDelayUntil(&imu_wake_time, idle_period);
     }
 }

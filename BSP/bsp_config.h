@@ -36,7 +36,7 @@
  * @{
  */
 
-/* ===== bsp_uart Config ===== */
+/* ===== bsp_uart config ===== */
 #define UART_FREE_PORT      huart2  // This port require solder pins onto the board
 
 #define BSP_DBUS_PORT       huart1
@@ -50,7 +50,7 @@
 
 #define UART_TX_BLOCKING_TIMEOUT    100
 
-/* ===== bsp_print Config ===== */
+/* ===== bsp_print config ===== */
 #define PRINT_TO_UART       1   // Set to 1 to print to uart port specified above
 #define PRINT_TO_SD         0   // Not supported yet
 
@@ -58,6 +58,12 @@
 #define BSP_ADC_MAX_SAMPLE_SIZE 500
 #define BSP_ADC_MAX_VOLT        3.3
 #define BSP_ADC_MAX_ADC_OUT     4095
+
+/* ==== bsp_power config ==== */
+#define BSP_POWER_ADC               hadc1
+#define BSP_POWER_V_CHANNEL         0
+#define BSP_POWER_A_CHANNEL         1
+#define BSP_POWER_AVG_FILTER_SIZE   50
 
 /* ===== General Utility ===== */
 #define ON      1
