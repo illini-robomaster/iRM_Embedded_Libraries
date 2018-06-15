@@ -34,8 +34,18 @@ typedef struct {
  */
 adc_t* adc_dma_enable(adc_t *my_adc, ADC_HandleTypeDef *hadc, uint8_t channel, uint16_t avg_filter_size);
 
+/**
+ * @brief get adc raw value given an adc type instance
+ * @param my_adc adc type instance containing adc number and channel information
+ * @return raw value in the range [0 4095]
+ */
 uint16_t adc_get_val(adc_t *my_adc);
 
+/**
+ * @brief get adc voltage value given an adc type instance
+ * @param my_adc adc type instance containing adc number and channel information
+ * @return raw value in the range [0 3.3]
+ */
 float adc_get_volt(adc_t *my_adc);
 
 /**
