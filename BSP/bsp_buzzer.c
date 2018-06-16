@@ -25,48 +25,43 @@
 */
 
 #include "bsp_buzzer.h"
+#include "cmsis_os.h"
 
 /* @todo Need to reconstruct to use standard PWM lib */
 
 void buzzer_init(void) {
-    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-    TIM3->PSC = 83;
+    HAL_TIM_PWM_Start(&BSP_BUZZER_TIMER, BSP_BUZZER_CHANNEL);
+    BSP_BUZZER_TIMER.Instance->PSC = 83;
 }
 
-void buzzer_sing_tone(BUZZER_FREQ freq, int volume) {
-    TIM3->ARR = 1000000 / freq;     // Output Period
-    if (volume == 0) {
-        TIM3->CCR1 = TIM3->ARR / 2; // Output Volume
-    }
-    else if (volume == 1) {
-        TIM3->CCR1 = TIM3->ARR / 100; // For Test
-    }
-    else {
-        TIM3->CCR1 = TIM3->ARR / 200; // When I'm video chatting with my gf...
-    }
+void buzzer_sing_tone(buzzer_freq_t freq) {
+    TIM_TypeDef *tim = BSP_BUZZER_TIMER.Instance;
+
+    tim->ARR = 1000000 / freq;     // Output Period
+    tim->CCR1 = tim->ARR / 2; // Output Volume
 }
 
-void buzzer_sing_song(BUZZER_FREQ *freq, int volume) {
+void buzzer_sing_song(buzzer_freq_t *freq) {
     int i = 0;
     while (freq[i] != Finish) {
-        buzzer_sing_tone(freq[i], volume);
+        buzzer_sing_tone(freq[i]);
         HAL_Delay(250);
-        buzzer_sing_tone(Silent, 0);
-        HAL_Delay(50);
+        //buzzer_sing_tone(Silent);
+        //HAL_Delay(250);
         i++;
     }
-    buzzer_sing_tone(Silent, 0);
+    buzzer_sing_tone(Silent);
 }
 
-BUZZER_FREQ startup[] = {
+buzzer_freq_t startup[] = {
     So5L, La6L, Mi3M, Silent, Finish
 };
 
-BUZZER_FREQ initialize[] = {
+buzzer_freq_t initialize[] = {
     So5L, Finish
 };
 
-BUZZER_FREQ littleStar[] = {
+buzzer_freq_t littleStar[] = {
     Do1M, Do1M, So5M, So5M, La6M, La6M, So5M, Silent,
     Fa4M, Fa4M, Mi3M, Mi3M, Re2M, Re2M, Do1M, Silent,
     So5M, So5M, Fa4M, Fa4M, Mi3M, Mi3M, Re2M, Silent,

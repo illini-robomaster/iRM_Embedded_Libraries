@@ -65,6 +65,10 @@
 #define BSP_POWER_A_CHANNEL         1
 #define BSP_POWER_AVG_FILTER_SIZE   50
 
+/* ==== bsp_buzzer config ==== */
+#define BSP_BUZZER_TIMER    htim3
+#define BSP_BUZZER_CHANNEL  TIM_CHANNEL_1
+
 /* ===== General Utility ===== */
 #define ON      1
 #define OFF     0

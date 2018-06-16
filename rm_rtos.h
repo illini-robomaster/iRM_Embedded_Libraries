@@ -149,7 +149,7 @@ extern inline void RM_RTOS_Default_Task(void const * argument) {
 extern inline void RM_RTOS_Ready() {
     /* Indicate RTOS booted. Ready to battle. */
     if (MUTE_MODE == OFF)
-        buzzer_sing_song(startup, 1);
+        buzzer_sing_song(startup);
     led_green_on();
     laser_on();
     print("RTOS initialzed. Ready to battle.\n");

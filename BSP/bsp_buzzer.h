@@ -28,6 +28,7 @@
 #define _BSP_BUZZER_H_
 
 #include "stm32f4xx_hal.h"
+#include "bsp_config.h"
 #include "tim.h"
 
 /**
@@ -63,7 +64,7 @@ typedef enum{
 
     Silent  = 0,
     Finish  = -1,
-} BUZZER_FREQ;
+} buzzer_freq_t;
 
 /**
  * Initialize the buzzer.
@@ -76,27 +77,25 @@ void buzzer_init(void);
 /**
  * Let buzzer sing a tone.
  *
- * @param  freq       A frequency or note in BUZZER_FREQ
- * @param  volume     Volume of the buzzer
+ * @param  freq       A frequency or note in buzzer_freq_t
  * @author Nickel_Liang
  * @date   2018-04-16
  */
-void buzzer_sing_tone(BUZZER_FREQ freq, int volume);
+void buzzer_sing_tone(buzzer_freq_t freq);
 
 /**
  * Let buzzer sing a sone.
  *
  * @param  freq       A song
- * @param  volume     Volume of the buzzer
  * @author Nickel_Liang
  * @date   2018-04-16
  * @note   This function CAN NOT be used in RTOS due to HAL_Delay
  */
-void buzzer_sing_song(BUZZER_FREQ *freq, int volume);
+void buzzer_sing_song(buzzer_freq_t *freq);
 
-extern BUZZER_FREQ startup[];
-extern BUZZER_FREQ initialize[];
-extern BUZZER_FREQ littleStar[];
+extern buzzer_freq_t startup[];
+extern buzzer_freq_t initialize[];
+extern buzzer_freq_t littleStar[];
 
 /** @} */
 
