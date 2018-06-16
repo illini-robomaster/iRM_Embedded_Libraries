@@ -31,30 +31,27 @@
 
 void buzzer_init(void) {
     HAL_TIM_PWM_Start(&BSP_BUZZER_TIMER, BSP_BUZZER_CHANNEL);
-    BSP_BUZZER_TIMER.Instance->PSC = 83;
+    __HAL_TIM_SET_PRESCALER(&BSP_BUZZER_TIMER, 83);
 }
 
 void buzzer_sing_tone(buzzer_freq_t freq) {
     TIM_TypeDef *tim = BSP_BUZZER_TIMER.Instance;
 
-    tim->ARR = 1000000 / freq;     // Output Period
-    tim->CCR1 = tim->ARR / 2; // Output Volume
+    __HAL_TIM_SET_AUTORELOAD(&BSP_BUZZER_TIMER, 1000000 / freq);
+    __HAL_TIM_SET_COMPARE(&BSP_BUZZER_TIMER, BSP_BUZZER_CHANNEL, 1000000 / freq / 2);
 }
 
 void buzzer_sing_song(buzzer_freq_t *freq) {
     int i = 0;
-    while (freq[i] != Finish) {
+    while (freq[i++] != Finish) {
         buzzer_sing_tone(freq[i]);
-        HAL_Delay(250);
-        //buzzer_sing_tone(Silent);
-        //HAL_Delay(250);
-        i++;
+        HAL_Delay(200);
     }
     buzzer_sing_tone(Silent);
 }
 
 buzzer_freq_t startup[] = {
-    So5L, La6L, Mi3M, Silent, Finish
+    So5L, La6L, Si7L, Re2M, Silent, Finish
 };
 
 buzzer_freq_t initialize[] = {

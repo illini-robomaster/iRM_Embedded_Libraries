@@ -44,9 +44,9 @@ void led_green_off(void) {
     HAL_GPIO_WritePin(GPIOF, LED_GREEN_Pin, GPIO_PIN_SET);
 }
 
-void led_on(void) {
-    led_green_on();
-    led_red_on();
+void led_yellow_on(void) {
+    HAL_GPIO_WritePin(GPIOE, LED_RED_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOF, LED_GREEN_Pin, GPIO_PIN_RESET);
 }
 
 void led_off(void) {

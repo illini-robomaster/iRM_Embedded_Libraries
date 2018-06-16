@@ -69,12 +69,12 @@ void led_green_on(void);
 void led_green_off(void);
 
 /**
- * Turn on all led
+ * Turn on both green and red leds resulting in a yellow light
  *
  * @author Nickel_Liang
  * @date   2018-04-14
  */
-void led_on(void);
+void led_yellow_on(void);
 
 /**
  * Turn off all led

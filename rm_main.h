@@ -52,19 +52,19 @@
  * @date    2018-04-13
  */
 extern inline void RM_Main_Init(void) {
+    led_red_on();
     buzzer_init();
     if (MUTE_MODE == OFF)
-        buzzer_sing_song(initialize); // Control board power up.
-    led_on();
+        buzzer_sing_song(startup); // Control board power up.
     can1_init();
     can2_init();
     dbus_init();
     onboard_imu_init();
     sdio_init();
-    key_init();
+    // key_init(); // key debouncing not quite working under RTOS
 
     /* Indicate successfully initialized */
-    led_red_on();
+    led_yellow_on();
     print("All peripherals initialized.\r\n");
 
     /* Wait for ESC to initialize */
