@@ -39,13 +39,14 @@ void buzzer_sing_tone(buzzer_freq_t freq) {
 
     __HAL_TIM_SET_AUTORELOAD(&BSP_BUZZER_TIMER, 1000000 / freq);
     __HAL_TIM_SET_COMPARE(&BSP_BUZZER_TIMER, BSP_BUZZER_CHANNEL, 1000000 / freq / 2);
+    __HAL_TIM_SET_COUNTER(&BSP_BUZZER_TIMER, 0);
 }
 
 void buzzer_sing_song(buzzer_freq_t *freq) {
     int i = 0;
     while (freq[i] != Finish) {
         buzzer_sing_tone(freq[i++]);
-        HAL_Delay(200);
+        HAL_Delay(150);
     }
     buzzer_sing_tone(Silent);
 }
