@@ -43,15 +43,15 @@ void buzzer_sing_tone(buzzer_freq_t freq) {
 
 void buzzer_sing_song(buzzer_freq_t *freq) {
     int i = 0;
-    while (freq[i++] != Finish) {
-        buzzer_sing_tone(freq[i]);
+    while (freq[i] != Finish) {
+        buzzer_sing_tone(freq[i++]);
         HAL_Delay(200);
     }
     buzzer_sing_tone(Silent);
 }
 
 buzzer_freq_t startup[] = {
-    So5L, La6L, Si7L, Re2M, Silent, Finish
+    So5L, Si7L, Re2M, Do1M, Mi3M, So5M, Silent, Finish
 };
 
 buzzer_freq_t initialize[] = {

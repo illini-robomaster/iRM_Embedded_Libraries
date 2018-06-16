@@ -55,7 +55,7 @@ extern inline void RM_Main_Init(void) {
     led_red_on();
     buzzer_init();
     if (MUTE_MODE == OFF)
-        buzzer_sing_song(startup); // Control board power up.
+        buzzer_sing_song(initialize); // Control board power up.
     can1_init();
     can2_init();
     dbus_init();
