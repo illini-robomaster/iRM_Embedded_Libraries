@@ -27,33 +27,28 @@
 #include "servo.h"
 
 void servo_init(servo_t *servo,
-                uint8_t tim_id, uint8_t channel_id, uint32_t init_pwm) {
-    servo->tim_id     = tim_id;
-    servo->channel_id = channel_id;
+                TIM_HandleTypeDef *htim, uint8_t channel_id, uint32_t init_pwm) {
+    servo->pwm_timer = pwm_init(NULL, htim, channel_id);
     servo->init_pwm   = init_pwm;
     servo->current_pwm = init_pwm;
     servo->max_degree = STANDARDMAX;
     servo->min_degree = STANDARDMIN;
     servo->current_angle = pwm_to_degrees(servo, init_pwm);
-    /* TO FIX: now ONLY support HTIM5 (4 servos)*/
-    if (tim_id == 5) {
-        pwm5_init();
-        pwm5_transmit(channel_id, init_pwm);
-    }
+    pwm_set_pulse_width(servo->pwm_timer, init_pwm);
 }
 
 void servo_writeMicroseconds(servo_t *servo,
                 uint32_t pwm)  {
     servo->current_pwm = pwm;
     servo->current_angle = pwm_to_degrees(servo, pwm);
-    pwm5_transmit(servo->channel_id, pwm);
+    pwm_set_pulse_width(servo->pwm_timer, pwm);
 }
 
 void servo_write(servo_t *servo,
                 uint32_t degrees)  {
     servo->current_angle = degrees;
     servo->current_pwm = degrees_to_pwm(servo, degrees);
-    pwm5_transmit(servo->channel_id, servo->current_pwm);
+    pwm_set_pulse_width(servo->pwm_timer, servo->current_pwm);
 }
 
 void servo_setmax(servo_t *servo,

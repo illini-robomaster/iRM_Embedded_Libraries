@@ -31,6 +31,4 @@
 
 void test_servo();
 
-void test_snail();
-
 #endif

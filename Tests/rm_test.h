@@ -34,6 +34,7 @@
 #include "test_key.h"
 #include "test_referee.h"
 #include "test_bsp_adc.h"
+#include "test_bsp_pwm.h"
 
 /* Test utility */
 #define PASS    1
@@ -57,6 +58,7 @@
 #define TEST_DBUS       OFF
 #define TEST_BSP_CAN    OFF
 #define TEST_SERVO      OFF
+#define TEST_BSP_PWM    OFF
 #define TEST_BSP_IMU    OFF
 #define TEST_IMU        OFF
 #define TEST_MOUSE      OFF
@@ -80,6 +82,8 @@ extern inline void run_all_tests() {
         TEST_OUTPUT("BSP CAN TEST", test_bsp_can());
     if (TEST_SERVO == ON)
         test_servo();
+    if (TEST_BSP_PWM == ON)
+        test_bsp_pwm();
     if (TEST_BSP_IMU == ON)
         TEST_OUTPUT("BSP IMU TEST", test_bsp_imu());
     if (TEST_IMU == ON)

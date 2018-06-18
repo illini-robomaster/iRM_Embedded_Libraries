@@ -16,14 +16,6 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  *************************************************************************/
 
-/**
- * @author  Eric_Liang <hanghang177>
- * @date    2018-04-20
- * @file    bsp_pwm.h
- * @brief   Board support package for pwm servos and escs
- * #log     2018-04-20 hanghang177
- */
-
 #ifndef _BSP_PWM_H_
 #define _BSP_PWM_H_
 
@@ -35,32 +27,39 @@
  * @{
  */
 
-/**
- * A simpler name for writing PWM
- */
-
-#define pwm_transmit __HAL_TIM_SET_COMPARE
-
-/**
- * PWM5 init wrapper
- */
-
-void pwm5_init(void);
+typedef struct {
+    TIM_HandleTypeDef   *htim;
+    uint32_t            channel;
+}   pwm_t;
 
 /**
- * PWM5 trasmit data
- * @param  channel     Channel number in PWM5
- * @param  pulsewidth  PWM pulsewidth (keep within 1000-2000)
+ * @brief initialize a pwm channel and start sending pwm waveform
+ * @param my_pwm    a pwm structure to be initialized
+ * @param htim      hal timer handle type
+ * @param channel   pwm channel (should be in the range [1 4])
+ * @return  initialized pwm structure
  */
-
-void pwm5_transmit(uint32_t channel, uint32_t pulsewidth);
+pwm_t *pwm_init(pwm_t *my_pwm, TIM_HandleTypeDef *htim, uint8_t channel);
 
 /**
- * PWM init wrapper
- * @param htim HTIM ID to use (Default: htim5)
+ * @brief start sending pwm waves
+ * @param my_pwm    pwm struct variable
  */
+void pwm_start(pwm_t *my_pwm);
 
-static void pwm_init(TIM_HandleTypeDef *htim);
+/**
+ * @brief stop sending pwm waves
+ * @param my_pwm    pwm struct variable
+ */
+void pwm_stop(pwm_t *my_pwm);
+
+/**
+ * @brief adjust pulse width for a pwm channel
+ * @param my_pwm        pwm instance to be adjusted
+ * @param pulse_width   pulse width as in timer clock cycles
+ * @note pulse_width can mostly mean microseconds if the prescaler are set to enforce a 1MHz timer clock frequency
+ */
+void pwm_set_pulse_width(pwm_t *my_pwm, uint32_t pulse_width);
 
 /** @} */
 

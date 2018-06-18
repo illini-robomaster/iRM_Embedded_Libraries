@@ -25,39 +25,44 @@
  */
 
 #include "bsp_pwm.h"
+#include "FreeRTOS.h"
+#include "bsp_error_handler.h"
 
-/*Initialize HTIM5 for PWM*/
-
-void pwm5_init(void) {
-    pwm_init(&htim5);
-}
-
-/*Transmit PWM signal through HTIM5 Channel 1 - 4*/
-
-void pwm5_transmit(uint32_t channel, uint32_t pulsewidth) {
+pwm_t *pwm_init(pwm_t *my_pwm, TIM_HandleTypeDef *htim, uint8_t channel) {
+    if (!my_pwm)
+        my_pwm = pvPortMalloc(sizeof(pwm_t));
+    
+    my_pwm->htim = htim;
     switch(channel) {
         case 1:
-            pwm_transmit(&htim5, TIM_CHANNEL_1, pulsewidth);
+            my_pwm->channel = TIM_CHANNEL_1;
             break;
         case 2:
-            pwm_transmit(&htim5, TIM_CHANNEL_2, pulsewidth);
+            my_pwm->channel = TIM_CHANNEL_2;
             break;
         case 3:
-            pwm_transmit(&htim5, TIM_CHANNEL_3, pulsewidth);
+            my_pwm->channel = TIM_CHANNEL_3;
             break;
         case 4:
-            pwm_transmit(&htim5, TIM_CHANNEL_4, pulsewidth);
+            my_pwm->channel = TIM_CHANNEL_4;
             break;
-        default:
-            break;
-  }
+        deault:
+            bsp_error_handler(__FUNCTION__, __LINE__, "pwm channel not valid");
+            return NULL;
+    }
+
+    HAL_TIM_PWM_Start(my_pwm->htim, my_pwm->channel);
+    return my_pwm;
 }
 
-/*Initialize General HTIM for PWM*/
+void pwm_start(pwm_t *my_pwm) {
+    HAL_TIM_PWM_Start(my_pwm->htim, my_pwm->channel);
+}
 
-static void pwm_init(TIM_HandleTypeDef *htim) {
-    HAL_TIM_PWM_Start(htim, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(htim, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(htim, TIM_CHANNEL_3);
-    HAL_TIM_PWM_Start(htim, TIM_CHANNEL_4);
+void pwm_stop(pwm_t *my_pwm) {
+    HAL_TIM_PWM_Stop(my_pwm->htim, my_pwm->channel);
+}
+
+void pwm_set_pulse_width(pwm_t *my_pwm, uint32_t pulse_width) {
+    __HAL_TIM_SET_COMPARE(my_pwm->htim, my_pwm->channel, pulse_width);
 }

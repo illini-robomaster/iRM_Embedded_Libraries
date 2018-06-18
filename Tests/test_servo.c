@@ -31,7 +31,7 @@ void test_servo() {
     servo_t servo;
     size_t i;
 
-    servo_init(&servo, 5, 1, 1500);
+    servo_init(&servo, &htim5, 1, 1500);
 
     servo_setmax(&servo, 120);
     servo_setmin(&servo, 0);
@@ -45,17 +45,3 @@ void test_servo() {
     }
 }
 
-void test_snail() {
-    servo_t servo;
-    size_t i;
-
-    servo_init(&servo, 5, 1, 1000);
-
-    if (1) {
-        for (i = 1000; i < 2000; i++) {
-          servo_writeMicroseconds(&servo, i);
-          HAL_Delay(20);
-        }
-        servo_writeMicroseconds(&servo, 1000);
-    }
-}

@@ -51,8 +51,7 @@
  */
 
 typedef struct {
-    uint8_t        tim_id;
-    uint8_t        channel_id;
+    pwm_t          *pwm_timer;
     uint32_t       init_pwm;
     uint32_t       min_degree;
     uint32_t       max_degree;
@@ -64,13 +63,13 @@ typedef struct {
  * Servo Initialize
  * @brief initialize a servo or a PWM based ESC
  * @param servo      servo_t type servo to be initialized
- * @param tim_id     tim id for the servo channel
+ * @param htim       overall timer group (e.g. htim1 or htim12)
  * @param channel_id channel id for the servo within tim
  * @param init_pwm   the initial value for servo (Default: 1500)
  */
 
 void servo_init(servo_t *servo,
-                uint8_t tim_id, uint8_t channel_id, uint32_t init_pwm);
+                TIM_HandleTypeDef *htim, uint8_t channel_id, uint32_t init_pwm);
 
 /**
  * Servo writeMicroseconds
