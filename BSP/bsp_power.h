@@ -4,6 +4,9 @@
 #include "bsp_adc.h"
 #include "bsp_config.h"
 
+#define MAX_CURRENT_ERROR 3
+#define MAX_VOLTAGE_ERROR 2
+
 /**
  * @brief initialize onboard power module
  * @param v_div     initial voltage divider (voltmeter)
@@ -13,6 +16,15 @@
  * @note    power current = (adc voltage + ampere offset) * ampere per voltage
  */
 void power_module_init(float v_div, float a_p_v, float a_offset);
+
+/**
+ * @brief power module offline detection by comparing power module adc input value
+ *        with some true values
+ * @param tru_volt  true voltage value (typically comes from referee)
+ * @param tru_cur   true current value (typically comming from referee)
+ * @return 1 if power module is online else 0
+ */
+uint8_t power_module_online(float tru_volt, float tru_cur);
 
 /**
  * @brief calibrate voltmeter

@@ -32,16 +32,6 @@ static uint8_t evasive_tar_cnt = 0;
  */
 int8_t direction = 1;
 
-static void normalize_to_range(float *vx, float *vy) {
-    float norm = 1;
-    if (*vx != 0 || *vy != 0)
-        norm = sqrt(*vx * *vx + *vy * *vy);
-    if (norm > 1) {
-        *vx /= norm;
-        *vy /= norm;
-    }
-}
-
 void chassis_init(pid_ctl_t *my_chassis[4]){
     motor_t *m_fl, *m_fr, *m_rl, *m_rr;
     pid_ctl_t *pid_fl, *pid_fr, *pid_rl, *pid_rr;
@@ -116,7 +106,8 @@ void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_ang
     int16_t deviation = get_angle_err(yaw_motor, desired_yaw_angle);
     int32_t rotate_speed = pid_calc(&chassis_rotate, deviation);
 
-    for (int i = 0; i < 4; ++i) my_chassis[i]->motor->target += abs(direction) * rotate_speed;
+    for (int i = 0; i < 4; ++i)
+        my_chassis[i]->motor->target += abs(direction) * rotate_speed;
 }
 
 void chassis_mode_forward(void) {
@@ -132,7 +123,9 @@ void chassis_stop(void) {
 }
 
 void run_chassis(pid_ctl_t *my_chassis[4]){
-    for (uint8_t i = 0; i < 4; ++i) my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->target);
+    for (uint8_t i = 0; i < 4; ++i)
+        my_chassis[i]->motor->out = pid_calc(my_chassis[i], my_chassis[i]->motor->target);
+
     set_can_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
                 my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);
 }

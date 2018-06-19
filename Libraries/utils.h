@@ -42,8 +42,30 @@ int32_t abs_limit(int32_t *data, int32_t lim);
  */
 float fabs_limit(float *data, float lim);
 
+/**
+ * @brief force an integer to be in range [low_lim high_lim]
+ * @param data      pointer to the integer to be clipped
+ * @param low_lim   lower limit value
+ * @param high_lim  upper limit value
+ * @return clipped value
+ */
 int32_t clip_to_range(int32_t *data, int32_t low_lim, int32_t high_lim);
 
+/**
+ * @brief force a float to be in range [low_lim high_lim]
+ * @param data      pointer to the float to be clipped
+ * @param low_lim   lower limit value
+ * @param high_lim  upper limit value
+ * @return clipped value
+ */
 float fclip_to_range(float *data, float low_lim, float high_lim);
-    
+
+/**
+ * @brief normalize two variables on cartesian plane
+ * @param vx    pointer to the first variable
+ * @param vy    pointer to the second variable
+ * @return none
+ */
+void normalize_2d(float *vx, float *vy);
+
 #endif

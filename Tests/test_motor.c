@@ -5,8 +5,7 @@
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
+ *  (at your option) any later version.  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -118,18 +117,22 @@ void test_motor_3510(uint8_t rotate) {
 }
 
 void test_motor_2305(void) {
-    pwm_t   pwm;
-    motor_t motor;
+    pwm_t   pwm1, pwm2;
+    motor_t motor1, motor2;
 
-    pwm_init(&pwm, &htim12, 2);
-    pwm_motor_init(&motor, M2305, &pwm, 1000);
+    pwm_init(&pwm1, &htim12, 1);
+    pwm_init(&pwm2, &htim12, 2);
+    pwm_motor_init(&motor1, M2305, &pwm1, 1000);
+    pwm_motor_init(&motor2, M2305, &pwm2, 1000);
 
     osDelay(4000);
 
     while (1) {
-        for (size_t i = 100; i < 300; i += 20) {
-            motor.out = i;
-            set_pwm_motor_output(&motor);
+        for (size_t i = 500; i < 1000; i += 0) {
+            motor1.out = i;
+            motor2.out = i;
+            set_pwm_motor_output(&motor1);
+            set_pwm_motor_output(&motor2);
             osDelay(1000);
         }
     }

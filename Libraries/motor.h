@@ -85,7 +85,7 @@
 #define SPEED_CRT_2006      1       // speed direction noraml
 
 #define CURRENT_MIN_2305    0
-#define CURRENT_MAX_2305    400
+#define CURRENT_MAX_2305    700
 
 #define ANGLE_RANGE_DJI     8192
 

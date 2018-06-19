@@ -20,14 +20,14 @@
 
 osThreadId chassis_task_handle;
 osThreadId gimbal_task_handle;
-gimbal_t my_gimbal;
-pid_ctl_t *my_chassis[4];
-motion_mode_t motion_mode = NORMAL;
+
+gimbal_t        my_gimbal;
+pid_ctl_t       *my_chassis[4];
+motion_mode_t   motion_mode = NORMAL;
 
 void motion_task_create(void) {
     gimbal_init(&my_gimbal);
     chassis_init(my_chassis);
-    print("Function called\r\n");
     osThreadDef(chassisTask, chassis_task, osPriorityAboveNormal, 0, 256);
     chassis_task_handle = osThreadCreate(osThread(chassisTask), NULL);
     if (chassis_task_handle == NULL)

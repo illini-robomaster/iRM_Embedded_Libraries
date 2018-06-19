@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <math.h>
 
 int32_t abs_limit(int32_t *data, int32_t lim) {
     if (*data > lim)
@@ -35,3 +36,10 @@ float fclip_to_range(float *data, float low_lim, float high_lim) {
         *data = high_lim;
     return *data;
 }
+
+void normalize_2d(float *vx, float *vy) {
+    float norm = sqrt(*vx * *vx + *vy * *vy);
+    *vx /= norm;
+    *vy /= norm;
+}
+

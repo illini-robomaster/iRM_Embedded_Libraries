@@ -1,4 +1,5 @@
 #include "bsp_power.h"
+#include <math.h>
 
 float v_divider;
 float amp_per_volt;
@@ -15,6 +16,11 @@ void power_module_init(float v_div, float a_p_v, float a_offset) {
     v_divider       = v_div;
     amp_per_volt    = a_p_v;
     amp_offset      = a_offset;
+}
+
+uint8_t power_module_online(float tru_volt, float tru_cur) {
+    return fabs(tru_volt - get_volt()) <= MAX_VOLTAGE_ERROR &&
+           fabs(tru_cur - get_current()) <= MAX_CURRENT_ERROR;
 }
 
 void voltage_calibrate(float volt) {
