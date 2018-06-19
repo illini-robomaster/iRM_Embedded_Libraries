@@ -16,14 +16,6 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  *************************************************************************/
 
-/**
- * @author  Eric_Liang <hanghang177>
- * @date    2018-04-20
- * @file    bsp_pwm.c
- * @brief   Board support package for pwm servos and escs
- * #log     2018-04-20 hanghang177
- */
-
 #include "bsp_pwm.h"
 #include "FreeRTOS.h"
 #include "bsp_error_handler.h"
