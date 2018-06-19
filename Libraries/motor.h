@@ -35,6 +35,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include "bsp_can.h"
+#include "bsp_pwm.h"
 #include "bsp_error_handler.h"
 #include "bsp_print.h"
 
@@ -83,6 +84,9 @@
 #define CURRENT_CRT_2006    1       // current direction normal
 #define SPEED_CRT_2006      1       // speed direction noraml
 
+#define CURRENT_MIN_2305    0
+#define CURRENT_MAX_2305    400
+
 #define ANGLE_RANGE_DJI     8192
 
 #define MOTOR_2_RAD  0.0007669904f  // (360 / 8192) * (pi / 180)
@@ -97,22 +101,32 @@
  * @var M6623   6623 motor
  */
 typedef enum {
+    /* can motors */
     M3508,
     M3510,
     M2006,
     M6623,
-    MDJI
+    MDJICAN,
+    /* pwm motors */
+    M2305,
+    MPWM,
 }   motor_type_t;
 
 /**
  * @struct  motor_3508_t
  * @brief   store 3508 motor data
+ * @var rx_id   sensor CAN recieve id
+ * @var tx_id   sensor CAN transmit id
+ * @var can_id  CAN id chosen from [CAN1, CAN2]
  * @var angle       most recent angle data
  * @var current_get actual current / torque output
  * @var speed_rpm   rotational speed in RPM (Rotation Per Minute)
  * @var temperature sensor temperature in celcius degree
  */
 typedef struct {
+    uint16_t    rx_id;
+    uint16_t    tx_id;
+    uint8_t     can_id;
     int16_t     angle;
     int16_t     current_get;
     int16_t     speed_rpm;
@@ -122,11 +136,17 @@ typedef struct {
 /**
  * @struct  motor_6623_t
  * @brief   store 6623 motor data
+ * @var rx_id   sensor CAN recieve id
+ * @var tx_id   sensor CAN transmit id
+ * @var can_id  CAN id chosen from [CAN1, CAN2]
  * @var angle       most recent angle data
  * @var current_get actual current / torque output
  * @var current_set target current / torque output
  */
-typedef struct {
+typedef struct {    
+    uint16_t    rx_id;
+    uint16_t    tx_id;
+    uint8_t     can_id;
     int16_t     angle;
     int16_t     current_get;
     int16_t     current_set;
@@ -135,10 +155,16 @@ typedef struct {
 /**
  * @struct  motor_3510_t
  * @brief   store 3510 motor data
+ * @var rx_id   sensor CAN recieve id
+ * @var tx_id   sensor CAN transmit id
+ * @var can_id  CAN id chosen from [CAN1, CAN2]
  * @var angle       most recent angle data
  * @var current_get actual current / torque output
  */
 typedef struct {
+    uint16_t    rx_id;
+    uint16_t    tx_id;
+    uint8_t     can_id;
     int16_t     angle;
     int16_t     current_get;
 }   motor_3510_t;
@@ -146,10 +172,16 @@ typedef struct {
 /**
  * @struct  motor_2006_t
  * @brief   store 2006 motor data
+ * @var rx_id   sensor CAN recieve id
+ * @var tx_id   sensor CAN transmit id
+ * @var can_id  CAN id chosen from [CAN1, CAN2]
  * @var angle       most recent angle data
  * @var speed_rpm   rotational speed in RPM (Rotation Per Minute)
  */
 typedef struct {
+    uint16_t    rx_id;
+    uint16_t    tx_id;
+    uint8_t     can_id;
     int16_t     angle;
     int16_t     speed_rpm;
     int16_t     current_get;
@@ -158,11 +190,22 @@ typedef struct {
 /**
  * @struct  motor_dji_t
  * @brief   store generic dji motor data
+ * @var rx_id   sensor CAN recieve id
+ * @var tx_id   sensor CAN transmit id
+ * @var can_id  CAN id chosen from [CAN1, CAN2]
  * @var angle   most recent angle data
  */
 typedef struct {
+    uint16_t    rx_id;
+    uint16_t    tx_id;
+    uint8_t     can_id;
     int16_t     angle;
-}   motor_dji_t;
+}   motor_dji_can_t;
+
+typedef struct {
+    pwm_t       *pwm;
+    uint32_t    idle_throttle;
+}   motor_pwm_t;
 
 /**
  * @union   motor_interp_t
@@ -171,6 +214,8 @@ typedef struct {
  * @var m3510           generic 3510 motor
  * @var m2006           generic 2006 motor
  * @var m6623           generic 6623 motor
+ * @var mdjican         generic dji can motor
+ * @var mpwm            generic pwm motor
  * @var chassis         chassis motor
  * @var friction        friction pully for shooting
  * @var gimbal          main gimbal
@@ -179,17 +224,18 @@ typedef struct {
  */
 typedef union {
     /* generic motor */
-    motor_3508_t m3508;
-    motor_3510_t m3510;
-    motor_2006_t m2006;
-    motor_6623_t m6623;
-    motor_dji_t  mdji;
+    motor_3508_t        m3508;
+    motor_3510_t        m3510;
+    motor_2006_t        m2006;
+    motor_6623_t        m6623;
+    motor_dji_can_t     mdjican;
+    motor_pwm_t         mpwm;
     /* specific functioning motor */
-    motor_3508_t chassis;
-    motor_3508_t friction;
-    motor_6623_t gimbal;
-    motor_3510_t extra_gimbal;
-    motor_2006_t poke;
+    motor_3508_t        chassis;
+    motor_3508_t        friction;
+    motor_6623_t        gimbal;
+    motor_3510_t        extra_gimbal;
+    motor_2006_t        poke;
 }   motor_interp_t;
 
 /**
@@ -197,16 +243,11 @@ typedef union {
  * @brief   ultimate structure that holds all information for a motor
  * @var as      a union structure motor interpretation
  * @var cur_idx current index to write into the cicular buffer
- * @var rx_id   hardware sensor id as in CAN address
- * @var can_id  CAN id chosen from [CAN1, CAN2]
  * @var out     Motor output to be used; clockwise.
  */
 typedef struct {
     motor_interp_t  as;
     motor_type_t    type;
-    uint16_t        rx_id;
-    uint16_t        tx_id;
-    uint8_t         can_id;
     float           target;
     float           out;
 }   motor_t;
@@ -328,15 +369,26 @@ static int16_t correct_output(motor_t *motor);
  **************************************************************************/
 
 /**
- * @brief initialize generic motor variable with specific sensor id and can id
+ * @brief initialize generic can motors with specific sensor id and can id
  * @param motor     motor_t type variable to be initialized
  * @param rx_id     hardware sensor id as in CAN address
  * @param can_id    CAN id chosen from [CAN1_ID, CAN2_ID]
  * @param type      type of the motor
  * @return initialized motor pointer
  */
-motor_t *motor_init(motor_t *motor,
+motor_t *can_motor_init(motor_t *motor,
         uint16_t rx_id, uint8_t can_id, motor_type_t type);
+
+/**
+ * @brief initialize generic pwm motors with specific pulse width range
+ * @param motor     motor_t type variable to be initialized
+ * @param pwm       pwm controller
+ * @param min_pulse minimum pulse width as in timer clock cycle
+ * @param max_pulse maximum pulse width as in timer clock cycle
+ * @return initialized motor pointer
+ */
+motor_t *pwm_motor_init(motor_t *motor, motor_type_t type,
+        pwm_t *pwm, uint32_t idle_throttle);
 
 /**
  * @brief get generic motor data (type inferred from the data structure)
@@ -346,20 +398,26 @@ motor_t *motor_init(motor_t *motor,
 uint8_t get_motor_data(motor_t *motor);
 
 /**
- * @brief set output of a group of 4 motors
- *       function work properly
+ * @brief set output of a group of 4 can protocol motors
  * @param motor1 motor #1
  * @param motor2 motor #2
  * @param motor3 motor #3
  * @param motor4 motor #4
- * @note you need to set motor1.out, motor2.out, etc. to make this
+ * @note you need to set motor1.out, motor2.out, etc. to make this function work properly
  * @note four motors are positioned strictly in order.
- *       Put NULL to any position where you don't want to send any information.
+ *       Put NULL to any position where you want to send 0 output.
  * @return 1 if successfully sent, 0 for can / tx id inconsistency among
  *         4 motors
  */
-uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
+uint8_t set_can_motor_output(motor_t *motor1, motor_t *motor2,
         motor_t *motor3, motor_t *motor4);
+
+/**
+ * @brief set output of a single pwm motor
+ * @param motor motor instance
+ * @return none
+ */
+void set_pwm_motor_output(motor_t *motor);
 
 /**
  * @brief get the latest angle data from a motor

@@ -34,4 +34,6 @@ void test_motor_2006(uint8_t rotate);
 
 void test_motor_3510(uint8_t rotate);
 
+void test_motor_2305(void);
+
 #endif

@@ -17,6 +17,7 @@
  *************************************************************************/
 
 #include "motor.h"
+#include "utils.h"
 #include <stdlib.h>
 
 /* private function starts from here */
@@ -33,7 +34,7 @@ static void get_3508_data(motor_t* motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_3508_data(motor_t* motor) {
-    print("== 3508 at CAN bus %u node %x ==\r\n", motor->can_id, motor->rx_id);
+    print("== 3508 at CAN bus %u node %x ==\r\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
     print("Angle        %d\n", motor->as.m3508.angle);
     print("Current      %d\n", motor->as.m3508.current_get);
     print("Speed        %d\n", motor->as.m3508.speed_rpm);
@@ -51,7 +52,7 @@ static void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_6623_data(motor_t* motor) {
-    print("== 6623 at CAN bus %u node %x ==\n", motor->can_id, motor->rx_id);
+    print("== 6623 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
     print("Angle        %d\n", motor->as.m6623.angle);
     print("Current      %d\n", motor->as.m6623.current_get);
     print("Set Current  %d\n", motor->as.m6623.current_set);
@@ -66,7 +67,7 @@ static void get_3510_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_3510_data(motor_t* motor) {
-    print("== 3510 at CAN bus %u node %x ==\n", motor->can_id, motor->rx_id);
+    print("== 3510 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
     print("Angle        %d\n", motor->as.m3510.angle);
     print("Current      %d\n", motor->as.m3510.current_get);
     print("================================\n");
@@ -82,7 +83,7 @@ static void get_2006_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_2006_data(motor_t* motor) {
-    print("== 2006 at CAN bus %u node %x ==\n", motor->can_id, motor->rx_id);
+    print("== 2006 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
     print("Angle        %d\n", motor->as.m2006.angle);
     print("Current      %d\n", motor->as.m2006.current_get);
     print("Speed        %d\n", motor->as.m2006.speed_rpm);
@@ -128,6 +129,8 @@ static int16_t correct_output(motor_t *motor) {
         case M2006:
             return current_limit(motor->out * CURRENT_CRT_2006,
                     CURRENT_MAX_2006);
+        case M2305:
+            return fclip_to_range(&motor->out, CURRENT_MIN_2305, CURRENT_MAX_2305);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "motor type undefined");
             return 0;
@@ -136,43 +139,58 @@ static int16_t correct_output(motor_t *motor) {
 
 /* public function starts from here */
 
-motor_t *motor_init(motor_t *motor,
+motor_t *can_motor_init(motor_t *motor,
         uint16_t rx_id, uint8_t can_id, motor_type_t type) {
     if (!motor)
         motor = pvPortMalloc(sizeof(motor_t));
-    motor->type     = type;
-    motor->can_id   = can_id;
-    motor->rx_id    = rx_id;
-    motor->out      = 1;
-    motor->target   = 0;
+    motor->type                 = type;
+    motor->as.mdjican.can_id    = can_id;
+    motor->as.mdjican.rx_id                = rx_id;
+    motor->out                  = 1;
+    motor->target               = 0;
     if (rx_id >= CAN_RX1_START &&
             rx_id < CAN_RX1_START + CAN_GROUP_SIZE)
-        motor->tx_id = CAN_TX1_ID;
+        motor->as.mdjican.tx_id = CAN_TX1_ID;
     else if (rx_id >= CAN_RX2_START &&
             rx_id < CAN_RX2_START + CAN_GROUP_SIZE)
-        motor->tx_id = CAN_TX2_ID;
+        motor->as.mdjican.tx_id = CAN_TX2_ID;
     else if (rx_id >= CAN_RX3_START &&
             rx_id < CAN_RX3_START + CAN_GROUP_SIZE)
-        motor->tx_id = CAN_TX3_ID;
+        motor->as.mdjican.tx_id = CAN_TX3_ID;
     else
         bsp_error_handler(__FUNCTION__, __LINE__, "rx id out of range");
     /* transmit non-zero data to can bus to avoid initial motor burst */
     for (size_t i = 0; i < 30; i++)
-        set_motor_output(motor, motor, motor, motor);
+        set_can_motor_output(motor, motor, motor, motor);
+    return motor;
+}
+
+motor_t *pwm_motor_init(motor_t *motor, motor_type_t type,
+        pwm_t *pwm, uint32_t idle_throttle) {
+    if (!motor)
+        motor = pvPortMalloc(sizeof(motor_t));
+
+    motor->type     = type;
+    motor->out      = 0;
+    motor->target   = 0;
+
+    motor->as.mpwm.pwm              = pwm;
+    motor->as.mpwm.idle_throttle    = idle_throttle;
+
     return motor;
 }
 
 uint8_t get_motor_data(motor_t *motor) {
     uint8_t buf[CAN_DATA_SIZE];
-    switch (motor->can_id) {
+    switch (motor->as.mdjican.can_id) {
         case CAN1_ID:
-            if (!can1_read(motor->rx_id, buf)) {
+            if (!can1_read(motor->as.mdjican.rx_id, buf)) {
                 bsp_error_handler(__FUNCTION__, __LINE__, "CAN1_read failed");
                 return 0;
             }
             break;
         case CAN2_ID:
-            if (!can2_read(motor->rx_id, buf)) {
+            if (!can2_read(motor->as.mdjican.rx_id, buf)) {
                 bsp_error_handler(__FUNCTION__, __LINE__, "can2_read failed");
                 return 0;
             }
@@ -224,7 +242,7 @@ int16_t get_motor_angle(motor_t *motor) {
         case M3510:
         case M6623:
         case M2006:
-            return motor->as.mdji.angle;
+            return motor->as.mdjican.angle;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
             return 0;
@@ -238,7 +256,7 @@ int16_t get_angle_err(motor_t *motor, int16_t target) {
         case M3510:
         case M6623:
         case M2006:
-            diff = target - motor->as.mdji.angle;
+            diff = target - motor->as.mdjican.angle;
             return clip(diff, ANGLE_RANGE_DJI);
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "motor type does not support angle attribute");
@@ -271,17 +289,17 @@ int16_t get_speed_err(motor_t *motor, int16_t target) {
     }
 }
 
-uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
+uint8_t set_can_motor_output(motor_t *motor1, motor_t *motor2,
         motor_t *motor3, motor_t *motor4) {
     int16_t sp1, sp2, sp3, sp4;
     uint16_t tx_id, can_id;
     sp1 = sp2 = sp3 = sp4 = 0;
     tx_id = can_id = 0;
 
-    if ((motor1 && (!match_id(&tx_id, motor1->tx_id) || !match_id(&can_id, motor1->can_id))) ||
-        (motor2 && (!match_id(&tx_id, motor2->tx_id) || !match_id(&can_id, motor2->can_id))) ||
-        (motor3 && (!match_id(&tx_id, motor3->tx_id) || !match_id(&can_id, motor3->can_id))) ||
-        (motor4 && (!match_id(&tx_id, motor4->tx_id) || !match_id(&can_id, motor4->can_id)))) {
+    if ((motor1 && (!match_id(&tx_id, motor1->as.mdjican.tx_id) || !match_id(&can_id, motor1->as.mdjican.can_id))) ||
+        (motor2 && (!match_id(&tx_id, motor2->as.mdjican.tx_id) || !match_id(&can_id, motor2->as.mdjican.can_id))) ||
+        (motor3 && (!match_id(&tx_id, motor3->as.mdjican.tx_id) || !match_id(&can_id, motor3->as.mdjican.can_id))) ||
+        (motor4 && (!match_id(&tx_id, motor4->as.mdjican.tx_id) || !match_id(&can_id, motor4->as.mdjican.can_id)))) {
         bsp_error_handler(__FUNCTION__, __LINE__, "motor can / tx id not matched");
         return 0;
     }
@@ -304,4 +322,11 @@ uint8_t set_motor_output(motor_t *motor1, motor_t *motor2,
     }
 
     return 1;
+}
+
+void set_pwm_motor_output(motor_t *motor) {
+    uint32_t output = correct_output(motor);
+
+    output += motor->as.mpwm.idle_throttle;
+    pwm_set_pulse_width(motor->as.mpwm.pwm, output);
 }

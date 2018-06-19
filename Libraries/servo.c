@@ -28,27 +28,27 @@
 
 void servo_init(servo_t *servo,
                 TIM_HandleTypeDef *htim, uint8_t channel_id, uint32_t init_pwm) {
-    servo->pwm_timer = pwm_init(NULL, htim, channel_id);
-    servo->init_pwm   = init_pwm;
-    servo->current_pwm = init_pwm;
-    servo->max_degree = STANDARDMAX;
-    servo->min_degree = STANDARDMIN;
+    servo->pwm          = pwm_init(NULL, htim, channel_id);
+    servo->init_pwm     = init_pwm;
+    servo->current_pwm  = init_pwm;
+    servo->max_degree   = STANDARDMAX;
+    servo->min_degree   = STANDARDMIN;
     servo->current_angle = pwm_to_degrees(servo, init_pwm);
-    pwm_set_pulse_width(servo->pwm_timer, init_pwm);
+    pwm_set_pulse_width(servo->pwm, init_pwm);
 }
 
 void servo_writeMicroseconds(servo_t *servo,
                 uint32_t pwm)  {
-    servo->current_pwm = pwm;
-    servo->current_angle = pwm_to_degrees(servo, pwm);
-    pwm_set_pulse_width(servo->pwm_timer, pwm);
+    servo->current_pwm      = pwm;
+    servo->current_angle    = pwm_to_degrees(servo, pwm);
+    pwm_set_pulse_width(servo->pwm, pwm);
 }
 
 void servo_write(servo_t *servo,
                 uint32_t degrees)  {
     servo->current_angle = degrees;
-    servo->current_pwm = degrees_to_pwm(servo, degrees);
-    pwm_set_pulse_width(servo->pwm_timer, servo->current_pwm);
+    servo->current_pwm   = degrees_to_pwm(servo, degrees);
+    pwm_set_pulse_width(servo->pwm, servo->current_pwm);
 }
 
 void servo_setmax(servo_t *servo,

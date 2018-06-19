@@ -51,7 +51,7 @@
  */
 
 typedef struct {
-    pwm_t          *pwm_timer;
+    pwm_t          *pwm;
     uint32_t       init_pwm;
     uint32_t       min_degree;
     uint32_t       max_degree;

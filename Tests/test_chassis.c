@@ -31,9 +31,9 @@
 static void init_shoot(motor_t *m_fy_left, motor_t *m_fy_right, motor_t *m_poke,
         pid_ctl_t *pid_fy_left, pid_ctl_t *pid_fy_right, pid_ctl_t *pid_poke) {
     size_t i;
-    motor_init(m_poke, 0x208, CAN1_ID, M3508);
-    motor_init(m_fy_left, 0x205, CAN1_ID, M3508);
-    motor_init(m_fy_right, 0x206, CAN1_ID, M3508);
+    can_motor_init(m_poke, 0x208, CAN1_ID, M3508);
+    can_motor_init(m_fy_left, 0x205, CAN1_ID, M3508);
+    can_motor_init(m_fy_right, 0x206, CAN1_ID, M3508);
     pid_init(pid_poke, POKE, m_poke, -2000, 0, 80000, 0, 0, 14, 2, 0, 10000, 0);
     pid_init(pid_fy_left, FLYWHEEL, m_fy_left, -4000, 0, 0, 0, 0, 22, 0, 0, 3000, 0);
     pid_init(pid_fy_right, FLYWHEEL, m_fy_right, 0, 4000, 0, 0, 0, 22, 0, 0, 3000, 0);
@@ -43,7 +43,7 @@ static void init_shoot(motor_t *m_fy_left, motor_t *m_fy_right, motor_t *m_poke,
         get_motor_data(m_fy_right);
         get_motor_data(m_fy_left);
         get_motor_data(m_poke);
-        set_motor_output(m_fy_left, m_fy_right, NULL, m_poke);
+        set_can_motor_output(m_fy_left, m_fy_right, NULL, m_poke);
     }
 }
 
@@ -68,10 +68,10 @@ void demo_run_chassis() {
     yaw_ang = 6000;
     pitch_ang = 5500;
 #endif
-    motor_init(&m_fl, 0x201, CAN1_ID, M3508);
-    motor_init(&m_fr, 0x202, CAN1_ID, M3508);
-    motor_init(&m_rl, 0x203, CAN1_ID, M3508);
-    motor_init(&m_rr, 0x204, CAN1_ID, M3508);
+    can_motor_init(&m_fl, 0x201, CAN1_ID, M3508);
+    can_motor_init(&m_fr, 0x202, CAN1_ID, M3508);
+    can_motor_init(&m_rl, 0x203, CAN1_ID, M3508);
+    can_motor_init(&m_rr, 0x204, CAN1_ID, M3508);
     pid_init(&pid_fl, CHASSIS_ROTATE, &m_fl, -3000, 3000, int_lim, 0, 0, kp, ki, kd, 0, 0);
     pid_init(&pid_fr, CHASSIS_ROTATE, &m_fr, -3000, 3000, int_lim, 0, 0, kp, ki, kd, 0, 0);
     pid_init(&pid_rl, CHASSIS_ROTATE, &m_rl, -3000, 3000, int_lim, 0, 0, kp, ki, kd, 0, 0);
@@ -80,7 +80,7 @@ void demo_run_chassis() {
     for (i = 0; i < 100; i++) {
         get_motor_data(&m_fl);
         m_fl.out = 1;
-        set_motor_output(&m_fl, &m_fl, &m_fl, &m_fl);
+        set_can_motor_output(&m_fl, &m_fl, &m_fl, &m_fl);
     }
     while (1) {
         if (rc->key.bit.W) {
@@ -128,13 +128,13 @@ void demo_run_chassis() {
         m_yaw.out = pid_calc(&pid_yaw, yaw_ang);
         m_pitch.out = pid_calc(&pid_pitch, pitch_ang);
 #if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
-        set_motor_output(&m_fl, &m_fr, &m_rl, &m_rr);
-        set_motor_output(&m_yaw, &m_pitch, NULL, NULL);
+        set_can_motor_output(&m_fl, &m_fr, &m_rl, &m_rr);
+        set_can_motor_output(&m_yaw, &m_pitch, NULL, NULL);
 #elif defined(ENGINEERING)
-        set_motor_output(&m_yaw, NULL, NULL, NULL);
-        set_motor_output(&m_pitch, NULL, NULL, NULL);
+        set_can_motor_output(&m_yaw, NULL, NULL, NULL);
+        set_can_motor_output(&m_pitch, NULL, NULL, NULL);
 #else
-        set_motor_output(&m_fl, &m_fr, &m_rl, &m_rr);
+        set_can_motor_output(&m_fl, &m_fr, &m_rl, &m_rr);
 #endif
         HAL_Delay(5);
     }

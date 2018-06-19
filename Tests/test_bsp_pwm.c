@@ -9,10 +9,8 @@ void test_bsp_pwm() {
     osDelay(4000);
     
     while (1) {
-        for (size_t i = 1100; i < 1300; i += 50) {
-            pwm_set_pulse_width(&snail_left, i);
-            pwm_set_pulse_width(&snail_right, i);
-            osDelay(10000);
-        }
-    }
+        pwm_set_pulse_width(&snail_left, 1280);
+        pwm_set_pulse_width(&snail_right, 1280);
+        osDelay(10000);
+}
 }

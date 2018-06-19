@@ -29,8 +29,8 @@
     #define PITCH_HIGH_LIMIT        6200
     /* chassis related */
     #define MAX_TURN_SPEED          3000
-    #define MAX_LINEAR_SPEED        3500
-    #define MAX_SPEED               7000
+    #define MAX_LINEAR_SPEED        8000
+    #define MAX_SPEED               12000
     #define chs_kp                  10
     #define chs_ki                  0.9f
     #define chs_kd                  0
