@@ -25,7 +25,7 @@ void test_motor() {
     // test_motor_6623(0);
     // test_motor_2006(0);
     // test_motor_3510(0);
-    test_motor_2305();
+    // test_motor_2305();
 }
 
 void motor_feedback(void) {
@@ -127,13 +127,10 @@ void test_motor_2305(void) {
 
     osDelay(4000);
 
-    while (1) {
-        for (size_t i = 500; i < 1000; i += 0) {
-            motor1.out = i;
-            motor2.out = i;
-            set_pwm_motor_output(&motor1);
-            set_pwm_motor_output(&motor2);
-            osDelay(1000);
-        }
-    }
+    motor1.out = 600;
+    motor2.out = 600;
+    set_pwm_motor_output(&motor1);
+    set_pwm_motor_output(&motor2);
+    
+    osDelay(2000);
 }

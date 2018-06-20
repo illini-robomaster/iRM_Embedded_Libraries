@@ -35,6 +35,7 @@
 #include "test_referee.h"
 #include "test_bsp_adc.h"
 #include "test_bsp_pwm.h"
+#include "test_bsp_power.h"
 
 /* Test utility */
 #define PASS    1
@@ -69,6 +70,7 @@
 #define TEST_BSP_ADC    OFF
 #define TEST_SDIO       DISABLE
 #define TEST_KEY        OFF
+#define TEST_BSP_POWER  OFF
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -104,6 +106,8 @@ extern inline void run_all_tests() {
         TEST_OUTPUT("SDIO TEST", test_sdio());
     if (TEST_KEY == ON)
         TEST_OUTPUT("KEY TEST", test_key());
+    if (TEST_BSP_POWER == ON)
+        test_bsp_power();
 }
 
 #endif
