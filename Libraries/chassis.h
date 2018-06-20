@@ -105,6 +105,12 @@ void chassis_mode_backward(void);
 void chassis_stop(void);
 
 /**
+ * @brief hang all chassis motors to an infinite zero-output loop
+ * @param my_chassis[4] array of chassis motor pid controller
+ */
+void chassis_kill(pid_ctl_t *my_chassis[4]);
+
+/**
  * Run chassis motors. SHOULD ONLY BE CALLED AFTER PID CALC
  * @brief
  * @param my_chassis my chassis object. An array of pid that represents chassis

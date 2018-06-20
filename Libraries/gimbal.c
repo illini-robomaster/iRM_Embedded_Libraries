@@ -51,6 +51,21 @@ void gimbal_init(gimbal_t *my_gimbal) {
     // not implemented yet
 }
 
+void gimbal_kill(gimbal_t *my_gimbal) {
+    my_gimbal->pitch->motor->out = 0;
+    my_gimbal->yaw->motor->out = 0;
+    
+    while (1) {
+#if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3) || defined(HERO)
+        set_can_motor_output(my_gimbal->yaw->motor, my_gimbal->pitch->motor, NULL, NULL);
+#else
+        set_can_motor_output(my_gimbal->yaw->motor, NULL, NULL, NULL);
+        set_can_motor_output(my_gimbal->pitch->motor, NULL, NULL, NULL);
+#endif
+        osDelay(1000);
+    }
+}
+
 void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw) {
     my_gimbal->yaw_ang -= rc->mouse.x * 0.2;
     my_gimbal->pitch_ang -= rc->mouse.y * 0.2;

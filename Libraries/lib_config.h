@@ -31,10 +31,10 @@
     #define MAX_TURN_SPEED          3000
     #define MAX_LINEAR_SPEED        8000
     #define MAX_SPEED               12000
-    #define chs_kp                  10
-    #define chs_ki                  0.9f
-    #define chs_kd                  0
-    #define chs_int_lim             200
+    #define CHS_KP                  10
+    #define CHS_KI                  0.9f
+    #define CHS_KD                  0
+    #define CHS_INT_LIM             200
     #define ROTATE_KP               2.7f
 
 #elif defined(INFANTRY2)
@@ -59,10 +59,10 @@
     #define MAX_TURN_SPEED          4000
     #define MAX_LINEAR_SPEED        4500
     #define MAX_SPEED               9000
-    #define chs_kp                  10
-    #define chs_ki                  0.9f
-    #define chs_kd                  0
-    #define chs_int_lim             200
+    #define CHS_KP                  10
+    #define CHS_KI                  0.9f
+    #define CHS_KD                  0
+    #define CHS_INT_LIM             200
     #define ROTATE_KP               3.9f
 
 #elif defined(HERO)

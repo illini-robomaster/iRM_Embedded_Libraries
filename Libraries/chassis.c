@@ -43,14 +43,14 @@ void chassis_init(pid_ctl_t *my_chassis[4]){
     m_rl = can_motor_init(NULL, RL_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
     m_rr = can_motor_init(NULL, RR_MOTOR_CANID, CAN1_ID, CHASSIS_MOTOR_TYPE);
 
-    pid_fl = pid_init(NULL, CHASSIS_ROTATE, m_fl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
-    pid_fr = pid_init(NULL, CHASSIS_ROTATE, m_fr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
-    pid_rl = pid_init(NULL, CHASSIS_ROTATE, m_rl, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
-    pid_rr = pid_init(NULL, CHASSIS_ROTATE, m_rr, -MAX_SPEED, MAX_SPEED, chs_int_lim,
-                0, 0, chs_kp, chs_ki, chs_kd, 0, 0);
+    pid_fl = pid_init(NULL, CHASSIS_ROTATE, m_fl, -MAX_SPEED, MAX_SPEED, CHS_INT_LIM,
+                0, 0, CHS_KP, CHS_KI, CHS_KD, 0, 0);
+    pid_fr = pid_init(NULL, CHASSIS_ROTATE, m_fr, -MAX_SPEED, MAX_SPEED, CHS_INT_LIM,
+                0, 0, CHS_KP, CHS_KI, CHS_KD, 0, 0);
+    pid_rl = pid_init(NULL, CHASSIS_ROTATE, m_rl, -MAX_SPEED, MAX_SPEED, CHS_INT_LIM,
+                0, 0, CHS_KP, CHS_KI, CHS_KD, 0, 0);
+    pid_rr = pid_init(NULL, CHASSIS_ROTATE, m_rr, -MAX_SPEED, MAX_SPEED, CHS_INT_LIM,
+                0, 0, CHS_KP, CHS_KI, CHS_KD, 0, 0);
 
     my_chassis[CHASSIS_FL] = pid_fl;
     my_chassis[CHASSIS_FR] = pid_fr;
@@ -120,6 +120,17 @@ void chassis_mode_backward(void) {
 
 void chassis_stop(void) {
     direction = 0;
+}
+
+void chassis_kill(pid_ctl_t *my_chassis[4]) {
+    for (uint8_t i = 0; i < 4; ++i)
+        my_chassis[i]->motor->out = 0;
+
+    while (1) {
+        set_can_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
+                    my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);
+        osDelay(1000);
+    }
 }
 
 void run_chassis(pid_ctl_t *my_chassis[4]){

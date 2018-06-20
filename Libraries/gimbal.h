@@ -43,9 +43,16 @@ void gimbal_update(gimbal_t *my_gimbal);
 /**
  * Initialize gimbal motors
  * @brief
- * @param my_gimbal [description]
+ * @param my_gimbal gimbal struct that stores all gimbal related variables
  */
 void gimbal_init(gimbal_t *my_gimbal);
+
+/**
+ * @brief hang all gimbal motor into an infinite zero-output loop
+ * @param my_gimbal gimbal struct that stores all gimbal related variables
+ * @return none
+ */
+void gimbal_kill(gimbal_t *my_gimbal);
 
 /**
  * calculate gimbal movement based on mouse feedback from mouse
