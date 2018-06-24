@@ -39,7 +39,7 @@ void haptor_down() {
         if (abs(pid_haptor->integrator) == pid_haptor->int_lim)
             haptor_state = BOTTOM;
         /* TODO: the delay should be integrated with thread timer */
-        HAL_Delay(5);
+        osDelay(20);
     }
     m_haptor->out = 0;
     set_can_motor_output(NULL, m_haptor, NULL, NULL);
@@ -52,7 +52,7 @@ void haptor_up() {
         set_can_motor_output(NULL, m_haptor, NULL, NULL);
         if (abs(pid_haptor->integrator) == pid_haptor->int_lim)
             haptor_state = TOP;
-        HAL_Delay(5);
+        osDelay(20);
     }
     m_haptor->out = 0;
     set_can_motor_output(NULL, m_haptor, NULL, NULL);
