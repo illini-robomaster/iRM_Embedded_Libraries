@@ -25,6 +25,9 @@
 #define MAX_CURRENT_ERROR 3
 #define MAX_VOLTAGE_ERROR 2
 
+#define PM_OFFLINE  0
+#define PM_ONLINE   1
+
 /**
  * @brief initialize onboard power module
  * @param v_div     initial voltage divider (voltmeter)
@@ -32,6 +35,9 @@
  * @param a_offset  ampere offset in adc voltage (in V)
  * @note    power voltage = adc voltage * voltage divider
  * @note    power current = (adc voltage + ampere offset) * ampere per voltage
+ * @note v_div & a_offset can be calculated through calibration, however,
+ *       an approximate value should be provided for offline detection
+ *       to work properly
  */
 void power_module_init(float v_div, float a_p_v, float a_offset);
 
@@ -41,8 +47,15 @@ void power_module_init(float v_div, float a_p_v, float a_offset);
  * @param tru_volt  true voltage value (typically comes from referee)
  * @param tru_cur   true current value (typically comming from referee)
  * @return 1 if power module is online else 0
+ * @note this offline check should be run BEFORE calibration
  */
-uint8_t power_module_online(float tru_volt, float tru_cur);
+uint8_t power_module_check(float tru_volt, float tru_cur);
+
+/**
+ * @brief get power module status (offline / online)
+ * @return PM_ONLINE / PM_OFFLINE
+ */
+uint8_t power_module_stat(void);
 
 /**
  * @brief calibrate voltmeter
@@ -58,21 +71,27 @@ void current_calibrate(float amp);
 
 /**
  * @brief calibrate both voltmeter and amperemeter
- * @param volt measured voltage (in V)
- * @param amp measured current (in A)
+ * @param volt measured voltage (in Volts)
+ * @param amp measured current (in Amperes)
  */
 void power_module_calibrate(float volt, float amp);
     
 /**
  * @brief get voltage value from power module
- * @return power voltage (in V)
+ * @return power voltage (in Volts)
  */
 float get_volt(void);
 
 /**
- * @brief get current calue from power module
- * @return power current (in A)
+ * @brief get current value from power module
+ * @return power current (in Amperes)
  */
 float get_current(void);
+
+/**
+ * @brief get power value from power module
+ * @return power value (in Jouls)
+ */
+float get_power(void);
 
 #endif

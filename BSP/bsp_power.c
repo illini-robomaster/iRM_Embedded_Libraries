@@ -26,6 +26,8 @@ float amp_offset;
 adc_t *volt_adc;
 adc_t *amp_adc;
 
+uint8_t pm_stat = PM_OFFLINE;
+
 void power_module_init(float v_div, float a_p_v, float a_offset) {
     volt_adc = adc_dma_enable(NULL, &BSP_POWER_ADC,
             BSP_POWER_V_CHANNEL, BSP_POWER_AVG_FILTER_SIZE);
@@ -36,9 +38,18 @@ void power_module_init(float v_div, float a_p_v, float a_offset) {
     amp_offset      = a_offset;
 }
 
-uint8_t power_module_online(float tru_volt, float tru_cur) {
-    return fabs(tru_volt - get_volt()) <= MAX_VOLTAGE_ERROR &&
-           fabs(tru_cur - get_current()) <= MAX_CURRENT_ERROR;
+uint8_t power_module_check(float tru_volt, float tru_cur) {
+    if (fabs(tru_volt - get_volt()) <= MAX_VOLTAGE_ERROR &&
+            fabs(tru_cur - get_current()) <= MAX_CURRENT_ERROR)
+        pm_stat = PM_ONLINE;
+    else
+        pm_stat = PM_OFFLINE;
+
+    return pm_stat;
+}
+
+uint8_t power_module_stat(void) {
+    return pm_stat;
 }
 
 void voltage_calibrate(float volt) {
@@ -69,4 +80,8 @@ float get_current(void) {
     float adc_volt = adc_get_volt(amp_adc);
 
     return (adc_volt + amp_offset) * amp_per_volt;
+}
+
+float get_power(void) {
+    return get_volt() * get_current();
 }
