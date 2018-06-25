@@ -24,6 +24,8 @@
  * @log     2018-05-23 nickelliang
  */
 
+#if 0
+
 #include "bsp_sdio.h"
 #include "cmsis_os.h"
 
@@ -64,3 +66,5 @@ void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd) {
   return Stat;
 }
 */
+
+#endif

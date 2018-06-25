@@ -34,7 +34,11 @@
 // #include "main.h"
 #include "sd_diskio.h"
 
+#if 0
+
 void sdio_init(void);
 void sdio_queue_init(void);
+
+#endif
 
 #endif

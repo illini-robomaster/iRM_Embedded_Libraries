@@ -60,7 +60,7 @@ extern inline void RM_Main_Init(void) {
     can2_init();
     dbus_init();
     onboard_imu_init();
-    sdio_init();
+    // sdio_init(); // SD IO not quite working yet
     // key_init(); // key debouncing not quite working under RTOS
 
     /* Indicate successfully initialized */

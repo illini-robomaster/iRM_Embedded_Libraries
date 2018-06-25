@@ -77,87 +77,77 @@ uint8_t can2_read(uint16_t id, uint8_t buf[CAN_DATA_SIZE]) {
 
 static void can_init(CAN_HandleTypeDef* hcan) {
     can_filter_config(hcan);   //Initialize filter 0
-    if (HAL_CAN_Receive_IT(hcan, CAN_FIFO0) != HAL_OK) {
-        bsp_error_handler(__FUNCTION__, __LINE__, "CAN init failed.");
-    }
+
+    if (HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+        bsp_error_handler(__FUNCTION__, __LINE__, "Cannot activate CAN notification");
+    
+    if (HAL_CAN_Start(hcan) != HAL_OK)
+        bsp_error_handler(__FUNCTION__, __LINE__, "Cannot start CAN");
 }
 
 static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int16_t msg2, int16_t msg3, int16_t msg4) {
-    hcan->pTxMsg->StdId = id;
-    hcan->pTxMsg->IDE = CAN_ID_STD;
-    hcan->pTxMsg->RTR = CAN_RTR_DATA;
-    hcan->pTxMsg->DLC = 0x08;
-    hcan->pTxMsg->Data[0] = msg1 >> 8; 	//Higher 8 bits of ESC 1
-    hcan->pTxMsg->Data[1] = msg1;		//Lower 8 bits of ESC 1
-    hcan->pTxMsg->Data[2] = msg2 >> 8;
-    hcan->pTxMsg->Data[3] = msg2;
-    hcan->pTxMsg->Data[4] = msg3 >> 8;
-    hcan->pTxMsg->Data[5] = msg3;
-    hcan->pTxMsg->Data[6] = msg4 >> 8;
-    hcan->pTxMsg->Data[7] = msg4;
-    HAL_CAN_Transmit(hcan, 1000);
+    CAN_TxHeaderTypeDef tx_header;
+    uint8_t             data[8];
+    uint32_t            pTxMailbox;
+
+    tx_header.StdId = id;
+    tx_header.IDE   = CAN_ID_STD;
+    tx_header.RTR   = CAN_RTR_DATA;
+    tx_header.DLC   = 0x08;
+    data[0] = msg1 >> 8; 	//Higher 8 bits of ESC 1
+    data[1] = msg1;		//Lower 8 bits of ESC 1
+    data[2] = msg2 >> 8;
+    data[3] = msg2;
+    data[4] = msg3 >> 8;
+    data[5] = msg3;
+    data[6] = msg4 >> 8;
+    data[7] = msg4;
+
+    HAL_CAN_AddTxMessage(hcan, &tx_header, data, &pTxMailbox);
 }
 
 static void can_filter_config(CAN_HandleTypeDef* hcan) {
-    CAN_FilterConfTypeDef   CAN_FilterConfigStructure;
-    static CanTxMsgTypeDef  Tx1Message; //Allocate memory for data storage
-    static CanRxMsgTypeDef  Rx1Message;
-    static CanTxMsgTypeDef  Tx2Message;
-    static CanRxMsgTypeDef  Rx2Message;
+    CAN_FilterTypeDef       CAN_FilterConfigStructure;
     /* Configure Filter Property */
     CAN_FilterConfigStructure.FilterIdHigh = 0x0000;
     CAN_FilterConfigStructure.FilterIdLow = 0x0000;
     CAN_FilterConfigStructure.FilterMaskIdHigh = 0x0000;
     CAN_FilterConfigStructure.FilterMaskIdLow = 0x0000;
-    CAN_FilterConfigStructure.FilterFIFOAssignment = CAN_FilterFIFO0;
+    CAN_FilterConfigStructure.FilterFIFOAssignment = CAN_FILTER_FIFO0;
     CAN_FilterConfigStructure.FilterMode = CAN_FILTERMODE_IDMASK;
     CAN_FilterConfigStructure.FilterScale = CAN_FILTERSCALE_32BIT;
     CAN_FilterConfigStructure.FilterActivation = ENABLE;
-    CAN_FilterConfigStructure.BankNumber = 14;  //CAN1 and CAN2 split all 28 filters
+    CAN_FilterConfigStructure.SlaveStartFilterBank = 14;  //CAN1 and CAN2 split all 28 filters
     /* Configure each CAN bus */
-    if (hcan == &CAN_BUS_1) {
-        CAN_FilterConfigStructure.FilterNumber = 0; //Master CAN1 get filter 0-13
-        hcan->pTxMsg = &Tx1Message;
-        hcan->pRxMsg = &Rx1Message;
-    }
-    else if (hcan == &CAN_BUS_2) {
-        CAN_FilterConfigStructure.FilterNumber = 14; //Slave CAN2 get filter 14-27
-        hcan->pTxMsg = &Tx2Message;
-        hcan->pRxMsg = &Rx2Message;
-    }
-    if (HAL_CAN_ConfigFilter(hcan, &CAN_FilterConfigStructure) != HAL_OK) {
+    if (hcan == &CAN_BUS_1)
+        CAN_FilterConfigStructure.FilterBank = 0; //Master CAN1 get filter 0-13
+    else if (hcan == &CAN_BUS_2)
+        CAN_FilterConfigStructure.FilterBank = 14; //Slave CAN2 get filter 14-27
+
+    if (HAL_CAN_ConfigFilter(hcan, &CAN_FilterConfigStructure) != HAL_OK)
         bsp_error_handler(__FUNCTION__, __LINE__, "CAN filter configuration failed.");
-    }
 }
 
-/**
- * CAN bus callback function, no need to define in h file. This will overwrite original call back function.
- *
- * @param  hcan       Which CAN to get data from
- * @author Nickel_Liang
- * @date   2018-04-14
- * @note   This function is intended to fully abstract away the usage of HAL library in upper layer.
- * @todo   Add offline detection for CAN motors
- */
-void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan) {
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
+    static CAN_RxHeaderTypeDef rx_header;
+    /* get device id ahead of time */
+    rx_header.StdId = (CAN_RI0R_STID & hcan->Instance->sFIFOMailBox[0].RIR) >> CAN_TI0R_STID_Pos;
+
     if (hcan == &CAN_BUS_1) {
         /* Enter critical section here */
         /* @todo Critical section not tested yet */
         UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
-        uint8_t idx = hcan->pRxMsg->StdId - CAN1_RX_ID_START;
-        memcpy(can1_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
+        uint8_t idx = rx_header.StdId - CAN1_RX_ID_START;
+        HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, can1_rx_buffer[idx]);
         /* Exit critical section here */
         taskEXIT_CRITICAL_FROM_ISR(it_status);
     }
     else if (hcan == &CAN_BUS_2) {
         /* Enter critical section here */
         UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
-        uint8_t idx = hcan->pRxMsg->StdId - CAN2_RX_ID_START;
-        memcpy(can2_rx_buffer[idx], hcan->pRxMsg->Data, CAN_DATA_SIZE);
+        uint8_t idx = rx_header.StdId - CAN2_RX_ID_START;
+        HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, can2_rx_buffer[idx]);
         /* Exit critical section here */
         taskEXIT_CRITICAL_FROM_ISR(it_status);
     }
-    // Reset CAN receive interrupt to prevent bug
-    __HAL_CAN_ENABLE_IT(&CAN_BUS_1, CAN_IT_FMP0);
-    __HAL_CAN_ENABLE_IT(&CAN_BUS_2, CAN_IT_FMP0);
 }

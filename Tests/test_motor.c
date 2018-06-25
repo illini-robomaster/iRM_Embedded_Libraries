@@ -80,12 +80,12 @@ void test_motor_2006(uint8_t rotate) {
     motor_t motor;
     size_t i;
 
-    can_motor_init(&motor, 0x206, CAN1_ID, M2006);
+    can_motor_init(&motor, 0x201, CAN1_ID, M2006);
     motor.out = 400;
 
     if (rotate)
         for (i = 0; i < 1000; i++)
-            set_can_motor_output(NULL, &motor, NULL, NULL);
+            set_can_motor_output(&motor, NULL, NULL, NULL);
 
     for (i = 0; i < 1000; i++) {
         get_motor_data(&motor);
