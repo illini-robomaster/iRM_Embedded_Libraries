@@ -131,7 +131,7 @@ static void can_filter_config(CAN_HandleTypeDef* hcan) {
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     static CAN_RxHeaderTypeDef rx_header;
     /* get device id ahead of time */
-    rx_header.StdId = (CAN_RI0R_STID & hcan->Instance->sFIFOMailBox[0].RIR) >> CAN_TI0R_STID_Pos;
+    rx_header.StdId = (CAN_RI0R_STID & hcan->Instance->sFIFOMailBox[CAN_RX_FIFO0].RIR) >> CAN_TI0R_STID_Pos;
 
     if (hcan == &CAN_BUS_1) {
         /* Enter critical section here */
