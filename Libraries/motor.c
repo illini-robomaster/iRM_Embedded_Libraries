@@ -52,11 +52,11 @@ static void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_6623_data(motor_t* motor) {
-    print("== 6623 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
-    print("Angle        %d\n", motor->as.m6623.angle);
-    print("Current      %d\n", motor->as.m6623.current_get);
-    print("Set Current  %d\n", motor->as.m6623.current_set);
-    print("================================\n");
+    print("== 6623 at CAN bus %u node %x ==\r\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
+    print("Angle        %d\r\n", motor->as.m6623.angle);
+    print("Current      %d\r\n", motor->as.m6623.current_get);
+    print("Set Current  %d\r\n", motor->as.m6623.current_set);
+    print("================================\r\n");
 }
 
 static void get_3510_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {

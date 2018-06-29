@@ -25,6 +25,7 @@
  */
 
 #include "bsp_can.h"
+#include "FreeRTOS.h"
 
 uint8_t can1_rx_buffer[CAN1_DEVICE_NUM][CAN_DATA_SIZE];
 uint8_t can2_rx_buffer[CAN2_DEVICE_NUM][CAN_DATA_SIZE];
@@ -79,8 +80,8 @@ static void can_init(CAN_HandleTypeDef* hcan) {
     can_filter_config(hcan);   //Initialize filter 0
 
     if (HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
-        bsp_error_handler(__FUNCTION__, __LINE__, "Cannot activate CAN notification");
-    
+        bsp_error_handler(__FUNCTION__, __LINE__, "Cannot activate CAN rx message pending notification");
+
     if (HAL_CAN_Start(hcan) != HAL_OK)
         bsp_error_handler(__FUNCTION__, __LINE__, "Cannot start CAN");
 }
@@ -94,6 +95,7 @@ static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int
     tx_header.IDE   = CAN_ID_STD;
     tx_header.RTR   = CAN_RTR_DATA;
     tx_header.DLC   = 0x08;
+    tx_header.TransmitGlobalTime = DISABLE;
     data[0] = msg1 >> 8; 	//Higher 8 bits of ESC 1
     data[1] = msg1;		//Lower 8 bits of ESC 1
     data[2] = msg2 >> 8;
@@ -103,7 +105,10 @@ static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int
     data[6] = msg4 >> 8;
     data[7] = msg4;
 
-    HAL_CAN_AddTxMessage(hcan, &tx_header, data, &pTxMailbox);
+    if (HAL_CAN_AddTxMessage(hcan, &tx_header, data, &pTxMailbox) != HAL_OK)
+        bsp_error_handler(__FUNCTION__, __LINE__, "can transmit fail");
+    else
+        while (HAL_CAN_IsTxMessagePending(hcan, pTxMailbox));
 }
 
 static void can_filter_config(CAN_HandleTypeDef* hcan) {
@@ -129,7 +134,7 @@ static void can_filter_config(CAN_HandleTypeDef* hcan) {
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
-    static CAN_RxHeaderTypeDef rx_header;
+    CAN_RxHeaderTypeDef rx_header;
     /* get device id ahead of time */
     rx_header.StdId = (CAN_RI0R_STID & hcan->Instance->sFIFOMailBox[CAN_RX_FIFO0].RIR) >> CAN_TI0R_STID_Pos;
 
@@ -144,6 +149,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     }
     else if (hcan == &CAN_BUS_2) {
         /* Enter critical section here */
+        /* @todo Critical section not tested yet */
         UBaseType_t it_status = taskENTER_CRITICAL_FROM_ISR();
         uint8_t idx = rx_header.StdId - CAN2_RX_ID_START;
         HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, can2_rx_buffer[idx]);

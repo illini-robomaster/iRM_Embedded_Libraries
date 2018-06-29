@@ -22,7 +22,7 @@
 void test_motor() {
     // motor_feedback();
     // test_motor_3508(0);
-    // test_motor_6623(0);
+    test_motor_6623(0);
     // test_motor_2006(0);
     // test_motor_3510(0);
     // test_motor_2305();
@@ -35,7 +35,7 @@ void motor_feedback(void) {
     while (1) {
         get_motor_data(motor);
         print_motor_data(motor);
-        HAL_Delay(20);
+        osDelay(20);
     }
 }
 
@@ -54,7 +54,7 @@ void test_motor_3508(uint8_t rotate) {
         get_motor_data(&motor);
         print_motor_data(&motor);
         print("Target: %d Error: %d\n", 400, get_angle_err(&motor, 400));
-        HAL_Delay(20);
+        osDelay(20);
     }
 }
 
@@ -69,10 +69,10 @@ void test_motor_6623(uint8_t rotate) {
         for (i = 0; i < 1000; i++)
             set_can_motor_output(&motor, NULL, NULL, NULL);
 
-    for (i = 0; i < 1000; i++) {
+    while(1) {
         get_motor_data(&motor);
         print_motor_data(&motor);
-        HAL_Delay(20);
+        osDelay(20);
     }
 }
 
@@ -90,7 +90,7 @@ void test_motor_2006(uint8_t rotate) {
     for (i = 0; i < 1000; i++) {
         get_motor_data(&motor);
         print_motor_data(&motor);
-        HAL_Delay(20);
+        osDelay(20);
     }
 }
 
@@ -112,7 +112,7 @@ void test_motor_3510(uint8_t rotate) {
     for (i = 0; i < 10000; i++) {
         get_motor_data(&motor);
         print_motor_data(&motor);
-        HAL_Delay(20);
+        osDelay(20);
     }
 }
 
