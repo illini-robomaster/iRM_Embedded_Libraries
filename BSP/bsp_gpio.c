@@ -35,20 +35,5 @@
  * @date   2018-05-27
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    switch (GPIO_Pin) {
-        case SWITCH_1_Pin:
-            /* @todo Add switch callback function here */
-            break;
-        case KEY_Pin:
-            key_fsm();
-            break;
-        case SWITCH_2_Pin:
-            /* @todo Add switch callback function here */
-            break;
-        case SD_EXTI_Pin:
-            /* @todo Add SD callback function here */
-            break;
-        default:
-            bsp_error_handler(__FUNCTION__, __LINE__, "Undefined GPIO callbacked.");
-    }
+    /* TODO: handle gpio interrupts */
 }
