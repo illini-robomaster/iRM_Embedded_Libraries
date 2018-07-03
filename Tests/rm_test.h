@@ -36,6 +36,7 @@
 #include "test_bsp_adc.h"
 #include "test_bsp_pwm.h"
 #include "test_bsp_power.h"
+#include "test_oled_module.h"
 
 /* Test utility */
 #define PASS    1
@@ -54,23 +55,24 @@
                                 // RM_MAIN : Run test in main function
 
 /* Test config */
-#define TEST_PID        OFF
-#define TEST_MOTOR      OFF
-#define TEST_DBUS       OFF
-#define TEST_BSP_CAN    OFF
-#define TEST_SERVO      OFF
-#define TEST_BSP_PWM    OFF
-#define TEST_BSP_IMU    OFF
-#define TEST_IMU        OFF
-#define TEST_MOUSE      OFF
-#define TEST_HAPTOR     OFF
-#define TEST_CHASSIS    OFF
-#define TEST_TX2        OFF
-#define TEST_REFEREE    OFF
-#define TEST_BSP_ADC    OFF
-#define TEST_SDIO       DISABLE
-#define TEST_KEY        OFF
-#define TEST_BSP_POWER  OFF
+#define TEST_PID            OFF
+#define TEST_MOTOR          OFF
+#define TEST_DBUS           OFF
+#define TEST_BSP_CAN        OFF
+#define TEST_SERVO          OFF
+#define TEST_BSP_PWM        OFF
+#define TEST_BSP_IMU        OFF
+#define TEST_IMU            OFF
+#define TEST_MOUSE          OFF
+#define TEST_HAPTOR         OFF
+#define TEST_CHASSIS        OFF
+#define TEST_TX2            OFF
+#define TEST_REFEREE        OFF
+#define TEST_BSP_ADC        OFF
+#define TEST_SDIO           DISABLE
+#define TEST_KEY            OFF
+#define TEST_BSP_POWER      OFF
+#define TEST_OLED_MODULE    OFF
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -108,6 +110,8 @@ extern inline void run_all_tests() {
         TEST_OUTPUT("KEY TEST", test_key());
     if (TEST_BSP_POWER == ON)
         test_bsp_power();
+    if (TEST_OLED_MODULE == ON)
+        test_oled_module();
 }
 
 #endif
