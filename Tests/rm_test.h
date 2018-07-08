@@ -37,6 +37,7 @@
 #include "test_bsp_pwm.h"
 #include "test_bsp_power.h"
 #include "test_oled_module.h"
+#include "test_bsp_tof.h"
 
 /* Test utility */
 #define PASS    1
@@ -73,6 +74,7 @@
 #define TEST_KEY            OFF
 #define TEST_BSP_POWER      OFF
 #define TEST_OLED_MODULE    OFF
+#define TEST_BSP_TOF        OFF
 
 /* TODO: test case not finished yet */
 extern inline void run_all_tests() {
@@ -112,6 +114,8 @@ extern inline void run_all_tests() {
         test_bsp_power();
     if (TEST_OLED_MODULE == ON)
         test_oled_module();
+    if (TEST_BSP_TOF == ON)
+        test_bsp_tof();
 }
 
 #endif
