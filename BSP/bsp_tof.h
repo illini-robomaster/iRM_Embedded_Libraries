@@ -26,6 +26,14 @@
 
 #define MAX_BOOTUP_TIME         2
 
+/**
+ * @struct  bsp_vl53l0x_t
+ * @brief   store vl53l0x tof ranging sensor data
+ * @var device  device information with official driver type
+ * @var gport           gpio group number
+ * @var gpin            gpio pin number
+ * @var ranging_time    ranging time budget in microseconds
+ */
 typedef struct {
     VL53L0X_Dev_t   *device;
     GPIO_TypeDef    *gport;
@@ -33,10 +41,29 @@ typedef struct {
     uint32_t        ranging_time;
 }   bsp_vl53l0x_t;
 
+/**
+ * @brief initialize vl53l0x device
+ * @param addr          device i2c address (to be set)
+ * @param gport         gpio group number for reset pin
+ * @param gpin          gpio pin number for reset pin
+ * @param ranging_time  ranging time budget in microseconds
+ * @return allocated and initialized bsp_vl53l0x_t instance
+ */
 bsp_vl53l0x_t* bsp_vl53l0x_init(uint8_t addr, GPIO_TypeDef *gport, uint16_t gpin, uint32_t ranging_time);
 
+/**
+ * @brief in case of any error, reset the tof sensor through
+ *        gpio reset pin
+ * @param tof a bsp_vl53l0x_t type that holds all sensor information
+ * @return 1 for success and 0 for failure
+ */
 uint8_t reset_vl53l0x(bsp_vl53l0x_t *tof);
 
+/**
+ * @brief read sensor ranging distance measurement in millimeter
+ * @param tof a bsp_vl53l0x_t type that holds all sensor information
+ * @return measured distance in millimeter
+ */
 uint16_t get_vl53l0x_dist_milli(bsp_vl53l0x_t *tof);
 
 #endif
