@@ -22,7 +22,7 @@
 void test_motor() {
     // motor_feedback();
     // test_motor_3508(0);
-    test_motor_6623(0);
+    // test_motor_6623(0);
     // test_motor_2006(0);
     // test_motor_3510(0);
     // test_motor_2305();

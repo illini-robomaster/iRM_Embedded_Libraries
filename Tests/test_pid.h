@@ -36,7 +36,9 @@ void test_poke();
 
 void new_test_poke(void);
 
-void test_2006();
+void test_pid_2006();
+
+void test_pid_3508();
 
 void test_power_speed(void);
 
