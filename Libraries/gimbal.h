@@ -81,6 +81,13 @@ void gimbal_remote_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_ya
 void yaw_ramp_ctl(gimbal_t *my_gimbal, int32_t delta_ang, uint16_t step_size);
 
 /**
+ * @brief set yaw angle (as in gimbal motor relative angles)
+ * @param my_gimbal     my gimbal object
+ * @param yaw_ang       target yaw angle in motor degree
+ */
+void gimbal_set_yaw_angle(gimbal_t *my_gimbal, int32_t yaw_ang);
+
+/**
  * Run motor with corresponding values. SHOULD ONLY BE CALLED AFTER PID CALC
  * @brief
  * @param my_gimbal my gimbal object

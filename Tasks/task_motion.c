@@ -86,28 +86,33 @@ static void engineering_mode_switch(dbus_t *rc) {
     if (motion_mode != HORIZONTAL && rc->swr == RC_SWITCH_MI) {
         chassis_stop();
         motion_mode = HORIZONTAL;
-        get_motor_data(my_gimbal.pitch->motor);
-        yaw_ramp_ctl(&my_gimbal, get_angle_err(my_gimbal.yaw->motor, 
-                    HORIZONTAL_MIDDLE_YAW), 100);
+        for (size_t i = 0; i < 30; i++) {
+            gimbal_set_yaw_angle(&my_gimbal, HORIZONTAL_MIDDLE_YAW);
+            osDelay(MOTION_CYCLE);
+        }
         my_gimbal.yaw_middle = HORIZONTAL_MIDDLE_YAW;
-        osDelay(200);
+        my_gimbal.yaw_ang = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
         chassis_mode_forward();
     }
     else if (motion_mode == HORIZONTAL && rc->swr != RC_SWITCH_MI) {
         chassis_stop();
-        get_motor_data(my_gimbal.pitch->motor);
         if (rc->swr == RC_SWITCH_UP) {
             motion_mode = NORMAL;
-            yaw_ramp_ctl(&my_gimbal, get_angle_err(my_gimbal.yaw->motor, 
-                        NORMAL_MIDDLE_YAW), 100);
+            for (size_t i = 0; i < 30; i++) {
+                gimbal_set_yaw_angle(&my_gimbal, NORMAL_MIDDLE_YAW);
+                osDelay(MOTION_CYCLE);
+            }
             my_gimbal.yaw_middle = NORMAL_MIDDLE_YAW;
         }
         else {
             motion_mode = REVERSE;
-            yaw_ramp_ctl(&my_gimbal, get_angle_err(my_gimbal.yaw->motor, 
-                        REVERSE_MIDDLE_YAW), 100);
+            for (size_t i = 0; i < 30; i++) {
+                gimbal_set_yaw_angle(&my_gimbal, REVERSE_MIDDLE_YAW);
+                osDelay(MOTION_CYCLE);
+            }
             my_gimbal.yaw_middle = REVERSE_MIDDLE_YAW;
         }
+        my_gimbal.yaw_ang = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
         chassis_mode_forward();
     }
 }
