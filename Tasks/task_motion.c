@@ -58,7 +58,7 @@ void chassis_task(void const *argu) {
     while (1) {
         gimbal_update(&my_gimbal);
         cur_yaw_feedback = get_motor_angle(my_gimbal.yaw->motor);
-        yaw_astray = cur_yaw_feedback - my_gimbal.yaw_middle; // how far
+        yaw_astray = cur_yaw_feedback - INIT_MIDDLE_YAW; // how far
         yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // TODO: replace the following three 0s with yaw_astray_in_rad
 #ifdef USE_REMOTE
@@ -70,13 +70,45 @@ void chassis_task(void const *argu) {
 #endif
 #ifndef ENGINEERING
         if (evasion_mode)
+#else
+        if (evasion_mode && motion_mode == HORIZONTAL)
+#endif
             evasive_move(my_chassis, cur_yaw_feedback, my_gimbal.yaw->motor);
         else
-#endif
             adjust_chassis_gimbal_pos(my_chassis, my_gimbal.yaw_middle, my_gimbal.yaw->motor);
 
         run_chassis(my_chassis);
         osDelayUntil(&chassis_wake_time, MOTION_CYCLE);
+    }
+}
+
+static void engineering_mode_switch(dbus_t *rc) {
+    if (motion_mode != HORIZONTAL && rc->swr == RC_SWITCH_MI) {
+        chassis_stop();
+        motion_mode = HORIZONTAL;
+        get_motor_data(my_gimbal.pitch->motor);
+        yaw_ramp_ctl(&my_gimbal, get_angle_err(my_gimbal.yaw->motor, 
+                    HORIZONTAL_MIDDLE_YAW), 100);
+        my_gimbal.yaw_middle = HORIZONTAL_MIDDLE_YAW;
+        osDelay(200);
+        chassis_mode_forward();
+    }
+    else if (motion_mode == HORIZONTAL && rc->swr != RC_SWITCH_MI) {
+        chassis_stop();
+        get_motor_data(my_gimbal.pitch->motor);
+        if (rc->swr == RC_SWITCH_UP) {
+            motion_mode = NORMAL;
+            yaw_ramp_ctl(&my_gimbal, get_angle_err(my_gimbal.yaw->motor, 
+                        NORMAL_MIDDLE_YAW), 100);
+            my_gimbal.yaw_middle = NORMAL_MIDDLE_YAW;
+        }
+        else {
+            motion_mode = REVERSE;
+            yaw_ramp_ctl(&my_gimbal, get_angle_err(my_gimbal.yaw->motor, 
+                        REVERSE_MIDDLE_YAW), 100);
+            my_gimbal.yaw_middle = REVERSE_MIDDLE_YAW;
+        }
+        chassis_mode_forward();
     }
 }
 
@@ -89,25 +121,17 @@ void gimbal_task(void const *argu) {
     while (1) {
         gimbal_update(&my_gimbal);
         yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle;
+
 #ifdef ENGINEERING
-        if (motion_mode == NORMAL && rc->swr == RC_SWITCH_UP) {
-            chassis_stop();
-            motion_mode = REVERSE;
-            yaw_ramp_ctl(&my_gimbal, -4096, 100);
-            my_gimbal.yaw_middle = REVERSE_MIDDLE_YAW;
-            chassis_mode_backward();
-        }
-        else if (motion_mode == REVERSE && rc->swr == RC_SWITCH_MI) {
-            chassis_stop();
-            motion_mode = NORMAL;
-            yaw_ramp_ctl(&my_gimbal, 4096, 100);
-            my_gimbal.yaw_middle = NORMAL_MIDDLE_YAW;
-            chassis_mode_forward();
-        }
-        observed_absolute_gimbal_yaw = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
-#else
-        observed_absolute_gimbal_yaw = (int32_t)(yaw_astray) + (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
+        engineering_mode_switch(rc);
+        if (rc->swl == RC_SWITCH_UP) 
+            HAL_GPIO_WritePin(MAGNET_GPIO_Port, MAGNET_Pin, GPIO_PIN_SET);
+        else
+            HAL_GPIO_WritePin(MAGNET_GPIO_Port, MAGNET_Pin, GPIO_PIN_RESET);
+        
 #endif
+
+        observed_absolute_gimbal_yaw = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
 #ifdef USE_REMOTE
         gimbal_remote_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
 #else

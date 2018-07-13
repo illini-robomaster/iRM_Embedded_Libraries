@@ -99,7 +99,11 @@ void evasive_move(pid_ctl_t *my_chassis[4], int16_t cur_yaw_feedback, motor_t *y
     if(abs(cur_yaw_feedback - EVASIVE_RIGHTMOST_YAW) < EVASIVE_DEADBAND) {
         evasive_tar_cnt = 0;
     }
+
+    /* adjust maximum turning speed for evasive mode */
+    chassis_rotate.maxout = EVASIVE_TURN_SPEED;
     adjust_chassis_gimbal_pos(my_chassis, evasive_tar[evasive_tar_cnt], yaw_motor);
+    chassis_rotate.maxout = MAX_TURN_SPEED;
 }
 
 void adjust_chassis_gimbal_pos(pid_ctl_t *my_chassis[4], int16_t desired_yaw_angle, motor_t *yaw_motor) {

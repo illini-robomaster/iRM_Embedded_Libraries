@@ -40,6 +40,7 @@ extern pid_ctl_t* my_chassis[4];
 
 typedef enum {
     NORMAL,
+    HORIZONTAL,
     REVERSE,
 }   motion_mode_t;
 

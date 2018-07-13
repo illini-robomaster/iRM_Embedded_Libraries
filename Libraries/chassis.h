@@ -35,9 +35,7 @@
 #define RR_MOTOR_CANID 0x204
 
 #define EVASIVE_DEADBAND 400
-#define YAW_DEADBAND     50 // 22 ~ 1 deg
-
-#define TURNING_SPEED   700
+#define YAW_DEADBAND     20 // 22 ~ 1 deg
 
 typedef enum{
     CHASSIS_FL = 0,
