@@ -29,13 +29,16 @@
 osThreadId      test_task_handle;
 
 void test_task_create(void) {
-    osThreadDef(testTask, test_task, osPriorityAboveNormal, 0, 512);
+    osThreadDef(testTask, test_task, osPriorityNormal, 0, 512);
     test_task_handle = osThreadCreate(osThread(testTask), NULL);
     if (test_task_handle == NULL)
         bsp_error_handler(__FUNCTION__, __LINE__, "test task create failed.");
 }
 
 void test_task(void const *argu) {
-    run_all_tests();
+    while (1) {
+        run_all_tests();
+        osDelay(1000000);
+    }
 }
 
