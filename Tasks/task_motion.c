@@ -82,7 +82,8 @@ void chassis_task(void const *argu) {
     }
 }
 
-static void engineering_mode_switch(dbus_t *rc) {
+static uint8_t engineering_mode_switch(dbus_t *rc) {
+#ifdef ENGINEERING
     if (motion_mode != HORIZONTAL && rc->swr == RC_SWITCH_MI) {
         chassis_stop();
         motion_mode = HORIZONTAL;
@@ -93,6 +94,7 @@ static void engineering_mode_switch(dbus_t *rc) {
         my_gimbal.yaw_middle = HORIZONTAL_MIDDLE_YAW;
         my_gimbal.yaw_ang = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
         chassis_mode_forward();
+        return 1;
     }
     else if (motion_mode == HORIZONTAL && rc->swr != RC_SWITCH_MI) {
         chassis_stop();
@@ -114,7 +116,10 @@ static void engineering_mode_switch(dbus_t *rc) {
         }
         my_gimbal.yaw_ang = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
         chassis_mode_forward();
+        return 1;
     }
+#endif
+    return 0;
 }
 
 void gimbal_task(void const *argu) {
@@ -128,7 +133,8 @@ void gimbal_task(void const *argu) {
         yaw_astray = get_motor_angle(my_gimbal.yaw->motor) - my_gimbal.yaw_middle;
 
 #ifdef ENGINEERING
-        engineering_mode_switch(rc);
+        if (engineering_mode_switch(rc))
+            gimbal_wake_time = osKernelSysTick();
         if (rc->swl == RC_SWITCH_UP) 
             HAL_GPIO_WritePin(MAGNET_GPIO_Port, MAGNET_Pin, GPIO_PIN_SET);
         else

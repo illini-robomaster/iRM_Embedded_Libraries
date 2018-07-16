@@ -22,7 +22,7 @@
 void test_motor() {
     // motor_feedback();
     // test_motor_3508(0);
-    // test_motor_6623(0);
+    test_motor_6623(0);
     // test_motor_2006(0);
     // test_motor_3510(0);
     // test_motor_2305();
@@ -62,7 +62,7 @@ void test_motor_6623(uint8_t rotate) {
     motor_t motor;
     size_t i;
 
-    can_motor_init(&motor, 0x20A, CAN1_ID, M6623);
+    can_motor_init(&motor, 0x209, CAN1_ID, M6623);
     motor.out = 400;
 
     if (rotate)
@@ -120,8 +120,8 @@ void test_motor_2305(void) {
     pwm_t   pwm1, pwm2;
     motor_t motor1, motor2;
 
-    pwm_init(&pwm1, &htim12, 1);
-    pwm_init(&pwm2, &htim12, 2);
+    pwm_init(&pwm1, &htim4, 1);
+    pwm_init(&pwm2, &htim4, 2);
     pwm_motor_init(&motor1, M2305, &pwm1, 1000);
     pwm_motor_init(&motor2, M2305, &pwm2, 1000);
 

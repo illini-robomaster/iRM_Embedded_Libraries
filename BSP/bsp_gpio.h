@@ -41,4 +41,6 @@
 
 /** @} */
 
+void poker_stop_callback(void);
+
 #endif

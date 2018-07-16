@@ -29,7 +29,7 @@ void test_pid() {
     // test_poke();
     // test_shoot();
     // test_pitch();
-    // test_yaw();
+    test_yaw();
     // test_pid_2006();
     // test_pid_3508();
 }
@@ -77,19 +77,28 @@ void test_pitch() {
     /* TODO: needs to be re-tuned with camera load on */
     pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 0, 0, 4, 0, 8, 8000, 0);
 #elif defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
-    low_lim = 5200;
-    high_lim = 6800;
+    low_lim = 6000;
+    high_lim = 7300;
     can_motor_init(&motor, 0x20A, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 0, 800, 4, 0.03, 15, 1800, 0);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, low_lim, high_lim, 0, 0, 0, 6, 0.13, 18, 2500, 0);
 #endif
 
-    int target_val_1 = 6800;
-    int target_val_2 = 5200;
     int target_val;
     uint32_t pid_pitch_time = osKernelSysTick();
     while (1) {
-        for (target_val = low_lim; target_val < high_lim; target_val += 400) {
-            for (i = 0; i < 100; i++) {
+        for (target_val = low_lim; target_val < high_lim; target_val += 200) {
+            for (i = 0; i < 40; i++) {
+                motor.out = pid_calc(&pid, target_val);
+#ifdef ENGINEERING
+                set_can_motor_output(&motor, NULL, NULL, NULL);
+#else
+                set_can_motor_output(NULL, &motor, NULL, NULL);
+#endif
+                osDelayUntil(&pid_pitch_time, 20);
+            }
+        }
+        for (target_val = high_lim; target_val > low_lim; target_val -= 200) {
+            for (i = 0; i < 40; i++) {
                 motor.out = pid_calc(&pid, target_val);
 #ifdef ENGINEERING
                 set_can_motor_output(&motor, NULL, NULL, NULL);
@@ -110,7 +119,7 @@ void test_yaw() {
 
 #if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     can_motor_init(&motor, 0x209, CAN1_ID, M6623);
-    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 0, 0, 0, 20, 0, 80, 4500, 0);
+    pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 5200, 6800, 0, 0, 0, 10, 0, 30, 4500, 0);
 #elif defined(ENGINEERING)
     can_motor_init(&motor, 0x209, CAN1_ID, M6623);
     pid_init(&pid, GIMBAL_MAN_SHOOT, &motor, 0, 0, 0, 0, 600, 7, 0, 32, 3500, 0);

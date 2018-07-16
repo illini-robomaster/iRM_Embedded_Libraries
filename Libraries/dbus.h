@@ -46,7 +46,7 @@ typedef enum {
     RC_ROCKER_MIN = 364,
     RC_ROCKER_MID = 1024,
     RC_ROCKER_MAX = 1684,
-    RC_ROCKER_ZERO_DRIFT = 5,   // Range of possible drift around initial position
+    RC_ROCKER_ZERO_DRIFT = 10,   // Range of possible drift around initial position
     RC_ROCKER_MIN_MAX_DRIFT = RC_ROCKER_MAX - RC_ROCKER_MID + 10,   // Range of possible drift around min or max position
 } dbus_rc_rocker_t;
 

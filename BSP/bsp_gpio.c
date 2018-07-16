@@ -35,5 +35,9 @@
  * @date   2018-05-27
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+
+#ifdef POKER_IT_Pin
+    /* TODO: handle poker interrupt */
+#endif
     /* TODO: handle gpio interrupts */
 }
