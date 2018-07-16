@@ -32,7 +32,7 @@ static flywhl_t* can_flywhl_init(flywhl_t *can_flywhl) {
 static pid_ctl_t* poker_init(pid_ctl_t* poker) {
     motor_t *m_poker = can_motor_init(NULL, POKER_ID, POKER_CAN, POKER_TYPE);
 
-    poker = pid_init(poker, POKE, m_poker, -5000, 0, 30000, 0, 0, 3, 0.8, 0, 9000, 0);
+    poker = pid_init(poker, POKE, m_poker, -5000, 0, 30000, 0, 0, 6.5, 0, 0, 9000, 0);
 
     return poker;
 }

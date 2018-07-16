@@ -105,7 +105,7 @@ extern inline void RM_RTOS_THREADS_Init(void) {
     test_task_create();
 #else
     /* TODO: shoot task to be tested */
-    // shoot_task_create();
+    shoot_task_create();
     motion_task_create();
 #endif
 }
