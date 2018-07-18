@@ -1,5 +1,5 @@
 /**************************************************************************
- *  Copyright (C) 2018 
+ *  Copyright (C) 2018
  *  Illini RoboMaster @ University of Illinois at Urbana-Champaign.
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
  *************************************************************************/
 
 #include "task_motion.h"
-#include "bsp_power.h"
 
 osThreadId chassis_task_handle;
 osThreadId gimbal_task_handle;
@@ -25,6 +24,18 @@ osThreadId gimbal_task_handle;
 gimbal_t        my_gimbal;
 pid_ctl_t       *my_chassis[4];
 motion_mode_t   motion_mode = NORMAL;
+
+int power_ctl_curve(float cur_power) {
+    //return MAX_LINEAR_SPEED;
+    if (cur_power < 45)
+        return 3500;
+    if (cur_power < 50)
+        return 3400;
+    if (cur_power < 60)
+        return 3300;
+    else
+        return 3000;
+}
 
 void motion_task_create(void) {
     gimbal_init(&my_gimbal);
@@ -63,22 +74,33 @@ void chassis_task(void const *argu) {
     uint8_t evasion_mode = 0;
     uint32_t chassis_wake_time = osKernelSysTick();
     while (1) {
+        print("Current: %.3f", get_current());
+        print("Voltage: %.3f", get_volt());
         gimbal_update(&my_gimbal);
         cur_yaw_feedback = get_motor_angle(my_gimbal.yaw->motor);
         yaw_astray = cur_yaw_feedback - INIT_MIDDLE_YAW; // how far
         yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // TODO: replace the following three 0s with yaw_astray_in_rad
+#ifdef ENGINEERING
+        int maximum_speed = MAX_LINEAR_SPEED;
+#else
+        //int maximum_speed = power_ctl_curve(get_power());
+        int maximum_speed = power_ctl_curve(referee_info.power_heat_data.chassis_power);
+#endif
 #ifdef USE_REMOTE
-        calc_remote_move(my_chassis, rc, yaw_astray_in_rad);
+        calc_remote_move(my_chassis, rc, yaw_astray_in_rad, maximum_speed);
         evasion_mode = (rc->swl == RC_SWITCH_UP);
 #else
-        calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad);
-        evasion_mode = rc->key.bit.X;
+        calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad, maximum_speed);
+        if (rc->key.bit.F)
+            evasion_mode = 1;
+        if (rc->key.bit.G)
+            evasion_mode = 0;
 #endif
-#ifndef ENGINEERING
-        if (evasion_mode)
-#else
+#ifdef ENGINEERING
         if (evasion_mode && motion_mode == HORIZONTAL)
+#else
+        if (evasion_mode)
 #endif
             evasive_move(my_chassis, cur_yaw_feedback, my_gimbal.yaw->motor);
         else
@@ -144,11 +166,11 @@ void gimbal_task(void const *argu) {
 #ifdef ENGINEERING
         if (engineering_mode_switch(rc))
             gimbal_wake_time = osKernelSysTick();
-        if (rc->swl == RC_SWITCH_UP) 
+        if (rc->swl == RC_SWITCH_UP)
             HAL_GPIO_WritePin(MAGNET_GPIO_Port, MAGNET_Pin, GPIO_PIN_SET);
         else
             HAL_GPIO_WritePin(MAGNET_GPIO_Port, MAGNET_Pin, GPIO_PIN_RESET);
-        
+
 #endif
 
         observed_absolute_gimbal_yaw = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);

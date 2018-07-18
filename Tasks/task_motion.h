@@ -1,5 +1,5 @@
 /**************************************************************************
- *  Copyright (C) 2018 
+ *  Copyright (C) 2018
  *  Illini RoboMaster @ University of Illinois at Urbana-Champaign.
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -27,6 +27,8 @@
 #include "chassis.h"
 #include "gimbal.h"
 #include "imu_onboard.h"
+#include "referee.h"
+#include "bsp_power.h"
 /* End User Include */
 
 #define MOTION_CYCLE 20
@@ -43,6 +45,8 @@ typedef enum {
     HORIZONTAL,
     REVERSE,
 }   motion_mode_t;
+
+int power_ctl_curve(float cur_power);
 
 /**
  * get current yaw angle for gimbal

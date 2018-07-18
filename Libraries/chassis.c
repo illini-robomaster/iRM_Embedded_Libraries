@@ -1,5 +1,5 @@
 /**************************************************************************
- *  Copyright (C) 2018 
+ *  Copyright (C) 2018
  *  Illini RoboMaster @ University of Illinois at Urbana-Champaign.
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -61,7 +61,7 @@ void chassis_init(pid_ctl_t *my_chassis[4]){
                 0, 0, 0, ROTATE_KP, 0, 0, MAX_TURN_SPEED, YAW_DEADBAND);
 }
 
-void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
+void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed) {
     // counterclockwise: positive
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = 0;
@@ -71,21 +71,21 @@ void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
     if (rc->key.bit.A) v_x -= 1;
     if (rc->key.bit.D) v_x += 1;
     // rotation; change of basis matrix.
-    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_LINEAR_SPEED;
-    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_LINEAR_SPEED;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * max_speed;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * max_speed;
     my_chassis[CHASSIS_FL]->motor->target = direction * target_x;
     my_chassis[CHASSIS_RR]->motor->target = direction * (-target_x); // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = direction * target_y;
     my_chassis[CHASSIS_FR]->motor->target = direction * (-target_y);
 }
 
-void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle) {
+void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed) {
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = rc->ch1 * 1.0 / 660;
     float v_x = rc->ch0 * 1.0 / 660;
     // rotation; change of basis matrix.
-    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_LINEAR_SPEED;
-    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_LINEAR_SPEED;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * max_speed;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * max_speed;
     my_chassis[CHASSIS_FL]->motor->target = direction * target_x;
     my_chassis[CHASSIS_RR]->motor->target = direction * (-target_x); // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = direction * target_y;

@@ -1,5 +1,5 @@
 /**************************************************************************
- *  Copyright (C) 2018 
+ *  Copyright (C) 2018
  *  Illini RoboMaster @ University of Illinois at Urbana-Champaign.
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ void chassis_init(pid_ctl_t *my_chassis[4]);
  * @param rc         dbus struct; for getting remote controller data
  * @param yaw_angle  Counterclockwise is positive. In radian. How far is gimbal deviate from chassis
  */
-void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
+void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed);
 
 /**
  * @brief calculate chassis move based on remote controller
@@ -66,7 +66,7 @@ void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
  * @param rc         dbus struct; for getting remote controller data
  * @param yaw_angle  angle of gimabl deviated from chassis, in radian. (counter colockwise is positive)
  */
-void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle);
+void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed);
 
 /**
  * Makes chassis roate based on yaw motor feedback
