@@ -43,4 +43,6 @@ void flywhl_off(shooter_t *shooter);
 
 void poker_set_speed(shooter_t *shooter, int32_t speed);
 
+void poker_run(shooter_t *shooter);
+
 #endif

@@ -1,5 +1,6 @@
 #include "task_shoot.h"
 #include "dbus.h"
+#include "referee.h"
 
 static osEvent      shoot_event;
 
@@ -12,10 +13,11 @@ void shoot_task_create(void) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Shoot task failed to create.");
 }
 
+/* TODO: Poker API changes, require poker_run, to be fixed */
 static void keyboard_shoot(shooter_t *my_shooter, dbus_t *rc) {
-    if (rc->key.bit.Z)
+    if (rc->key.bit.C)
         flywhl_on(my_shooter);
-    if (rc->key.bit.X)
+    if (rc->key.bit.V)
         flywhl_off(my_shooter);
     if (rc->mouse.l && my_shooter->flywhl->state == FLYWHL_ON) {
 #ifdef POKER_IT_Pin
@@ -41,8 +43,8 @@ static void keyboard_shoot(shooter_t *my_shooter, dbus_t *rc) {
 static void remote_shoot(shooter_t *my_shooter, dbus_t *rc) {
     if (rc->swr != RC_SWITCH_DN) {
         flywhl_on(my_shooter);
-        if (rc->swr == RC_SWITCH_UP)
-            poker_set_speed(my_shooter, -1600);
+        if (rc->swr == RC_SWITCH_UP && referee_info.power_heat_data.barrel_heat_17 < 40)
+            my_shooter->poker->motor->out = -7000;
         else
             poker_set_speed(my_shooter, 0);
     }
@@ -51,6 +53,7 @@ static void remote_shoot(shooter_t *my_shooter, dbus_t *rc) {
         poker_set_speed(my_shooter, 0);
         my_shooter->poker->integrator = 0;
     }
+    poker_run(my_shooter);
     osDelay(20);
 }
 

@@ -51,6 +51,8 @@ float get_gimbal_yaw_angle(motor_t *gimbal_motor) {
 void chassis_task(void const *argu) {
     print("CHASSIS TASK STARTED\r\n");
     dbus_t *rc = dbus_get_struct();
+    osDelay(5000);
+
     float yaw_astray_in_rad;
     int16_t yaw_astray, cur_yaw_feedback;
     uint8_t evasion_mode = 0;
@@ -125,6 +127,8 @@ static uint8_t engineering_mode_switch(dbus_t *rc) {
 void gimbal_task(void const *argu) {
     print("GIMBAL TASK STARTED\r\n");
     dbus_t *rc = dbus_get_struct();
+    osDelay(2000);
+
     int16_t yaw_astray;
     int32_t observed_absolute_gimbal_yaw;
     uint32_t gimbal_wake_time = osKernelSysTick();

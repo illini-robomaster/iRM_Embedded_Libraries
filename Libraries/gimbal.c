@@ -40,7 +40,7 @@ void gimbal_init(gimbal_t *my_gimbal) {
     my_gimbal->pitch_ang = INIT_MIDDLE_PITCH;
 #ifdef ENGINEERING
     pitch = can_motor_init(NULL, 0x205, CAN1_ID, M3510);
-    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 0, 0, 0, 4, 0, 8, 8000, 0);
+    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 0, 0, 0, 6, 0, 10, 8000, 0);
 #elif defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     pitch = can_motor_init(NULL, 0x20A, CAN1_ID, M6623);
     my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 0, 0, 0, 6, 0.13, 18, 2500, 0);

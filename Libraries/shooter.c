@@ -89,8 +89,7 @@ void flywhl_off(shooter_t *shooter) {
     flywhl_set_output(shooter, 0);
 }
 
-void poker_set_speed(shooter_t *shooter, int32_t speed) {
-    shooter->poker->motor->out = pid_calc(shooter->poker, speed);
+void poker_run(shooter_t *shooter) {
     switch (shooter->type) {
         case CAN:
             /* TODO: Not yet implemente */
@@ -102,6 +101,10 @@ void poker_set_speed(shooter_t *shooter, int32_t speed) {
             bsp_error_handler(__FUNCTION__, __LINE__, "flywheel type not supported");
             break;
     }
+}
+
+void poker_set_speed(shooter_t *shooter, int32_t speed) {
+    shooter->poker->motor->out = pid_calc(shooter->poker, speed);
 }
 
 #endif
