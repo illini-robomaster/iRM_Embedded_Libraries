@@ -18,9 +18,13 @@
 
 #include "test_bsp_power.h"
 #include "cmsis_os.h"
+#include "referee.h"
 
 void test_bsp_power(void) {
     power_module_init(10, 18, -0.14);
+    osDelay(5000);
+    power_module_calibrate(referee_info.power_heat_data.chassis_volt,
+                           referee_info.power_heat_data.chassis_current);
     while (1) {
         print("voltage: %.3f current %.3f\r\n",
                 get_volt(), get_current());

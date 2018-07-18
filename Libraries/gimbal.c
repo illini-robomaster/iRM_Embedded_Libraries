@@ -28,7 +28,7 @@ void gimbal_init(gimbal_t *my_gimbal) {
     my_gimbal->yaw_ang      = 0;
 #if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     yaw = can_motor_init(NULL, 0x209, CAN1_ID, M6623);
-    my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 5200, 7700, 8000, 0, 0, 11, 0.1, 60, 4800, 0);
+    my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 5200, 7700, 8000, 0, 0, 12, 0, 64, 4800, 0);
 #elif defined(ENGINEERING)
     yaw = can_motor_init(NULL, 0x209, CAN1_ID, M6623);
     my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 0, 0, 0, 0, 0, 4.2, 0, 35, 2500, 0);
