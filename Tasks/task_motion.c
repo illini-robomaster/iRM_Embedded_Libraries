@@ -17,6 +17,7 @@
  *************************************************************************/
 
 #include "task_motion.h"
+#include "bsp_power.h"
 
 osThreadId chassis_task_handle;
 osThreadId gimbal_task_handle;
@@ -51,7 +52,11 @@ float get_gimbal_yaw_angle(motor_t *gimbal_motor) {
 void chassis_task(void const *argu) {
     print("CHASSIS TASK STARTED\r\n");
     dbus_t *rc = dbus_get_struct();
+    /* power module init */
+    power_module_init(10, 18, 0);
     osDelay(5000);
+    power_module_calibrate(referee_info.power_heat_data.chassis_volt,
+                           referee_info.power_heat_data.chassis_current);
 
     float yaw_astray_in_rad;
     int16_t yaw_astray, cur_yaw_feedback;
