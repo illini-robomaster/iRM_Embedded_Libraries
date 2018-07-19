@@ -43,8 +43,8 @@ static void keyboard_shoot(shooter_t *my_shooter, dbus_t *rc) {
 static void remote_shoot(shooter_t *my_shooter, dbus_t *rc) {
     if (rc->swr != RC_SWITCH_DN) {
         flywhl_on(my_shooter);
-        if (rc->swr == RC_SWITCH_UP && referee_info.power_heat_data.barrel_heat_17 < 40)
-            my_shooter->poker->motor->out = -7000;
+        if (rc->swr == RC_SWITCH_UP && referee_info.power_heat_data.barrel_heat_17 < 10)
+            my_shooter->poker->motor->out = -7500;
         else
             poker_set_speed(my_shooter, 0);
     }
@@ -54,7 +54,7 @@ static void remote_shoot(shooter_t *my_shooter, dbus_t *rc) {
         my_shooter->poker->integrator = 0;
     }
     poker_run(my_shooter);
-    osDelay(20);
+    osDelay(5);
 }
 
 void shoot_task(void const *argu) {
