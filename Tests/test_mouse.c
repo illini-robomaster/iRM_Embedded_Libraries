@@ -1,5 +1,5 @@
 /**************************************************************************
- *  Copyright (C) 2018 
+ *  Copyright (C) 2018
  *  Illini RoboMaster @ University of Illinois at Urbana-Champaign.
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -71,9 +71,9 @@ static void init_shoot(motor_t *m_fy_left, motor_t *m_fy_right, motor_t *m_poke,
     can_motor_init(m_poke, 0x208, CAN1_ID, M3508);
     can_motor_init(m_fy_left, 0x205, CAN1_ID, M3508);
     can_motor_init(m_fy_right, 0x206, CAN1_ID, M3508);
-    pid_init(pid_poke, POKE, m_poke, -2000, 0, 80000, 0, 0, 14, 2.3, 0, 10000, 5, 0);
-    pid_init(pid_fy_left, FLYWHEEL, m_fy_left, -9000, 0, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
-    pid_init(pid_fy_right, FLYWHEEL, m_fy_right, 0, 9000, 0, 0, 0, 22, 0, 0, 3000, 5, 0);
+    pid_init(pid_poke, POKE, m_poke, -2000, 0, 80000, 0, 0, 14, 2.3, 0, 10000, 0);
+    pid_init(pid_fy_left, FLYWHEEL, m_fy_left, -9000, 0, 0, 0, 0, 22, 0, 0, 3000, 0);
+    pid_init(pid_fy_right, FLYWHEEL, m_fy_right, 0, 9000, 0, 0, 0, 22, 0, 0, 3000, 0);
 #endif
 }
 

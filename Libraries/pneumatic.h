@@ -16,18 +16,28 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  *************************************************************************/
 
-#ifndef BSP_PNEUMATIC_H_
-#define BSP_PNEUMATIC_H_
+#ifndef PNEUMATIC_H_
+#define PNEUMATIC_H_
 
 #ifdef HERO
 
-#include "stm32f4xx_hal.h"
-#include "bsp_error_handler.h"
-#include "main.h"
+#include "bsp_pneumatic.h"
 
-void pneumatic_extend(GPIO_TypeDef* gpio_port_, uint16_t gpio_pin_);
+void grabber_grab(void);
 
-void pneumatic_reset(GPIO_TypeDef* gpio_port_, uint16_t gpio_pin_);
+void grabber_release(void);
+
+void extend_grabber_mechanics(void);
+
+void reset_grabber_mechanics(void);
+
+void front_legs_extend(void);
+
+void front_legs_reset(void);
+
+void rear_legs_extend(void);
+
+void rear_legs_reset(void);
 
 #endif
 
