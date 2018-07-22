@@ -104,13 +104,10 @@ extern inline void RM_RTOS_THREADS_Init(void) {
 #ifdef TEST
     test_task_create();
 #else
-    #ifndef HERO
-    /* TODO: shoot task to be tested */
-    #ifndef ENGINEERING
+    #if !defined(ENGINEERING) && !defined(HERO)
     shoot_task_create();
     #endif
     motion_task_create();
-    #endif
 #endif
 }
 
