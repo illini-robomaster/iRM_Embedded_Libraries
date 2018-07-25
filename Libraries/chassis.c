@@ -61,35 +61,95 @@ void chassis_init(pid_ctl_t *my_chassis[4]){
                 0, 0, 0, ROTATE_KP, 0, 0, MAX_TURN_SPEED, YAW_DEADBAND);
 }
 
-void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed) {
+void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, float *prev_vx, float *prev_vy) {
     // counterclockwise: positive
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = 0;
     float v_x = 0;
+
     if (rc->key.bit.W) v_y += 1;
     if (rc->key.bit.S) v_y -= 1;
     if (rc->key.bit.A) v_x -= 1;
     if (rc->key.bit.D) v_x += 1;
+#if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
+    if (sign(v_y) * sign(*prev_vy) == -1)
+        v_y = 0;
+    /*
+    else if (fabs(v_y) > 0.2 && fabs(*prev_vy) < 0.2)
+        v_y = sign(v_y) * 0.2;
+        */
+    else if (fabs(v_y) - fabs(*prev_vy) >= 0.01) {
+        if (referee_info.power_heat_data.chassis_power <= 50)
+            v_y = *prev_vy + sign(v_y - *prev_vy) * 0.01;
+        else if (referee_info.power_heat_data.chassis_power >= 70)
+            v_y = *prev_vy - sign(v_y - *prev_vy) * 0.01;
+        else
+            v_y = *prev_vy;
+    }
+
+    if (sign(v_x) * sign(*prev_vx) == -1)
+        v_x = 0;
+    /*
+    else if (fabs(v_x) > 0.1 && fabs(*prev_vx) < 0.1)
+        v_x = sign(v_x) * 0.1;
+        */
+    else if (fabs(v_x) - fabs(*prev_vx) >= 0.007) {
+        if (referee_info.power_heat_data.chassis_power <= 50)
+            v_x = *prev_vx + sign(v_x - *prev_vx) * 0.007;
+        else if (referee_info.power_heat_data.chassis_power >= 70)
+            v_x = *prev_vx - sign(v_x - *prev_vx) * 0.007;
+        else
+            v_x = *prev_vx;
+    }
+#endif
+
     // rotation; change of basis matrix.
-    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * max_speed;
-    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * max_speed;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_LINEAR_SPEED;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_LINEAR_SPEED;
     my_chassis[CHASSIS_FL]->motor->target = direction * target_x;
     my_chassis[CHASSIS_RR]->motor->target = direction * (-target_x); // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = direction * target_y;
     my_chassis[CHASSIS_FR]->motor->target = direction * (-target_y);
+    *prev_vx = v_x;
+    *prev_vy = v_y;
 }
 
-void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed) {
+void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, float *prev_vx, float *prev_vy) {
     yaw_angle = -yaw_angle + Q_PI;
     float v_y = rc->ch1 * 1.0 / 660;
     float v_x = rc->ch0 * 1.0 / 660;
+#if defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
+    if (sign(v_y) * sign(*prev_vy) == -1)
+        v_y = 0;
+    else if (fabs(v_y) - fabs(*prev_vy) >= 0.007) {
+        if (referee_info.power_heat_data.chassis_power <= 45)
+            v_y = *prev_vy + sign(v_y - *prev_vy) * 0.007;
+        else if (referee_info.power_heat_data.chassis_power >= 70)
+            v_y = *prev_vy - sign(v_y - *prev_vy) * 0.007;
+        else
+            v_y = *prev_vy;
+    }
+
+    if (sign(v_x) * sign(*prev_vx) == -1)
+        v_x = 0;
+    else if (fabs(v_x) - fabs(*prev_vx) >= 0.007) {
+        if (referee_info.power_heat_data.chassis_power <= 45)
+            v_x = *prev_vx + sign(v_x - *prev_vx) * 0.007;
+        else if (referee_info.power_heat_data.chassis_power >= 70)
+            v_x = *prev_vx - sign(v_x - *prev_vx) * 0.007;
+        else
+            v_x = *prev_vx;
+    }
+#endif
     // rotation; change of basis matrix.
-    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * max_speed;
-    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * max_speed;
+    float target_x = (v_x * cos(yaw_angle) + v_y * sin(yaw_angle)) * MAX_LINEAR_SPEED;
+    float target_y = (-v_x * sin(yaw_angle) + v_y * cos(yaw_angle)) * MAX_LINEAR_SPEED;
     my_chassis[CHASSIS_FL]->motor->target = direction * target_x;
     my_chassis[CHASSIS_RR]->motor->target = direction * (-target_x); // velocity is the same. It's just these two motors are installed in opposite direction.
     my_chassis[CHASSIS_RL]->motor->target = direction * target_y;
     my_chassis[CHASSIS_FR]->motor->target = direction * (-target_y);
+    *prev_vx = v_x;
+    *prev_vy = v_y;
 }
 
 void evasive_move(pid_ctl_t *my_chassis[4], int16_t cur_yaw_feedback, motor_t *yaw_motor) {

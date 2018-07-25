@@ -65,7 +65,7 @@ void chassis_task(void const *argu) {
     dbus_t *rc = dbus_get_struct();
     /* power module init */
     power_module_init(10, 18, 0);
-    osDelay(5000);
+    osDelay(3000);
     power_module_calibrate(referee_info.power_heat_data.chassis_volt,
                            referee_info.power_heat_data.chassis_current);
 
@@ -73,30 +73,27 @@ void chassis_task(void const *argu) {
     int16_t yaw_astray, cur_yaw_feedback;
     uint8_t evasion_mode = 0;
     uint32_t chassis_wake_time = osKernelSysTick();
+    int maximum_speed;
+    float prev_vx = 0;
+    float prev_vy = 0;
+
     while (1) {
-        print("Current: %.3f", get_current());
-        print("Voltage: %.3f", get_volt());
         gimbal_update(&my_gimbal);
         cur_yaw_feedback = get_motor_angle(my_gimbal.yaw->motor);
         yaw_astray = cur_yaw_feedback - INIT_MIDDLE_YAW; // how far
         yaw_astray_in_rad = yaw_astray * MOTOR_2_RAD;
         // TODO: replace the following three 0s with yaw_astray_in_rad
-#ifdef ENGINEERING
-        int maximum_speed = MAX_LINEAR_SPEED;
-#else
-        //int maximum_speed = power_ctl_curve(get_power());
-        int maximum_speed = power_ctl_curve(referee_info.power_heat_data.chassis_power);
-#endif
-#ifdef USE_REMOTE
-        calc_remote_move(my_chassis, rc, yaw_astray_in_rad, maximum_speed);
-        evasion_mode = (rc->swl == RC_SWITCH_UP);
-#else
-        calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad, maximum_speed);
-        if (rc->key.bit.F)
-            evasion_mode = 1;
-        if (rc->key.bit.G)
-            evasion_mode = 0;
-#endif
+        if (rc->swr != RC_SWITCH_DN) {
+            evasion_mode = (rc->swl == RC_SWITCH_UP);
+            calc_remote_move(my_chassis, rc, yaw_astray_in_rad, &prev_vx, &prev_vy);
+        }
+        else {
+            if (rc->key.bit.F)
+                evasion_mode = 1;
+            if (rc->key.bit.G)
+                evasion_mode = 0;
+            calc_keyboard_move(my_chassis, rc, yaw_astray_in_rad, &prev_vx, &prev_vy);
+        }
 #ifdef ENGINEERING
         if (evasion_mode && motion_mode == HORIZONTAL)
 #else
@@ -154,7 +151,7 @@ static uint8_t engineering_mode_switch(dbus_t *rc) {
 void gimbal_task(void const *argu) {
     print("GIMBAL TASK STARTED\r\n");
     dbus_t *rc = dbus_get_struct();
-    osDelay(2000);
+    osDelay(1000);
 
     int16_t yaw_astray;
     int32_t observed_absolute_gimbal_yaw;
@@ -174,11 +171,11 @@ void gimbal_task(void const *argu) {
 #endif
 
         observed_absolute_gimbal_yaw = (int32_t)(imuBoard.angle[YAW] * DEG_2_MOTOR);
-#ifdef USE_REMOTE
-        gimbal_remote_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
-#else
-        gimbal_mouse_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
-#endif
+        if (rc->swr != RC_SWITCH_DN)
+            gimbal_remote_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
+        else
+            gimbal_mouse_move(&my_gimbal, rc, observed_absolute_gimbal_yaw);
+
         run_gimbal(&my_gimbal);
         osDelayUntil(&gimbal_wake_time, MOTION_CYCLE);
     }

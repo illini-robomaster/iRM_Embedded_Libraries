@@ -19,31 +19,22 @@ static void keyboard_shoot(shooter_t *my_shooter, dbus_t *rc) {
         flywhl_on(my_shooter);
     if (rc->key.bit.V)
         flywhl_off(my_shooter);
-    if (rc->mouse.l && my_shooter->flywhl->state == FLYWHL_ON) {
-#ifdef POKER_IT_Pin
-        /* clear interrupt signal */
-        osSignalWait(POKER_STOP_SIGNAL, 0);
-        /* activate poker until recieving an interrupt signal */
-        do {
-            poker_set_speed(my_shooter, -600);
-            shoot_event = osSignalWait(POKER_STOP_SIGNAL, 20);
-        } while (shoot_event.status != osEventSignal &&
-                 !(shoot_event.value.signals & POKER_STOP_SIGNAL));
-#else
-        poker_set_speed(my_shooter, -600);
-        osDelay(20);
-#endif
+    if (rc->mouse.l && 
+            my_shooter->flywhl->state == FLYWHL_ON &&
+            referee_info.power_heat_data.barrel_heat_17 < 10) {
+        my_shooter->poker->motor->out = -7000;
     }
     else {
         poker_set_speed(my_shooter, 0);
-        osDelay(20);
     }
+    poker_run(my_shooter);
+    osDelay(5);
 }
 
 static void remote_shoot(shooter_t *my_shooter, dbus_t *rc) {
     if (rc->swr != RC_SWITCH_DN) {
         flywhl_on(my_shooter);
-        if (rc->swr == RC_SWITCH_UP && referee_info.power_heat_data.barrel_heat_17 < 10)
+        if (rc->swr == RC_SWITCH_UP && referee_info.power_heat_data.barrel_heat_17 < 30)
             my_shooter->poker->motor->out = -7500;
         else
             poker_set_speed(my_shooter, 0);
@@ -61,12 +52,12 @@ void shoot_task(void const *argu) {
     /* initialization*/
     shooter_t *my_shooter = shooter_init(NULL, PWM);
     dbus_t *rc = dbus_get_struct();
+    osDelay(5000);
     /* task loop */
     while (1) {
-#ifdef USE_REMOTE
-        remote_shoot(my_shooter, rc);
-#else
-        keyboard_shoot(my_shooter, rc);
-#endif
+        if (rc->swr != RC_SWITCH_DN)
+            remote_shoot(my_shooter, rc);
+        else
+            keyboard_shoot(my_shooter, rc);
     }
 }

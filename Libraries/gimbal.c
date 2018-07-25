@@ -33,7 +33,8 @@ void gimbal_init(gimbal_t *my_gimbal) {
     yaw = can_motor_init(NULL, 0x209, CAN1_ID, M6623);
     my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 0, 0, 0, 0, 0, 4.2, 0, 35, 2500, 0);
 #elif defined(HERO)
-    // TODO
+    yaw = can_motor_init(NULL, 0x209, CAN1_ID, M6623);
+    my_gimbal->yaw = pid_init(NULL, MANUAL_ERR_INPUT, yaw, 0, 0, 0, 0, 0, 5.5, 0, 40, 4800, 0);
 #endif
     /* Init Pitch*/
     motor_t *pitch;
@@ -43,9 +44,10 @@ void gimbal_init(gimbal_t *my_gimbal) {
     my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 0, 0, 0, 6, 0, 10, 8000, 0);
 #elif defined(INFANTRY1) || defined(INFANTRY2) || defined(INFANTRY3)
     pitch = can_motor_init(NULL, 0x20A, CAN1_ID, M6623);
-    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 0, 0, 0, 6, 0.13, 18, 2500, 0);
+    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 10000, 0, 0, 6, 0.13, 18, 2500, 0);
 #elif defined(HERO)
-    // TODO
+    pitch = can_motor_init(NULL, 0x20A, CAN1_ID, M6623);
+    my_gimbal->pitch = pid_init(NULL, GIMBAL_MAN_SHOOT, pitch, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT, 6000, 0, 0, 6, 0.14, 20, 4000, 0);
 #endif
     /* Init Camera Pitch */
     // not implemented yet
@@ -67,8 +69,8 @@ void gimbal_kill(gimbal_t *my_gimbal) {
 }
 
 void gimbal_mouse_move(gimbal_t *my_gimbal, dbus_t *rc, int32_t observed_abs_yaw) {
-    my_gimbal->yaw_ang -= rc->mouse.x * 0.2;
-    my_gimbal->pitch_ang -= rc->mouse.y * 0.2;
+    my_gimbal->yaw_ang -= rc->mouse.x * 0.4;
+    my_gimbal->pitch_ang -= rc->mouse.y * 0.4;
     fclip_to_range(&my_gimbal->pitch_ang, PITCH_LOW_LIMIT, PITCH_HIGH_LIMIT);
     my_gimbal->yaw->motor->out = pid_calc(my_gimbal->yaw, (int32_t)(my_gimbal->yaw_ang) - observed_abs_yaw);
     my_gimbal->pitch->motor->out = pid_calc(my_gimbal->pitch, (int32_t)(my_gimbal->pitch_ang));

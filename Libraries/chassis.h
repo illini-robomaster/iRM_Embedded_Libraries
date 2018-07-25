@@ -58,7 +58,7 @@ void chassis_init(pid_ctl_t *my_chassis[4]);
  * @param rc         dbus struct; for getting remote controller data
  * @param yaw_angle  Counterclockwise is positive. In radian. How far is gimbal deviate from chassis
  */
-void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed);
+void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, float *prev_vx, float *prev_vy);
 
 /**
  * @brief calculate chassis move based on remote controller
@@ -66,7 +66,7 @@ void calc_keyboard_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, i
  * @param rc         dbus struct; for getting remote controller data
  * @param yaw_angle  angle of gimabl deviated from chassis, in radian. (counter colockwise is positive)
  */
-void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, int max_speed);
+void calc_remote_move(pid_ctl_t *my_chassis[4], dbus_t *rc, float yaw_angle, float *prev_vx, float *prev_vy);
 
 /**
  * Makes chassis roate based on yaw motor feedback
