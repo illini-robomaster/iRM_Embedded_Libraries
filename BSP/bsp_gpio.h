@@ -39,8 +39,55 @@
  * @{
  */
 
-/** @} */
+/**
+ * @enum    gpio_state_t
+ * @brief   describe gpio state as in high / low
+ * @var HIGH    gpio in high state
+ * @var LOW     gpio in low state
+ */
+typedef enum {
+    HIGH = GPIO_PIN_SET,
+    LOW = GPIO_PIN_RESET,
+}   gpio_state_t;
 
-void poker_stop_callback(void);
+/**
+ * @struct  gpio_t
+ * @brief   hold all necessary information for a gpio pin
+ * @var group   gpio group number
+ * @var pin     gpio pin number
+ * @var state   gpio state
+ */
+typedef struct {
+    GPIO_TypeDef    *group;
+    uint16_t        pin;
+    gpio_state_t    state;
+}   gpio_t;
+
+/**
+ * @brief output low signal to a gpio pin
+ * @param gpio pointer to a gpio instance
+ */
+void gpio_low(gpio_t *gpio);
+
+/**
+ * @brief output high signal to a gpio pin
+ * @param gpio pointer to a gpio instance
+ */
+void gpio_high(gpio_t *gpio);
+
+/**
+ * @brief read in signal from a gpio pin
+ * @param gpio pointer to a gpio instance
+ */
+gpio_state_t gpio_read(gpio_t *gpio);
+
+/**
+ * @brief a weak function that handles gpio interrupt (to be implemented
+ *        in task layer)
+ * @param gpio_pin  gpio pin / interrupt number
+ */
+void gpio_interrupt(uint16_t gpio_pin);
+
+/** @} */
 
 #endif

@@ -19,6 +19,10 @@
 #ifndef _BSP_ADC_H_
 #define _BSP_ADC_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal_adc.h"
 #include "adc.h"
 #include "bsp_error_handler.h"
@@ -72,5 +76,9 @@ float adc_get_volt(adc_t *my_adc);
  * @return  converted voltage value
  */
 float get_volt_from_raw_data(uint16_t raw_data);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
