@@ -28,7 +28,6 @@
 #include "test_imu.h"
 #include "test_mouse.h"
 #include "test_chassis.h"
-#include "test_haptor.h"
 #include "test_tx2.h"
 #include "test_sdio.h"
 #include "test_key.h"
@@ -66,7 +65,6 @@
 #define TEST_BSP_IMU        OFF
 #define TEST_IMU            OFF
 #define TEST_MOUSE          OFF
-#define TEST_HAPTOR         OFF
 #define TEST_CHASSIS        OFF
 #define TEST_TX2            OFF
 #define TEST_REFEREE        OFF
@@ -100,8 +98,6 @@ extern inline void run_all_tests() {
         test_mouse();
     if (TEST_CHASSIS == ON)
         test_chassis();
-    if (TEST_HAPTOR == ON)
-        test_haptor();
     if (TEST_TX2 == ON)
         test_tx2();
     if (TEST_REFEREE == ON)
