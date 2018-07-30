@@ -23,8 +23,8 @@
 
 #define sign(x) (x < 0 ? -1 : (x == 0 ? 0 : 1))
 
-#define min(x, y) x < y ? x : y
-#define max(x, y) x > y ? x : y
+#define min(x, y) (x < y ? x : y)
+#define max(x, y) (x > y ? x : y)
 
 /**
  * @brief clip int32_t number into [-lim, lim]
