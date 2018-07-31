@@ -111,6 +111,13 @@ uint8_t tx2_dispatcher(void* target_struct, data_process_t* process_struct);
 uint8_t tx2_packer(void *target_struct, data_process_t *process_struct, uint16_t cmdid);
 
 /**
+ * @brief a weak function that handles a reception of 4 customized int16 number
+ * @param vec4d a structure of four int16 data
+ * @return none
+ */
+void custum_int16_handle(four_int16_t vec4d);
+
+/**
  * TX2 callback wrapper.
  *
  * @author Nickel_Liang
