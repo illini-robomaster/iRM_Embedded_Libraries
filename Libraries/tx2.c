@@ -72,6 +72,10 @@ uint8_t tx2_packer(void *target_struct, data_process_t *process_struct, uint16_t
             data_stream = (uint8_t*)&tx2->aim_request;
             data_length = (uint16_t)sizeof(aim_request_t);
             break;
+        case CMD_FOUR_INT16:
+            data_stream = (uint8_t*)&tx2->custom_int16s;
+            data_length = (uint16_t)sizeof(four_int16_t);
+            break;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "Unknown CMDID.");
             return 0;

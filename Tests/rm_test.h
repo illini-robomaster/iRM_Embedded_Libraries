@@ -31,7 +31,6 @@
 #include "test_tx2.h"
 #include "test_sdio.h"
 #include "test_key.h"
-#include "test_referee.h"
 #include "test_bsp_adc.h"
 #include "test_bsp_pwm.h"
 #include "test_bsp_power.h"
@@ -67,7 +66,6 @@
 #define TEST_MOUSE          OFF
 #define TEST_CHASSIS        OFF
 #define TEST_TX2            OFF
-#define TEST_REFEREE        OFF
 #define TEST_BSP_ADC        OFF
 #define TEST_SDIO           DISABLE
 #define TEST_KEY            OFF
@@ -100,8 +98,6 @@ extern inline void run_all_tests() {
         test_chassis();
     if (TEST_TX2 == ON)
         test_tx2();
-    if (TEST_REFEREE == ON)
-        test_referee();
     if (TEST_BSP_ADC == ON)
         test_bsp_adc();
     if (TEST_SDIO == ON)

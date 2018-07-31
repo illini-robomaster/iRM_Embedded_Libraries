@@ -40,6 +40,7 @@
 typedef enum {
     CMD_GIMBAL_CONTROL  = 0x00A1,
     CMD_AIM_REQUEST     = 0x0012,
+    CMD_FOUR_INT16      = 0x00F0,
 } tx2_cmdid_t;
 
 /* ===== CMD_GIMBAL_CONTROL 0x00A1 ===== */
@@ -53,6 +54,14 @@ typedef struct {
     uint8_t     aim_mode;
 } __packed aim_request_t;
 
+/* ===== CMD_FOUR_INT16 0x00F3 ===== */
+typedef struct {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+    int16_t w;
+} __packed four_int16_t;
+
 typedef enum {
     RUNE        = 0,
     AUTOAIM     = 1,
@@ -63,6 +72,8 @@ typedef enum {
 typedef struct {
     gimbal_control_t    gimbal_control;     // 0x00A1
     aim_request_t       aim_request;        // 0x0012
+
+    four_int16_t        custom_int16s;
 } tx2_t;
 
 /**
