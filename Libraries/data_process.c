@@ -90,14 +90,6 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
     return source;
 }
 
-void print_buffer(data_process_t *source, uint8_t buffer_num) {
-    uint8_t *buff = source->buff[buffer_num];
-    for (uint16_t i = 0; i < 20; i++) {
-        print("0x%08x : 0x%02x\r\n", &buff[i], buff[i]);
-    }
-    print("\r\n");
-}
-
 uint8_t data_process_rx(data_process_t *source) {
     if (!buffer_to_fifo(source)) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Buffer to FIFO error.");

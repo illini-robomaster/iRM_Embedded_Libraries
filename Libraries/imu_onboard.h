@@ -23,6 +23,12 @@
 #include "bsp_imu.h"
 #include <math.h>
 
+/**
+ * @ingroup library
+ * @defgroup imu_onboard Onboard IMU
+ * @{
+ */
+
 #define QANGLE      0.00002f // angle noise variance
 #define QGYRO       0.0065f  // gyro noise variance
 #define RANGLE      0.1f     // measurement noise covariance cov(gyro, angle)
@@ -110,5 +116,7 @@ void discrete_integral(imu_axis_t desired_axis);
  * @return              kalman-filtered calculated value
  */
 float kalman_filter_update(imu_axis_t desired_axis);
+
+/** @} */
 
 #endif

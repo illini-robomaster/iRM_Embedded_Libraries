@@ -38,6 +38,8 @@
 #include <stdarg.h>
 #include <stdint.h>
 
+/* TODO: missing documentation */
+
 #define OLED_CMD        0x00
 #define OLED_DATA       0x01
 

@@ -41,20 +41,15 @@
 /**
  * @enum pid_mode_t
  * @brief a enum type that defines motor usage
- * @var GIMBAL_AUTO_SHOOT   gimbal auto shooting mode
- * @var GIMBAL_MAN_SHOOT    gimbal manual shooting mode
- * @var POKE                bullet supply mode
- * @var CHASSIS_ROTATE      chassis motor mode
  */
 typedef enum {
-    GIMBAL_AUTO_SHOOT,
-    GIMBAL_MAN_SHOOT,
-    POKE,
-    CHASSIS_ROTATE,
-    FLYWHEEL,
-    HAPTOR,
-    MANUAL_ERR_INPUT,
-    POWER_CTL
+    GIMBAL_AUTO_SHOOT,  /* gimbal auto shooting mode */
+    GIMBAL_MAN_SHOOT,   /* gimbal manual shooting mode */
+    POKE,               /* bullet supply poker mode */
+    CHASSIS_ROTATE,     /* chassis rotation mode */
+    FLYWHEEL,           /* flywheel mode */
+    MANUAL_ERR_INPUT,   /* manual error input mode */
+    POWER_CTL           /* power control mode */
 }   pid_mode_t;
 
 /**

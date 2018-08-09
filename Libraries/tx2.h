@@ -32,6 +32,12 @@
 #include "bsp_config.h"
 #include "data_process.h"
 
+/**
+ * @ingroup library
+ * @defgroup tx2 TX2
+ * @{
+ */
+
 #define TX2_SOF         0xA0
 #define TX2_PORT        BSP_TX2_PORT
 #define TX2_FIFO_SIZE   BSP_TX2_MAX_LEN
@@ -132,5 +138,7 @@ void tx2_incomming(void);
  * @date   2018-05-26
  */
 void tx2_outgoing(void);
+
+/** @} */
 
 #endif

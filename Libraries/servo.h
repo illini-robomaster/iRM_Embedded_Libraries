@@ -28,7 +28,7 @@
 #define _SERVO_H_
 
 /**
- * @ingroup Library
+ * @ingroup library
  * @defgroup servo Servo
  * @{
  */

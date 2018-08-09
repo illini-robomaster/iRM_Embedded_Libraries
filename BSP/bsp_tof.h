@@ -22,6 +22,12 @@
 #include "vl53l0x_api.h"
 #include "stm32f4xx_hal_gpio.h"
 
+/** 
+ * @ingroup bsp
+ * @defgroup bsp_tof BSP TimeOfFlight
+ * @{
+ */
+
 #define VL53L0X_DEFAULT_ADDR    0x52
 
 #define MAX_BOOTUP_TIME         2
@@ -65,5 +71,7 @@ uint8_t reset_vl53l0x(bsp_vl53l0x_t *tof);
  * @return measured distance in millimeter
  */
 uint16_t get_vl53l0x_dist_milli(bsp_vl53l0x_t *tof);
+
+/** @} */
 
 #endif

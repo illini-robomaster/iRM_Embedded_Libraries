@@ -30,6 +30,8 @@
 #include "bsp_oled.h"
 #include <stdlib.h>
 
+/* TODO: Function documentation incomplete */
+
 /* How many screen of text will be stored in Text MEM */
 #define TEXT_MODE_MAX_SCREEN    4
 #define TEXT_MODE       ON

@@ -22,6 +22,12 @@
 #include "bsp_adc.h"
 #include "bsp_config.h"
 
+/**
+ * @ingroup bsp
+ * @defgroup bsp_power BSP Power
+ * @{
+ */
+
 #define MAX_CURRENT_ERROR 3
 #define MAX_VOLTAGE_ERROR 2
 
@@ -93,5 +99,7 @@ float get_current(void);
  * @return power value (in Jouls)
  */
 float get_power(void);
+
+/** @} */
 
 #endif

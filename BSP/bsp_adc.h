@@ -30,6 +30,11 @@ extern "C" {
 
 /* @note remember to add #include "stm32f4xx_hal_dma.h" to Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h */
 
+/**
+ * @ingroup bsp
+ * @defgroup bsp_adc BSP ADC
+ * @{
+ */
 
 typedef struct  adc_list_s {
     ADC_HandleTypeDef   *hadc;
@@ -80,5 +85,7 @@ float get_volt_from_raw_data(uint16_t raw_data);
 #ifdef __cplusplus
 }
 #endif
+
+/** @} */
 
 #endif

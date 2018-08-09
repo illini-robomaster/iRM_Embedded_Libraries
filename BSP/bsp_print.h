@@ -33,7 +33,7 @@
 
 /**
  * @ingroup bsp
- * @defgroup bsp_print BSP PRINT
+ * @defgroup bsp_print BSP Print
  * @{
  */
 

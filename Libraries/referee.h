@@ -39,6 +39,12 @@
  * Firmware version
  */
 
+/**
+ * @ingroup library
+ * @defgroup referee Referee System
+ * @{
+ */
+
 #define REFEREE_SOF         0xA5
 #define REFEREE_PORT        BSP_REFEREE_PORT
 #define REFEREE_FIFO_SIZE   BSP_REFEREE_MAX_LEN
@@ -252,5 +258,7 @@ void referee_incomming(void);
  * @date   2018-05-26
  */
 void referee_outgoing(void);
+
+/** @} */
 
 #endif

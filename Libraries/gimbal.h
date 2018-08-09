@@ -24,6 +24,12 @@
 #include "dbus.h"
 #include "lib_config.h"
 
+/**
+ * @ingroup library
+ * @defgroup gimbal Gimbal
+ * @{
+ */
+
 typedef struct {
     float pitch_ang;            // pitch err intergrated based on mouse input
     float yaw_ang;              // yaw error integrated from mouse movement
@@ -93,5 +99,7 @@ void gimbal_set_yaw_angle(gimbal_t *my_gimbal, int32_t yaw_ang);
  * @param my_gimbal my gimbal object
  */
 void run_gimbal(gimbal_t *my_gimbal);
+
+/** @} */
 
 #endif

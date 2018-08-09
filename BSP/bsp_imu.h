@@ -34,6 +34,12 @@
 #include "spi.h"
 #include "main.h"
 
+/**
+ * @ingroup bsp
+ * @defgroup bsp_imu BSP IMU
+ * @{
+ */
+
 /* Constants and Common Functions */
 #define RAD_2_DEG 57.29578
 #define DEG_2_RAD 0.017453
@@ -178,5 +184,7 @@ static uint8_t ist8310_write_reg(uint8_t addr, uint8_t data);
  * @date   2018-04-21
  */
 static void mpu_read_ist_config(uint8_t device_address, uint8_t reg_base_addr, uint8_t data_num);
+
+/** @} */
 
 #endif

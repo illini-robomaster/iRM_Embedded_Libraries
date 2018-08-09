@@ -34,6 +34,12 @@
 #include "cmsis_os.h"
 #include <stdlib.h>
 
+/**
+ * @ingroup library
+ * @defgroup data_process Data Process
+ * @{
+ */
+
 #define DATA_PROCESS_HEADER_LEN     5
 #define DATA_PROCESS_CMD_LEN        2
 #define DATA_PROCESS_CRC16_LEN      2
@@ -170,6 +176,6 @@ static uint8_t process_header(data_process_t* source);
  */
 static uint8_t process_frame(data_process_t* source);
 
-void print_buffer(data_process_t* source, uint8_t buffer_num);
+/** @} */
 
 #endif

@@ -25,6 +25,12 @@
 #include "referee.h"
 #include "lib_config.h"
 
+/**
+ * @ingroup library
+ * @defgroup chassis Chassis
+ * @{
+ */
+
 #define Q_PI 0.7853982 // \pi / 4
 
 #define CHASSIS_MOTOR_TYPE M3508
@@ -114,5 +120,7 @@ void chassis_kill(pid_ctl_t *my_chassis[4]);
  * @param my_chassis my chassis object. An array of pid that represents chassis
  */
 void run_chassis(pid_ctl_t *my_chassis[4]);
+
+/** @} */
 
 #endif

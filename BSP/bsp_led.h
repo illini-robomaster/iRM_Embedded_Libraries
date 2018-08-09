@@ -32,7 +32,7 @@
 
 /**
  * @ingroup bsp
- * @defgroup bsp_led BSP led
+ * @defgroup bsp_led BSP LED
  * @{
  */
 

@@ -37,7 +37,7 @@ static pid_ctl_t* poker_init(pid_ctl_t* poker) {
     return poker;
 }
 
-shooter_t *shooter_init(shooter_t *shooter, shooter_type_t type) {
+shooter_t *shooter_init(shooter_t *shooter, flywhl_type_t type) {
     if (shooter == NULL)
         shooter = pvPortMalloc(sizeof(shooter_t));
 

@@ -34,6 +34,12 @@
 #include <stdlib.h>
 #include "cmsis_os.h"
 
+/**
+ * @ingroup library
+ * @defgroup dbus DBUS
+ * @{
+ */
+
 #define DBUS_BUF_LEN        18
 
 typedef enum {
@@ -125,5 +131,7 @@ uint8_t dbus_data_process(uint8_t buffer[DBUS_BUF_LEN], dbus_t* dbus);
  * @date   2018-04-18
  */
 dbus_t* dbus_get_struct(void);
+
+/** @} */
 
 #endif

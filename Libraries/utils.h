@@ -21,6 +21,12 @@
 
 #include <stdint.h>
 
+/**
+ * @ingroup library
+ * @defgroup utils Utils
+ * @{
+ */
+
 #define sign(x) (x < 0 ? -1 : (x == 0 ? 0 : 1))
 
 #define min(x, y) (x < y ? x : y)
@@ -67,5 +73,7 @@ float fclip_to_range(float *data, float low_lim, float high_lim);
  * @return none
  */
 void normalize_2d(float *vx, float *vy);
+
+/** @} */
 
 #endif
