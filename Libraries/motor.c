@@ -131,6 +131,8 @@ static int16_t correct_output(motor_t *motor) {
                     CURRENT_MAX_2006);
         case M2305:
             return fclip_to_range(&motor->out, CURRENT_MIN_2305, CURRENT_MAX_2305);
+        case MPWM:
+            return motor->out;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "motor type undefined");
             return 0;

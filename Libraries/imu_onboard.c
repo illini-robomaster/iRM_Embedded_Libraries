@@ -92,10 +92,11 @@ void onboard_imu_update(void){
 
 void update_zero_bias(void){
     float* pgyro = (float*)(&imuBoard.my_raw_imu.gyro.x);
+    imuBoard.total_measurement_count++;
     for(int axis = 0; axis < 3; ++axis){
         imuBoard.angle_zero_bias[axis]
                 = (imuBoard.angle_zero_bias[axis] * imuBoard.total_measurement_count
-                                + *(pgyro + axis)) / (++imuBoard.total_measurement_count);
+                                + *(pgyro + axis)) / (imuBoard.total_measurement_count);
     }
 }
 

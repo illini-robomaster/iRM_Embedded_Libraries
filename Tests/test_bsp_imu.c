@@ -25,12 +25,14 @@
  */
 
 #include "test_bsp_imu.h"
+#include "cmsis_os.h"
 
 imu_t test_my_bsp_imu;
 
 uint8_t test_bsp_imu(void) {
     for (size_t i = 0; i < IMU_TEST_COUNT; i++) {
         print_mpu_data(&test_my_bsp_imu);
+        osDelay(100);
     }
     return 1;
 }
