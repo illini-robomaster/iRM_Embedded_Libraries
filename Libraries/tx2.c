@@ -51,7 +51,8 @@ uint8_t tx2_dispatcher(void *target_struct, data_process_t *process_struct) {
             memcpy(&(tx2->gimbal_control), data_addr, data_length);
             break;
         case CMD_FOUR_INT16:
-            custum_int16_handle(tx2->custom_int16s);
+            memcpy(&(tx2->custom_int16s), data_addr, data_length);
+            custom_int16_handle(tx2->custom_int16s);
             break;
         default:
             bsp_error_handler(__FUNCTION__, __LINE__, "Unknown CMDID.");
@@ -90,7 +91,7 @@ uint8_t tx2_packer(void *target_struct, data_process_t *process_struct, uint16_t
     return 1;
 }
 
-__weak void custum_int16_handle(four_int16_t vec4d) {
+__weak void custom_int16_handle(four_int16_t vec4d) {
     UNUSED(vec4d);
 }
 

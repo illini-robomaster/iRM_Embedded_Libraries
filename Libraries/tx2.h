@@ -121,7 +121,7 @@ uint8_t tx2_packer(void *target_struct, data_process_t *process_struct, uint16_t
  * @param vec4d a structure of four int16 data
  * @return none
  */
-void custum_int16_handle(four_int16_t vec4d);
+void custom_int16_handle(four_int16_t vec4d);
 
 /**
  * TX2 callback wrapper.
