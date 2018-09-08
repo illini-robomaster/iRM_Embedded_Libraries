@@ -21,6 +21,8 @@
 #include "motor.h"
 #include "utils.h"
 
+#ifdef INFANTRY1
+
 void gimbal_init(gimbal_t *my_gimbal) {
     /* Init Yaw */
     motor_t *yaw;
@@ -135,3 +137,5 @@ void run_gimbal(gimbal_t *my_gimbal) {
 #endif
     //set_can_motor_output(my_gimbal->camera_pitch->motor, NULL, NULL, NULL);
 }
+
+#endif

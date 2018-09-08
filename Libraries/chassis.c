@@ -21,6 +21,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#ifdef INFANTRY1
+
 static pid_ctl_t chassis_rotate;
 const static int16_t evasive_tar[2] = {EVASIVE_LEFTMOST_YAW, EVASIVE_RIGHTMOST_YAW};
 static uint8_t evasive_tar_cnt = 0;
@@ -204,3 +206,5 @@ void run_chassis(pid_ctl_t *my_chassis[4]){
     set_can_motor_output(my_chassis[CHASSIS_FL]->motor, my_chassis[CHASSIS_FR]->motor,
                 my_chassis[CHASSIS_RL]->motor, my_chassis[CHASSIS_RR]->motor);
 }
+
+#endif
