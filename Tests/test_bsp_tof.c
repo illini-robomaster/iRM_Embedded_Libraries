@@ -1,5 +1,6 @@
+#include <stdio.h>
+
 #include "test_bsp_tof.h"
-#include "bsp_print.h"
 #include "cmsis_os.h"
 
 void test_bsp_tof(void) {
@@ -10,7 +11,7 @@ void test_bsp_tof(void) {
     while (1) {
         dist1 = get_vl53l0x_dist_milli(tof1);
         dist2 = get_vl53l0x_dist_milli(tof2);
-        print("dist1: %d dist2: %d\r\n", dist1, dist2);
+        printf("dist1: %d dist2: %d\r\n", dist1, dist2);
         osDelay(50);
     }
 }

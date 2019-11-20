@@ -28,7 +28,6 @@
 #define _TEST_BSP_IMU_H_
 
 #include "bsp_imu.h"
-#include "bsp_print.h"
 #include "imu_onboard.h"
 
 #define IMU_TEST_COUNT     100000

@@ -26,7 +26,7 @@ void test_bsp_power(void) {
     power_module_calibrate(referee_info.power_heat_data.chassis_volt,
                            referee_info.power_heat_data.chassis_current);
     while (1) {
-        print("voltage: %.3f current %.3f\r\n",
+        printf("voltage: %.3f current %.3f\r\n",
                 get_volt(), get_current());
         osDelay(50);
     }

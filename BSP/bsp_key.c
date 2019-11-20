@@ -24,6 +24,8 @@
  * @log     2018-05-27 nickelliang
  */
 
+#include <stdio.h>
+
 #include "bsp_key.h"
 
 static uint32_t key_previous_tick;
@@ -91,6 +93,6 @@ uint16_t key_pressed_time(void) {
 }
 
 void wait_until_key_pressed(void) {
-    print("Please press the key to continue...\r\n");
+    printf("Please press the key to continue...\r\n");
     while (!key_pressed_once());
 }

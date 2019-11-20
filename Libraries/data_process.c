@@ -24,6 +24,9 @@
  * @log     2018-05-26 nickelliang
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "data_process.h"
 
 data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void *source_struct, osMutexId tx_mutex, packer_func_t packer_func) {
@@ -64,8 +67,8 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
     source->buff[1]         = source->buff[0] + source->buff_size;
 #ifdef DEBUG
     BSP_DEBUG;
-    print("source->buff[0] 0x%08x ", source->buff[0]);
-    print("source->buff[1] 0x%08x \r\n", source->buff[1]);
+    printf("source->buff[0] 0x%08x ", source->buff[0]);
+    printf("source->buff[1] 0x%08x \r\n", source->buff[1]);
 #endif
 
     source->frame_packet    = (uint8_t*)pvPortMalloc(fifo_size);
@@ -158,8 +161,8 @@ static uint8_t buffer_to_fifo(data_process_t *source) {
             return 0;
         }
         if (write_len != fifo_s_puts(source->data_fifo, &buff[source->read_index], write_len)) {
-            print("write index: %d\r\n", write_index);
-            print("memory target: %d\r\n", dma_memory_target);
+            printf("write index: %d\r\n", write_index);
+            printf("memory target: %d\r\n", dma_memory_target);
             bsp_error_handler(__FUNCTION__, __LINE__, "FIFO overflow, need to resize.");
             return 0;
         }
@@ -174,11 +177,11 @@ static uint8_t buffer_to_fifo(data_process_t *source) {
 
 #ifdef DEBUG
         BSP_DEBUG;
-        print("Total write len: %d\r\n", total_write_len);
-        print("Mem target:      %u\r\n", dma_memory_target);
-        print("Mem remain:      %d\r\n", dma_remain_space);
-        print("Write index:     %d\r\n", write_index);
-        print("\r\n");
+        printf("Total write len: %d\r\n", total_write_len);
+        printf("Mem target:      %u\r\n", dma_memory_target);
+        printf("Mem remain:      %d\r\n", dma_remain_space);
+        printf("Write index:     %d\r\n", write_index);
+        printf("\r\n");
 #endif
 
     /* General write condition */
@@ -199,9 +202,9 @@ static uint8_t fifo_to_struct(data_process_t *source) {
     while (!fifo_is_empty(source->data_fifo)) {
         byte = fifo_s_peek(source->data_fifo, 0); // Peek head
 #ifdef DEBUG
-        print("Byte: %02x\r\n", byte);
-        print("Used: %d\r\n", source->data_fifo->used);
-        print("Free: %d\r\n", source->data_fifo->free);
+        printf("Byte: %02x\r\n", byte);
+        printf("Used: %d\r\n", source->data_fifo->used);
+        printf("Free: %d\r\n", source->data_fifo->free);
 #endif
         if (byte != source->sof) {
             fifo_s_get(source->data_fifo);
@@ -215,7 +218,7 @@ static uint8_t fifo_to_struct(data_process_t *source) {
     }
 #ifdef DEBUG
     BSP_DEBUG;
-    print("End of loop.\r\n");
+    printf("End of loop.\r\n");
 #endif
     return flag;
 }

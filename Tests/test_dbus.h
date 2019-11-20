@@ -28,7 +28,6 @@
 #define _TEST_DBUS_H_
 
 #include "dbus.h"
-#include "bsp_print.h"
 
 #define DBUS_TEST_COUNT     100000
 

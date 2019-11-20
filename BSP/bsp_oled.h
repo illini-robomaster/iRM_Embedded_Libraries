@@ -29,7 +29,6 @@
 
 #include "stm32f4xx_hal.h"
 #include "bsp_error_handler.h"
-#include "bsp_print.h"
 #include "bsp_config.h"
 #include "bsp_adc.h"
 #include "spi.h"

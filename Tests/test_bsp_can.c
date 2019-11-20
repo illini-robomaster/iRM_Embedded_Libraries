@@ -36,18 +36,18 @@ uint8_t test_bsp_can(void) {
     for (i = 0; i < CAN_TEST_COUNT; i++) {
         size_t device;
         if (PRINT_CAN_1) {
-            print("===CAN1===\r\n");
+            printf("===CAN1===\r\n");
             for (device = 0; device < CAN1_DEVICE_NUM; device++) {
-                print("Node %d: %08x\r\n", device, can1_rx_buffer[device]);
+                printf("Node %d: %08x\r\n", device, can1_rx_buffer[device]);
             }
-            print("==========\r\n");
+            printf("==========\r\n");
         }
         if (PRINT_CAN_2) {
-            print("===CAN2===\r\n");
+            printf("===CAN2===\r\n");
             for (device = 0; device < CAN2_DEVICE_NUM; device++) {
-                print("Node %d: %08x\r\n", device, can2_rx_buffer[device]);
+                printf("Node %d: %08x\r\n", device, can2_rx_buffer[device]);
             }
-            print("==========\r\n");
+            printf("==========\r\n");
         }
 
         osDelay(100);

@@ -37,7 +37,6 @@
 #include "bsp_can.h"
 #include "bsp_pwm.h"
 #include "bsp_error_handler.h"
-#include "bsp_print.h"
 
 #define CAN1_ID 1
 #define CAN2_ID 2

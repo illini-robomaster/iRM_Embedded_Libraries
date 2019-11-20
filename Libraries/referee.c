@@ -24,6 +24,8 @@
  * @log     2018-05-26 nickelliang
  */
 
+#include <string.h>
+
 #include "referee.h"
 
 data_process_t  *referee_process;
@@ -42,7 +44,7 @@ uint8_t referee_dispatcher(void* target_struct, data_process_t* process_struct) 
     /* @todo Need to consider racing condition here */
 #ifdef DEBUG
     BSP_DEBUG;
-    print("Enter referee dispatcher.\r\n");
+    printf("Enter referee dispatcher.\r\n");
 #endif
     referee_t* referee     = target_struct;
     data_process_t* source = process_struct;

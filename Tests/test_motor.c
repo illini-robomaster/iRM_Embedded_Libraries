@@ -17,7 +17,6 @@
 
 #include "test_motor.h"
 #include "motor.h"
-#include "bsp_print.h"
 
 void test_motor() {
     // motor_feedback();
@@ -53,7 +52,6 @@ void test_motor_3508(uint8_t rotate) {
     for (i = 0; i < 1000; i++) {
         get_motor_data(&motor);
         print_motor_data(&motor);
-        print("Target: %d Error: %d\n", 400, get_angle_err(&motor, 400));
         osDelay(20);
     }
 }

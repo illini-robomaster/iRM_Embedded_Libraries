@@ -24,11 +24,13 @@
  * @log     2018-05-27 nickelliang
  */
 
+#include <stdio.h>
+
 #include "test_key.h"
 
 uint8_t test_key(void) {
-    print("Please press the key to continue...\r\n");
+    printf("Please press the key to continue...\r\n");
     while (!key_pressed_once());
-    print("Key pressed!\r\n");
+    printf("Key pressed!\r\n");
     return 1;
 }

@@ -46,9 +46,9 @@
 #define RM_MAIN 1
 
 #define TEST_HEADER                 \
-    print("[TEST] Running %s at %s:%d\n", __FUNCTION__, __FILE__, __LINE__)
+    printf("[TEST] Running %s at %s:%d\n", __FUNCTION__, __FILE__, __LINE__)
 #define TEST_OUTPUT(name, result)   \
-    print("[TEST] %s : %s\n", name, (result) ? "PASS" : "FAIL");
+    printf("[TEST] %s : %s\n", name, (result) ? "PASS" : "FAIL");
 
 /* Test options */
 #define RUN_IN          RM_MAIN // RM_RTOS : Run test in RTOS default task @todo Not yet implemented

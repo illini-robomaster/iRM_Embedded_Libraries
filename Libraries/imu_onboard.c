@@ -27,25 +27,25 @@ void print_mpu_data(imu_t* imu) {
         return;
     }
     mpu6500_get_data(imu);
-    print("[DECODED MPU] ");
-    print("Acce X %f \tY %f \t", imu->acce.x, imu->acce.y);
-    print("Z %f \t| ", imu->acce.z);
-    print("Gyro X %f \tY %f \t", imu->gyro.x, imu->gyro.y);
-    print("Z %f \t| ", imu->gyro.z);
-    print("Temp %f\r\n", imu->temp);
+    printf("[DECODED MPU] ");
+    printf("Acce X %f \tY %f \t", imu->acce.x, imu->acce.y);
+    printf("Z %f \t| ", imu->acce.z);
+    printf("Gyro X %f \tY %f \t", imu->gyro.x, imu->gyro.y);
+    printf("Z %f \t| ", imu->gyro.z);
+    printf("Temp %f\r\n", imu->temp);
 }
 
 void print_imu_data(void){
-    print("Angle X %.2f \tY %.2f", imuBoard.angle[0], imuBoard.angle[1]);
-    print(" \tZ %.2f \t| ", imuBoard.angle[2]);
-    print("\r\n");
-    print("ZBias X %.2f \tY %.2f", imuBoard.angle_zero_bias[0], imuBoard.angle_zero_bias[1]);
-    print(" \tZ %.2f \t| ", imuBoard.angle_zero_bias[2]);
-    print("\r\n");
+    printf("Angle X %.2f \tY %.2f", imuBoard.angle[0], imuBoard.angle[1]);
+    printf(" \tZ %.2f \t| ", imuBoard.angle[2]);
+    printf("\r\n");
+    printf("ZBias X %.2f \tY %.2f", imuBoard.angle_zero_bias[0], imuBoard.angle_zero_bias[1]);
+    printf(" \tZ %.2f \t| ", imuBoard.angle_zero_bias[2]);
+    printf("\r\n");
 }
 
 void onboard_imu_lib_init(void){
-    print("Initializing and calibrating onboard imu\r\n");
+    printf("Initializing and calibrating onboard imu\r\n");
     for(int i = 0; i < 3; ++i){
         imuBoard.angle[i] = 0;
         for(int j = 0; j < 2; ++j){

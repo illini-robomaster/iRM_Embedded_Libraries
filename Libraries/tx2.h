@@ -27,6 +27,8 @@
 #ifndef _TX2_H_
 #define _TX2_H_
 
+#include <string.h>
+
 #include "bsp_error_handler.h"
 #include "bsp_uart.h"
 #include "bsp_config.h"
