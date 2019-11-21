@@ -33,7 +33,6 @@
 #include "bsp_adc.h"
 #include "spi.h"
 #include "math.h"
-#include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
 

@@ -16,10 +16,10 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  *************************************************************************/
 
+#include "bsp_print.h"
 #include "motor.h"
 #include "utils.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 /* private function starts from here */
 

@@ -28,9 +28,9 @@ void test_pid() {
     // test_poke();
     // test_shoot();
     // test_pitch();
-    test_yaw();
+    // test_yaw();
     // test_pid_2006();
-    // test_pid_3508();
+    test_pid_3508();
 }
 
 void test_power_speed(void) {
@@ -216,7 +216,7 @@ void test_pid_3508() {
     motor_t mt_3508;
     pid_ctl_t   pid_3508;
 
-    can_motor_init(&mt_3508, 0x201, CAN1_ID, M3508);
+    can_motor_init(&mt_3508, 0x202, CAN1_ID, M3508);
     pid_init(&pid_3508, CHASSIS_ROTATE, &mt_3508, -2000, 2000, 0, 0, 0, 5, 0, 0, 5000, 0);
 
     int32_t target_speed = 800;
@@ -224,7 +224,7 @@ void test_pid_3508() {
 
     while (1) {
         mt_3508.out = pid_calc(&pid_3508, target_speed);
-        set_can_motor_output(&mt_3508, NULL, NULL, NULL);
+        set_can_motor_output(NULL, &mt_3508, NULL, NULL);
         osDelayUntil(&mt_3508_wake_time, 20);
     }
 }

@@ -24,6 +24,8 @@
  * @log     2018-05-30 nickelliang
  */
 
+#include "bsp_print.h"
+
 #include "oled_module.h"
 #include "oled_module_resource.h"
 
@@ -244,7 +246,7 @@ void oled_printf(const char *fmt, ...) {
     va_list ap;
 
     va_start(ap, fmt);
-    vsprintf((char*)OLED_PRINT_BUF, fmt, ap);
+    vsnprintf((char*)OLED_PRINT_BUF, CHAR_MAX_PRINT, fmt, ap);
     va_end(ap);
 
     oled_puts(&cursor_row, &cursor_col, OLED_PRINT_BUF, OLED_ON);

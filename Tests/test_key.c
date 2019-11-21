@@ -24,7 +24,7 @@
  * @log     2018-05-27 nickelliang
  */
 
-#include <stdio.h>
+#include "bsp_print.h"
 
 #include "test_key.h"
 

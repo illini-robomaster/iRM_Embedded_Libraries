@@ -29,7 +29,6 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 #define ASSERT(x) do {                          \
     while(!(x));                                \

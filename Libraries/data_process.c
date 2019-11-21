@@ -24,9 +24,9 @@
  * @log     2018-05-26 nickelliang
  */
 
-#include <stdio.h>
 #include <string.h>
 
+#include "bsp_print.h"
 #include "data_process.h"
 
 data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, uint32_t fifo_size, uint16_t buffer_size, uint8_t sof, dispatcher_func_t dispatcher_func, void *source_struct, osMutexId tx_mutex, packer_func_t packer_func) {
@@ -53,7 +53,7 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
     source->data_fifo       = fifo_s_create(fifo_size, mutex);
     if (source->data_fifo == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate FIFO for data process object.");
-        free(source);
+        vPortFree(source);
         return NULL;
     }
 
@@ -61,7 +61,7 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
     if (source->buff[0] == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate DMA buffer for data process object.");
         fifo_s_destory(source->data_fifo);
-        free(source);
+        vPortFree(source);
         return NULL;
     }
     source->buff[1]         = source->buff[0] + source->buff_size;
@@ -74,19 +74,19 @@ data_process_t* data_process_init(UART_HandleTypeDef *huart, osMutexId mutex, ui
     source->frame_packet    = (uint8_t*)pvPortMalloc(fifo_size);
     if (source->frame_packet == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate frame packet buffer for data process object.");
-        free(source->buff[0]);
+        vPortFree(source->buff[0]);
         fifo_s_destory(source->data_fifo);
-        free(source);
+        vPortFree(source);
         return NULL;
     }
 
     source->transmit_fifo   = fifo_s_create(fifo_size, tx_mutex);
     if (source->transmit_fifo == NULL) {
         bsp_error_handler(__FUNCTION__, __LINE__, "Unable to allocate transmit FIFO for data process object.");
-        free(source->frame_packet);
-        free(source->buff[0]);
+        vPortFree(source->frame_packet);
+        vPortFree(source->buff[0]);
         fifo_s_destory(source->data_fifo);
-        free(source);
+        vPortFree(source);
         return NULL;
     }
 

@@ -24,7 +24,7 @@
  * @log     2018-04-17 nickelliang
  */
 
-#include <stdio.h>
+#include "bsp_print.h"
 
 #include "test_dbus.h"
 

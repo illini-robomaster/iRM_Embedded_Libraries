@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "bsp_print.h"
 
 #include "test_bsp_tof.h"
 #include "cmsis_os.h"

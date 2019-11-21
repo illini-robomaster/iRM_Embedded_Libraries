@@ -27,7 +27,7 @@
 #ifndef _BSP_ERROR_HANDLER_H_
 #define _BSP_ERROR_HANDLER_H_
 
-#include <stdio.h>
+#include "bsp_print.h"
 
 /**
  * @ingroup bsp

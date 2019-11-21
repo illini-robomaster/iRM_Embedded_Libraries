@@ -62,7 +62,7 @@
 #define TEST_SERVO          OFF
 #define TEST_BSP_PWM        OFF
 #define TEST_BSP_IMU        OFF
-#define TEST_IMU            OFF
+#define TEST_IMU            ON
 #define TEST_MOUSE          OFF
 #define TEST_CHASSIS        OFF
 #define TEST_TX2            OFF

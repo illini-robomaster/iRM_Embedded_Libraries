@@ -20,8 +20,8 @@
 
 void test_motor() {
     // motor_feedback();
-    // test_motor_3508(0);
-    test_motor_6623(0);
+    test_motor_3508(1);
+    // test_motor_6623(0);
     // test_motor_2006(0);
     // test_motor_3510(0);
     // test_motor_2305();
@@ -42,12 +42,12 @@ void test_motor_3508(uint8_t rotate) {
     motor_t motor;
     size_t i;
 
-    can_motor_init(&motor, 0x201, CAN1_ID, M3508);
+    can_motor_init(&motor, 0x202, CAN1_ID, M3508);
     motor.out = 200;
 
     if (rotate)
         for (i = 0; i < 1000; i++)
-            set_can_motor_output(&motor, NULL, NULL, NULL);
+            set_can_motor_output(NULL, &motor, NULL, NULL);
 
     for (i = 0; i < 1000; i++) {
         get_motor_data(&motor);
