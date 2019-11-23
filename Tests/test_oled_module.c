@@ -22,7 +22,7 @@ void test_oled_button_raw(void) {
         button = oled_button_get_val();
         oled_clear(OLED_OFF);
         oled_printf("Button value %u\n", button);
-        // print("Button value %u.\r\n", button);
+        // printf("Button value %u.\r\n", button);
     }
 }
 
@@ -31,32 +31,32 @@ void test_oled_button(void) {
     for (count = 0; count < 100000; count++) {
         oled_button_status_t button_state = oled_get_button_status();
         if (button_state == PRESS_MIDDLE) {
-            // print("MIDDLE pressed.\r\n");
+            // printf("MIDDLE pressed.\r\n");
             // oled_clear(OLED_OFF);
             oled_printf("MIDDLE pressed.\n");
         }
         else if (button_state == PRESS_LEFT) {
-            // print("LEFT pressed.\r\n");
+            // printf("LEFT pressed.\r\n");
             // oled_clear(OLED_OFF);
             oled_printf("LEFT pressed.\n");
         }
         else if (button_state == PRESS_RIGHT) {
-            // print("RIGHT pressed.\r\n");
+            // printf("RIGHT pressed.\r\n");
             // oled_clear(OLED_OFF);
             oled_printf("RIGHT pressed.\n");
         }
         else if (button_state == PRESS_UP) {
-            // print("UP pressed.\r\n");
+            // printf("UP pressed.\r\n");
             // oled_clear(OLED_OFF);
             oled_printf("UP pressed.\n");
         }
         else if (button_state == PRESS_DOWN) {
-            // print("DOWN pressed.\r\n");
+            // printf("DOWN pressed.\r\n");
             // oled_clear(OLED_OFF);
             oled_printf("DOWN pressed.\n");
         }
         else if (button_state == PRESS_STATIC) {
-            // print("STATIC pressed.\r\n");
+            // printf("STATIC pressed.\r\n");
             // oled_clear(OLED_OFF);
             oled_printf("STATIC pressed.\n");
         }

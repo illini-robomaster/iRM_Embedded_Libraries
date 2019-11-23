@@ -28,7 +28,6 @@
 #define _TEST_BSP_CAN_H_
 
 #include "bsp_can.h"
-#include "bsp_print.h"
 
 #define CAN_TEST_COUNT      100000
 #define PRINT_CAN_1         1       // Set to 1 to print can 1 data

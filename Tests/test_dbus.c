@@ -24,6 +24,8 @@
  * @log     2018-04-17 nickelliang
  */
 
+#include "bsp_print.h"
+
 #include "test_dbus.h"
 
 uint8_t test_dbus(void) {
@@ -31,28 +33,28 @@ uint8_t test_dbus(void) {
     size_t i;
     dbus_t* rc = dbus_get_struct();
     for (i = 0; i < DBUS_TEST_COUNT; i++) {
-        print("CH0 %03d CH1 %03d ", rc->ch0, rc->ch1);
-        print("CH2 %03d CH3 %03d ", rc->ch2, rc->ch3);
-        print("SL %u SR %u ", rc->swl, rc->swr);
-        print("MX %04d MY %04d ", rc->mouse.x, rc->mouse.y);
-        print("ML %u MR %u ", rc->mouse.l, rc->mouse.r);
-        if (rc->key.bit.SHIFT) print("SHIFT ");
-        if (rc->key.bit.CTRL) print("CTRL ");
-        if (rc->key.bit.W) print("W ");
-        if (rc->key.bit.A) print("A ");
-        if (rc->key.bit.S) print("S ");
-        if (rc->key.bit.D) print("D ");
-        if (rc->key.bit.Q) print("Q ");
-        if (rc->key.bit.E) print("E ");
-        if (rc->key.bit.R) print("R ");
-        if (rc->key.bit.F) print("F ");
-        if (rc->key.bit.G) print("G ");
-        if (rc->key.bit.Z) print("Z ");
-        if (rc->key.bit.X) print("X ");
-        if (rc->key.bit.C) print("C ");
-        if (rc->key.bit.V) print("V ");
-        if (rc->key.bit.B) print("B ");
-        print("\r\n");
+        printf("CH0 %03d CH1 %03d ", rc->ch0, rc->ch1);
+        printf("CH2 %03d CH3 %03d ", rc->ch2, rc->ch3);
+        printf("SL %u SR %u ", rc->swl, rc->swr);
+        printf("MX %04d MY %04d ", rc->mouse.x, rc->mouse.y);
+        printf("ML %u MR %u ", rc->mouse.l, rc->mouse.r);
+        if (rc->key.bit.SHIFT) printf("SHIFT ");
+        if (rc->key.bit.CTRL) printf("CTRL ");
+        if (rc->key.bit.W) printf("W ");
+        if (rc->key.bit.A) printf("A ");
+        if (rc->key.bit.S) printf("S ");
+        if (rc->key.bit.D) printf("D ");
+        if (rc->key.bit.Q) printf("Q ");
+        if (rc->key.bit.E) printf("E ");
+        if (rc->key.bit.R) printf("R ");
+        if (rc->key.bit.F) printf("F ");
+        if (rc->key.bit.G) printf("G ");
+        if (rc->key.bit.Z) printf("Z ");
+        if (rc->key.bit.X) printf("X ");
+        if (rc->key.bit.C) printf("C ");
+        if (rc->key.bit.V) printf("V ");
+        if (rc->key.bit.B) printf("B ");
+        printf("\r\n");
     }
     return ret;
 }

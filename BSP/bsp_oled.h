@@ -29,12 +29,10 @@
 
 #include "stm32f4xx_hal.h"
 #include "bsp_error_handler.h"
-#include "bsp_print.h"
 #include "bsp_config.h"
 #include "bsp_adc.h"
 #include "spi.h"
 #include "math.h"
-#include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
 

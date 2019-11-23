@@ -27,26 +27,6 @@
 #ifndef _BSP_PRINT_H_
 #define _BSP_PRINT_H_
 
-#include "stm32f4xx_hal.h"
-#include "bsp_config.h"
-#include <string.h>
-
-/**
- * @ingroup bsp
- * @defgroup bsp_print BSP Print
- * @{
- */
-
-/**
- * Implementation of printf equivalent in embedded system
- *
- * @param  fmt     formatted string
- * @param  ...     variable length arguments 
- * @author Yixiao Sun
- * @date   2017-12-20
- */
-void print(const char *fmt, ...);
-
-/** @} */
+#include "printf.h" // third party tiny-printf implemnetations
 
 #endif // _BSP_PRINT_

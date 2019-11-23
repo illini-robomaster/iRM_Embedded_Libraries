@@ -16,6 +16,7 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  *************************************************************************/
 
+#include "bsp_print.h"
 #include "motor.h"
 #include "utils.h"
 #include <stdlib.h>
@@ -34,12 +35,12 @@ static void get_3508_data(motor_t* motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_3508_data(motor_t* motor) {
-    print("== 3508 at CAN bus %u node %x ==\r\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
-    print("Angle        %d\n", motor->as.m3508.angle);
-    print("Current      %d\n", motor->as.m3508.current_get);
-    print("Speed        %d\n", motor->as.m3508.speed_rpm);
-    print("Temperature  %u\n", motor->as.m3508.temperature);
-    print("================================\r\n");
+    printf("== 3508 at CAN bus %u node %x ==\r\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
+    printf("Angle        %d\n", motor->as.m3508.angle);
+    printf("Current      %d\n", motor->as.m3508.current_get);
+    printf("Speed        %d\n", motor->as.m3508.speed_rpm);
+    printf("Temperature  %u\n", motor->as.m3508.temperature);
+    printf("================================\r\n");
 }
 
 static void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
@@ -52,11 +53,11 @@ static void get_6623_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_6623_data(motor_t* motor) {
-    print("== 6623 at CAN bus %u node %x ==\r\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
-    print("Angle        %d\r\n", motor->as.m6623.angle);
-    print("Current      %d\r\n", motor->as.m6623.current_get);
-    print("Set Current  %d\r\n", motor->as.m6623.current_set);
-    print("================================\r\n");
+    printf("== 6623 at CAN bus %u node %x ==\r\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
+    printf("Angle        %d\r\n", motor->as.m6623.angle);
+    printf("Current      %d\r\n", motor->as.m6623.current_get);
+    printf("Set Current  %d\r\n", motor->as.m6623.current_set);
+    printf("================================\r\n");
 }
 
 static void get_3510_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
@@ -67,10 +68,10 @@ static void get_3510_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_3510_data(motor_t* motor) {
-    print("== 3510 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
-    print("Angle        %d\n", motor->as.m3510.angle);
-    print("Current      %d\n", motor->as.m3510.current_get);
-    print("================================\n");
+    printf("== 3510 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
+    printf("Angle        %d\n", motor->as.m3510.angle);
+    printf("Current      %d\n", motor->as.m3510.current_get);
+    printf("================================\n");
 }
 
 static void get_2006_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
@@ -83,11 +84,11 @@ static void get_2006_data(motor_t *motor, uint8_t buf[CAN_DATA_SIZE]) {
 }
 
 static void print_2006_data(motor_t* motor) {
-    print("== 2006 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
-    print("Angle        %d\n", motor->as.m2006.angle);
-    print("Current      %d\n", motor->as.m2006.current_get);
-    print("Speed        %d\n", motor->as.m2006.speed_rpm);
-    print("================================\n");
+    printf("== 2006 at CAN bus %u node %x ==\n", motor->as.mdjican.can_id, motor->as.mdjican.rx_id);
+    printf("Angle        %d\n", motor->as.m2006.angle);
+    printf("Current      %d\n", motor->as.m2006.current_get);
+    printf("Speed        %d\n", motor->as.m2006.speed_rpm);
+    printf("================================\n");
 }
 
 static uint8_t match_id(uint16_t *old_id, uint16_t new_id) {

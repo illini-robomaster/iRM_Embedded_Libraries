@@ -35,7 +35,7 @@
  * @{
  */
 
-#define BSP_DEBUG   print("[DEBUG] %s:%d ", __FUNCTION__, __LINE__)
+#define BSP_DEBUG   printf("[DEBUG] %s:%d ", __FUNCTION__, __LINE__)
 
 /**
  * Handle error condition printf etc.

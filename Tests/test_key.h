@@ -28,7 +28,6 @@
 #define _TEST_KEY_H_
 
 #include "bsp_key.h"
-#include "bsp_print.h"
 
 /**
  * Wait until a key pressed.

@@ -27,8 +27,10 @@
 #ifndef _OLED_MODULE_H_
 #define _OLED_MODULE_H_
 
-#include "bsp_oled.h"
 #include <stdlib.h>
+#include <string.h>
+
+#include "bsp_oled.h"
 
 /* TODO: Function documentation incomplete */
 

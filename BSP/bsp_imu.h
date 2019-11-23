@@ -30,7 +30,6 @@
 #include "bsp_mpu6500_reg.h"
 #include "bsp_ist8310_reg.h"
 #include "bsp_error_handler.h"
-#include "bsp_print.h"
 #include "spi.h"
 #include "main.h"
 

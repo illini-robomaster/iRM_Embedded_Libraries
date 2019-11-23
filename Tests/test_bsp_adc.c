@@ -25,7 +25,7 @@ void test_bsp_adc(void) {
     while (1) {
         uint16_t chan0 = adc_get_val(adc1);
         uint16_t chan1 = adc_get_val(adc2);
-        print("channel 0: %d channel 1: %d\r\n", chan0, chan1);
+        printf("channel 0: %d channel 1: %d\r\n", chan0, chan1);
         osDelay(300);
     }
 }
