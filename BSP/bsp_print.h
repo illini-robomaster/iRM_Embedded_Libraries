@@ -29,6 +29,4 @@
 
 #include "printf.h" // third party tiny-printf implemnetations
 
-/** @} */
-
 #endif // _BSP_PRINT_
