@@ -19,6 +19,10 @@
 #ifndef _IMU_ONBOARD_H_
 #define _IMU_ONBOARD_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "lib_config.h"
 #include "bsp_imu.h"
 #include <math.h>
@@ -118,5 +122,9 @@ void discrete_integral(imu_axis_t desired_axis);
 float kalman_filter_update(imu_axis_t desired_axis);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

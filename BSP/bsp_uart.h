@@ -27,6 +27,10 @@
 #ifndef _BSP_UART_H_
 #define _BSP_UART_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "bsp_config.h"
 #include "usart.h"
 #include "dma.h"
@@ -170,5 +174,9 @@ void uart_referee_callback(void);
 void uart_tx2_callback(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

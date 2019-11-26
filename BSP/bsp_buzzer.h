@@ -27,6 +27,10 @@
 #ifndef _BSP_BUZZER_H_
 #define _BSP_BUZZER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "bsp_config.h"
 #include "tim.h"
@@ -98,5 +102,9 @@ extern buzzer_freq_t initialize[];
 extern buzzer_freq_t littleStar[];
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

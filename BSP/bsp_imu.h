@@ -27,6 +27,10 @@
 #ifndef _BSP_IMU_H
 #define _BSP_IMU_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "bsp_mpu6500_reg.h"
 #include "bsp_ist8310_reg.h"
 #include "bsp_error_handler.h"
@@ -185,5 +189,9 @@ static uint8_t ist8310_write_reg(uint8_t addr, uint8_t data);
 static void mpu_read_ist_config(uint8_t device_address, uint8_t reg_base_addr, uint8_t data_num);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -27,6 +27,10 @@
 #ifndef _DATA_PROCESS_H_
 #define _DATA_PROCESS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "data_fifo.h"
 #include "crc_check.h"
 #include "bsp_error_handler.h"
@@ -177,5 +181,9 @@ static uint8_t process_header(data_process_t* source);
 static uint8_t process_frame(data_process_t* source);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

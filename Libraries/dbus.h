@@ -27,6 +27,10 @@
 #ifndef _DBUS_H_
 #define _DBUS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "bsp_error_handler.h"
 #include "bsp_uart.h"
 #include "bsp_config.h"
@@ -133,5 +137,9 @@ uint8_t dbus_data_process(uint8_t buffer[DBUS_BUF_LEN], dbus_t* dbus);
 dbus_t* dbus_get_struct(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

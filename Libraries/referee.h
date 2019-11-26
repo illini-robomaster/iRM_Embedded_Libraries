@@ -27,6 +27,10 @@
 #ifndef _REFEREE_H_
 #define _REFEREE_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "bsp_error_handler.h"
 #include "bsp_uart.h"
 #include "bsp_config.h"
@@ -260,5 +264,9 @@ void referee_incomming(void);
 void referee_outgoing(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

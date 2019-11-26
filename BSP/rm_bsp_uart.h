@@ -32,6 +32,10 @@
 #ifndef _RM_BSP_UART_H_
 #define _RM_BSP_UART_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "bsp_uart.h"
 #include "stm32f4xx_hal.h"
 #include "usart.h"
@@ -79,5 +83,9 @@ extern inline void RM_UART_IRQHandler(UART_HandleTypeDef *huart) {
         }
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

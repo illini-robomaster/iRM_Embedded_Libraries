@@ -26,6 +26,10 @@
 #ifndef _MOTOR_H_
 #define _MOTOR_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ingroup library
  * @defgroup motor Motor
@@ -456,5 +460,9 @@ int16_t get_speed_err(motor_t *motor, int16_t target);
 void print_motor_data(motor_t *motor);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

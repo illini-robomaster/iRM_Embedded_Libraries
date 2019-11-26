@@ -19,6 +19,10 @@
 #ifndef _CHASSIS_H_
 #define _CHASSIS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "pid.h"
 #include "motor.h"
 #include "dbus.h"
@@ -122,5 +126,9 @@ void chassis_kill(pid_ctl_t *my_chassis[4]);
 void run_chassis(pid_ctl_t *my_chassis[4]);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

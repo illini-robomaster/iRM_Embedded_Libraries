@@ -27,6 +27,10 @@
 #ifndef _BSP_SDIO_H_
 #define _BSP_SDIO_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // #include "bsp_driver_sd.h"
 // #include "stm32f4xx_hal.h"
 #include "fatfs.h"
@@ -39,6 +43,10 @@
 void sdio_init(void);
 void sdio_queue_init(void);
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

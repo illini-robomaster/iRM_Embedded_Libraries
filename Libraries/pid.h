@@ -25,6 +25,10 @@
 #ifndef _PID_H_
 #define _PID_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include <math.h>
 #include "motor.h"
@@ -199,5 +203,9 @@ int32_t pid_power_ctl_delta_speed(pid_ctl_t *pid, int32_t target_power);
 int32_t pid_calc(pid_ctl_t *pid, int32_t target);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

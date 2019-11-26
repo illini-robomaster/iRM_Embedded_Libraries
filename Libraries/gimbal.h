@@ -19,6 +19,10 @@
 #ifndef _GIMBAL_H_
 #define _GIMBAL_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "pid.h"
 #include "motor.h"
 #include "dbus.h"
@@ -101,5 +105,9 @@ void gimbal_set_yaw_angle(gimbal_t *my_gimbal, int32_t yaw_ang);
 void run_gimbal(gimbal_t *my_gimbal);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

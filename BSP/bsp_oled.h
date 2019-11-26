@@ -27,12 +27,15 @@
 #ifndef _BSP_OLED_H_
 #define _BSP_OLED_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "bsp_error_handler.h"
 #include "bsp_config.h"
 #include "bsp_adc.h"
 #include "spi.h"
-#include "math.h"
 #include <stdarg.h>
 #include <stdint.h>
 
@@ -58,5 +61,9 @@ void oled_button_init(void);
 uint16_t oled_button_get_val(void);
 
 float oled_button_get_volt(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

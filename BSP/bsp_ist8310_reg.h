@@ -27,6 +27,10 @@
 #ifndef _BSP_IST8310_REG_H_
 #define _BSP_IST8310_REG_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ingroup bsp
  * @defgroup bsp_ist7310_reg BSP IST8310 REG
@@ -52,5 +56,9 @@ typedef enum {
 } IST8310_REG;
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

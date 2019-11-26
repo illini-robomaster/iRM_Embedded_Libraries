@@ -27,6 +27,10 @@
 #ifndef _BSP_GPIO_H_
 #define _BSP_GPIO_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "bsp_error_handler.h"
 #include "bsp_key.h"
@@ -88,5 +92,9 @@ gpio_state_t gpio_read(gpio_t *gpio);
 void gpio_interrupt(uint16_t gpio_pin);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

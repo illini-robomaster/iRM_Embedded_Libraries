@@ -27,6 +27,10 @@
 #ifndef _BSP_LASER_H_
 #define _BSP_LASER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
@@ -53,5 +57,9 @@ void laser_on(void);
 void laser_off(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

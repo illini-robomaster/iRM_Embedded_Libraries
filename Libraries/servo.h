@@ -27,6 +27,10 @@
 #ifndef _SERVO_H_
 #define _SERVO_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ingroup library
  * @defgroup servo Servo
@@ -132,5 +136,9 @@ uint32_t pwm_to_degrees(servo_t *servo, uint32_t pwm);
 uint32_t degrees_to_pwm(servo_t *servo, uint32_t pwm);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

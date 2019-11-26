@@ -27,6 +27,10 @@
 #ifndef _TX2_H_
 #define _TX2_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <string.h>
 
 #include "bsp_error_handler.h"
@@ -142,5 +146,9 @@ void tx2_incomming(void);
 void tx2_outgoing(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

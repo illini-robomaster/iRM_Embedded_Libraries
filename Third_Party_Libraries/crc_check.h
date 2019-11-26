@@ -25,6 +25,10 @@
 #ifndef _CRC_CHECK_H_
 #define _CRC_CHECK_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 
 /**
@@ -80,5 +84,9 @@ uint8_t verify_crc16_check_sum(uint8_t* pchMessage, uint32_t dwLength);
  * @param  dwLength   Length = Data + Checksum
  */
 void append_crc16_check_sum(uint8_t* pchMessage, uint32_t dwLength);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #endif

@@ -27,6 +27,10 @@
 #ifndef _BSP_ERROR_HANDLER_H_
 #define _BSP_ERROR_HANDLER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "bsp_print.h"
 
 /**
@@ -49,5 +53,9 @@
 extern void bsp_error_handler(const char* func, int line, char* msg);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

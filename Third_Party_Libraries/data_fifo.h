@@ -26,6 +26,10 @@
 #ifndef _DATA_FIFO_H_
 #define _DATA_FIFO_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 #include <stdlib.h>
@@ -167,5 +171,9 @@ uint32_t fifo_free_count(fifo_s_t* pfifo);
  * @note    Previous content still persist
  */
 uint8_t fifo_flush(fifo_s_t* pfifo);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -27,6 +27,10 @@
 #ifndef _OLED_MODULE_H_
 #define _OLED_MODULE_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -171,5 +175,9 @@ void oled_highlight_chars(int8_t row, uint8_t col_start, uint8_t col_end);
 void oled_irm_logo(void);
 
 oled_button_status_t oled_get_button_status(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

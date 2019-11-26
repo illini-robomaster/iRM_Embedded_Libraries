@@ -19,6 +19,10 @@
 #ifndef _BSP_POWER_H_
 #define _BSP_POWER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "bsp_adc.h"
 #include "bsp_config.h"
 
@@ -101,5 +105,9 @@ float get_current(void);
 float get_power(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

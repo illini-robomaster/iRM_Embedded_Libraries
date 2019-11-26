@@ -27,6 +27,10 @@
 #ifndef _BSP_KEY_H_
 #define _BSP_KEY_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
@@ -116,5 +120,9 @@ uint16_t key_pressed_time(void);
 void wait_until_key_pressed(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -27,6 +27,10 @@
 #ifndef _BSP_LED_H_
 #define _BSP_LED_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
@@ -85,5 +89,9 @@ void led_yellow_on(void);
 void led_off(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -19,6 +19,10 @@
 #ifndef _SHOOTER_H_
 #define _SHOOTER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "pid.h"
 #include "motor.h"
 #include "FreeRTOS.h"
@@ -139,5 +143,9 @@ void poker_set_speed(shooter_t *shooter, int32_t speed);
 void poker_run(shooter_t *shooter);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

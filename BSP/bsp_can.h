@@ -27,6 +27,10 @@
 #ifndef _BSP_CAN_H_
 #define _BSP_CAN_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stm32f4xx_hal.h"
 #include "main.h"
 #include "can.h"
@@ -153,5 +157,9 @@ static void can_transmit(CAN_HandleTypeDef* hcan, uint16_t id, int16_t msg1, int
 static void can_filter_config(CAN_HandleTypeDef* hcan);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

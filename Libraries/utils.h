@@ -19,6 +19,10 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 /**
@@ -75,5 +79,9 @@ float fclip_to_range(float *data, float low_lim, float high_lim);
 void normalize_2d(float *vx, float *vy);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

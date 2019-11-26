@@ -19,6 +19,10 @@
 #ifndef _BSP_PWM_H_
 #define _BSP_PWM_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "tim.h"
 
 /**
@@ -62,5 +66,9 @@ void pwm_stop(pwm_t *my_pwm);
 void pwm_set_pulse_width(pwm_t *my_pwm, uint32_t pulse_width);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
